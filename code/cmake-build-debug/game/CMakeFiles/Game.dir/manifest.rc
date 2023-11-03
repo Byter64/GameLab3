@@ -1,0 +1,2 @@
+#pragma code_page(65001)
+1 /* CREATEPROCESS_MANIFEST_RESOURCE_ID */ 24 /* RT_MANIFEST */ "C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/game/CMakeFiles/Game.dir/embed.manifest"
