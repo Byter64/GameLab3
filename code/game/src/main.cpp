@@ -178,6 +178,5 @@ int main()
     glDeleteBuffers(1, &VBO);
     glDeleteVertexArrays(1, &VAO);
     glfwTerminate();
-    glfwTerminate();
     return 0;
 }
