@@ -41,7 +41,7 @@ code/.idea/**/libraries
 # *.ipr
 
 # CMake
-*/cmake-build-*/
+**/cmake-build-*/
 
 # Mongo Explorer plugin
 code/.idea/**/mongoSettings.xml
