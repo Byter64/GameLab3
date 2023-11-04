@@ -3,6 +3,10 @@ cmake_minimum_required(VERSION 3.18)
 set(SOURCE_FILES src/main.cpp
         ../engine/src/InputSystem.cpp
         ../engine/src/InputSystem.h
+        ../engine/src/InputActions/InputAction.cpp
+        ../engine/src/InputActions/InputAction.h
+        ../engine/src/InputActions/InputActionButton.cpp
+        ../engine/src/InputActions/InputActionButton.h
 )
 
 set(EXE_FILE Game)

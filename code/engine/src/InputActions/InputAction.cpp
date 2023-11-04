@@ -1,13 +1,15 @@
 #include "InputAction.h"
+#include <string>
+#include <list>
 
 namespace Engine
 {
-    InputAction::InputAction()
+    InputAction::InputAction(std::string name) : name(std::move(name))
     {
 
     }
 
-    const std::vector<int> &InputAction::GetKeyboardBindings()
+    const std::list<int> &InputAction::GetKeyboardBindings()
     {
         return keyboardBindings;
     }
