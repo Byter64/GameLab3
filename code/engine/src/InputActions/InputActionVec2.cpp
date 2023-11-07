@@ -94,7 +94,7 @@ namespace Engine
         endCallbacks.push_back(callback);
     }
 
-    void InputActionVec2::UpdateAction(int key)
+    void InputActionVec2::Update(int key)
     {
         auto result = std::find_if(directionMaps.begin(), directionMaps.end(), [&key](const DirectionMap& map){return key == map.leftKey || key == map.rightKey || key == map.upKey || key == map.downKey;});
         const DirectionMap& map = *result;

@@ -23,7 +23,7 @@ namespace Engine
         void AddOnEnd(CallbackButton callback);
         void RemoveOnEnd(CallbackButton callback);
 
-        void UpdateAction(int key) override;
+        void Update(int key) override;
     };
 
 } // Engine

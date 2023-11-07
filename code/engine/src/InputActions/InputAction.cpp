@@ -9,7 +9,7 @@ namespace Engine
 
     }
 
-    void InputAction::UpdateAction(int key)
+    void InputAction::Update(int key)
     {
 
     }

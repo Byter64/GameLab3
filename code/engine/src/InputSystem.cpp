@@ -31,7 +31,7 @@ namespace Engine
 
             for(const auto& inputAction : inputSystem->keyToInputActions[key])
             {
-                inputAction->UpdateAction(key);
+                inputAction->Update(key);
             }
         }
     }

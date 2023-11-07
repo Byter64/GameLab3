@@ -21,7 +21,7 @@ namespace Engine
          * Updates the state of the action.
          * @param key The key that changed
          */
-        virtual void UpdateAction(int key) = 0;
+        virtual void Update(int key) = 0;
     };
 
 } // Engine

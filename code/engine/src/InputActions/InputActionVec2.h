@@ -30,7 +30,7 @@ namespace Engine
         void AddOnEnd(CallbackVec2 callback);
         void RemoveOnEnd(CallbackVec2 callback);
 
-        void UpdateAction(int key) override;
+        void Update(int key) override;
 
     private:
         struct DirectionMap

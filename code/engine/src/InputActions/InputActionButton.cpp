@@ -34,7 +34,7 @@ namespace Engine
         endCallbacks.remove(callback);
     }
 
-    void InputActionButton::UpdateAction(int key)
+    void InputActionButton::Update(int key)
     {
         int action = inputSystem->GetKeyState(key);
         if(action == GLFW_PRESS)
