@@ -15,8 +15,6 @@ namespace Engine
         InputSystem* inputSystem;
 
         explicit InputAction(std::string name);
-
-    public:
         /**
          * Updates the state of the action.
          * @param key The key that changed
