@@ -1,5 +1,6 @@
-#include "InputActionButton.h"
 #include "GLFW/glfw3.h"
+#include "InputActionButton.h"
+#include "../InputSystem.h"
 
 namespace Engine
 {
@@ -43,12 +44,17 @@ namespace Engine
                 (*callback)();
             }
         }
-        else
+        else if (action == GLFW_RELEASE)
         {
             for(CallbackButton callback : endCallbacks)
             {
                 (*callback)();
             }
         }
+    }
+
+    InputActionButton::InputActionButton(std::string name) : InputAction(name)
+    {
+
     }
 } // Engine

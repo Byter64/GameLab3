@@ -9,8 +9,8 @@ namespace Engine
 
     }
 
-    const std::list<int> &InputAction::GetKeyboardBindings()
+    void InputAction::UpdateAction(int key)
     {
-        return keyboardBindings;
+
     }
 } // Engine

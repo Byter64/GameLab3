@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "../../engine/src/InputSystem.h"
+#include "../../engine/src/InputActions/InputActionVec2.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -54,6 +56,23 @@ void processInput(GLFWwindow *window) {
         yTranslate -= sin(glm::radians(zRotation)) * translationSpeed * deltaTime;
         xTranslate -= cos(glm::radians(zRotation)) * translationSpeed * deltaTime;
     }
+}
+
+Engine::InputSystem* inputSystem;
+
+void StartTest(glm::vec2 input)
+{
+    std::cout << "Start: " << input.x << "|" << input.y << "\n";
+}
+
+void ValueChangeTest(glm::vec2 input)
+{
+    std::cout << "Value Change: " << input.x << "|" << input.y << "\n";
+}
+
+void Endtest(glm::vec2 input)
+{
+    std::cout << "End: " << input.x << "|" << input.y << "\n";
 }
 
 int main()
@@ -153,6 +172,15 @@ int main()
     glm::mat4 projection = glm::perspective(glm::radians(2.0f), 1000.0f/600.0f, 0.1f, 100.0f);
     int mvpLocation = glGetUniformLocation(shaderProgram, "mvp");
 
+    inputSystem = new Engine::InputSystem(window);
+    std::unique_ptr<Engine::InputActionVec2> testVector2 = std::make_unique<Engine::InputActionVec2>("TestVec2");
+    testVector2->AddKeyboardBinding(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+    testVector2->AddOnStart(StartTest);
+    testVector2->AddOnValueChange(ValueChangeTest);
+    testVector2->AddOnEnd(Endtest);
+    inputSystem->Add(std::move(testVector2));
+
+
     glfwSetTime(1.0/60);
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
@@ -170,7 +198,7 @@ int main()
         float frameTime = glfwGetTime();
         deltaTime = frameTime - lastFrameTime;
         lastFrameTime = frameTime;
-        std::cout << "Delta Time: " << deltaTime << "s" << std::endl;
+        //std::cout << "Delta Time: " << deltaTime << "s" << std::endl;
 
         glfwSwapBuffers(window);
         glfwPollEvents();

@@ -16,8 +16,11 @@ namespace Engine
 
     InputSystem::~InputSystem()
     {
-        glfwSetKeyCallback(window, nullptr);
         activeInputSystems.remove(this);
+        if(activeInputSystems.empty())
+        {
+            glfwSetKeyCallback(window, nullptr);
+        }
     }
 
     void InputSystem::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -25,22 +28,42 @@ namespace Engine
         for(InputSystem* inputSystem : activeInputSystems)
         {
             inputSystem->keyStates[key] = action;
+
+            for(const auto& inputAction : inputSystem->keyToInputActions[key])
+            {
+                inputAction->UpdateAction(key);
+            }
         }
     }
 
     void InputSystem::Add(std::unique_ptr<InputAction> inputAction)
     {
         inputAction->inputSystem = this;
+
+        for (int key: inputAction->keyboardBindings)
+        {
+            keyToInputActions[key].push_back(inputAction.get());
+        }
         inputActions.push_back(std::move(inputAction));
     }
 
     std::unique_ptr<InputAction> InputSystem::Remove(std::string inputActionName)
     {
-        auto result = std::find_if(inputActions.begin(), inputActions.end(), [&inputActionName]( const std::unique_ptr<InputAction>& inputAction) {return inputAction->name ==inputActionName;});
+        //Find InputAction
+        auto result = std::find_if(inputActions.begin(), inputActions.end(), [&inputActionName](const std::unique_ptr<InputAction>& inputAction) {return inputAction->name == inputActionName;});
         if(result == inputActions.end())
         {
             return nullptr;
         }
+
+        //Delete all references to this InputAction
+        for(auto& pair : keyToInputActions)
+        {
+            std::list<InputAction*>& list = pair.second;
+            list.remove(result->get());
+        }
+
+        //return it
         return std::move(*result);
     }
 
@@ -48,6 +71,5 @@ namespace Engine
     {
         return keyStates[key];
     }
-
 
 } // Engine

@@ -7,6 +7,8 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/InputActions/InputAction.h
         ../engine/src/InputActions/InputActionButton.cpp
         ../engine/src/InputActions/InputActionButton.h
+        ../engine/src/InputActions/InputActionVec2.h
+        ../engine/src/InputActions/InputActionVec2.cpp
 )
 
 set(EXE_FILE Game)

@@ -1,9 +1,9 @@
 #pragma once
 #include <string>
 #include <list>
-#include "../InputSystem.h"
 namespace Engine
 {
+    class InputSystem;
 
     class InputAction
     {
@@ -17,7 +17,6 @@ namespace Engine
         explicit InputAction(std::string name);
 
     public:
-        const std::list<int>& GetKeyboardBindings();
         /**
          * Updates the state of the action.
          * @param key The key that changed
