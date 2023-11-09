@@ -9,6 +9,12 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/InputActions/InputActionButton.h
         ../engine/src/InputActions/InputActionVec2.h
         ../engine/src/InputActions/InputActionVec2.cpp
+        ../engine/src/EntityComponentSystem/Entity.cpp
+        ../engine/src/EntityComponentSystem/Entity.h
+        ../engine/src/EntityComponentSystem/EntityManager.cpp
+        ../engine/src/EntityComponentSystem/EntityManager.h
+        ../engine/src/EntityComponentSystem/ComponentType.cpp
+        ../engine/src/EntityComponentSystem/ComponentType.h
 )
 
 set(EXE_FILE Game)
