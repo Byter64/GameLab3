@@ -16,10 +16,7 @@ namespace Engine
 
         amount = amount > unpooledEntities ? unpooledEntities : amount;
 
-        if(amount == 0)
-        {
-            return false;
-        }
+        if(amount == 0) return false;
 
         for(int i = pooledEntitiesCount; i < pooledEntitiesCount + amount; i++)
         {
@@ -28,5 +25,43 @@ namespace Engine
         pooledEntitiesCount += amount;
 
         return true;
+    }
+
+    Entity EntityManager::CreateEntity()
+    {
+        if(activeEntitiesCount == pooledEntitiesCount)
+        {
+            bool hasWorked = AddNewEntitiesToPool(100);
+            if(!hasWorked) return INVALID_ENTITY_ID;
+        }
+
+        activeEntitiesCount++;
+
+        Entity id = pooledEntities.front();
+        pooledEntities.pop();
+        return id;
+    }
+
+    void EntityManager::DestroyEntity(Entity entity)
+    {
+        if(entity == INVALID_ENTITY_ID) return;
+
+        signatures[entity].reset();
+        pooledEntities.push(entity);
+        activeEntitiesCount--;
+    }
+
+    void EntityManager::SetSignature(Entity entity, Signature signature)
+    {
+        if(entity == INVALID_ENTITY_ID) return;
+
+        signatures[entity] = signature;
+    }
+
+    Signature EntityManager::GetSignature(Entity entity)
+    {
+        if(entity == INVALID_ENTITY_ID) return 0;
+
+        return signatures[entity];
     }
 } // Engine

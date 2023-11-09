@@ -8,6 +8,6 @@ namespace Engine
     typedef std::uint32_t Entity;
     typedef std::bitset<MAX_COMPONENTS> Signature;
     const Entity MAX_ENTITIES = 1000;
-    const Entity INVALID_ID = MAX_ENTITIES;
+    const Entity INVALID_ENTITY_ID = MAX_ENTITIES;
 
 } // Engine

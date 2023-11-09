@@ -16,9 +16,15 @@ namespace Engine
     public:
         EntityManager();
         Entity CreateEntity();
-        void DestroyEntity(Entity Entity);
+        void DestroyEntity(Entity entity);
         void SetSignature(Entity entity, Signature signature);
         Signature GetSignature(Entity entity);
+
+        /**
+         * Adds 0 to amount entities to the pool.
+         * @param amount The amount of entities that are tried to be added to the pool
+         * @return Returns True, if at least 1 entity could be added, else false
+         */
         bool AddNewEntitiesToPool(unsigned int amount);
     };
 
