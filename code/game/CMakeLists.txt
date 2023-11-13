@@ -15,6 +15,14 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/EntityManager.h
         ../engine/src/EntityComponentSystem/ComponentType.cpp
         ../engine/src/EntityComponentSystem/ComponentType.h
+        ../engine/src/EntityComponentSystem/IComponentArray.h
+        ../engine/src/EntityComponentSystem/ComponentArray.h
+        ../engine/src/EntityComponentSystem/ComponentManager.h
+        ../engine/src/EntityComponentSystem/System.h
+        ../engine/src/EntityComponentSystem/SystemManager.cpp
+        ../engine/src/EntityComponentSystem/SystemManager.h
+        ../engine/src/EntityComponentSystem/ECSSystem.cpp
+        ../engine/src/EntityComponentSystem/ECSSystem.h
 )
 
 set(EXE_FILE Game)
