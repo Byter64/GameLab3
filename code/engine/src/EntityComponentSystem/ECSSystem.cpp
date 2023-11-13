@@ -16,8 +16,18 @@ namespace Engine
 
     void ECSSystem::DestroyEntity(Entity entity)
     {
-        entityManager->DestroyEntity(entity);
-        componentManager->EntityDestroyed(entity);
-        systemManager->EntityDestroyed(entity);
+        entityPurgatory.insert(entity);
+    }
+
+    void ECSSystem::DestroyEntitiesForReal()
+    {
+        for(Entity entity : entityPurgatory)
+        {
+            entityManager->DestroyEntity(entity);
+            componentManager->EntityDestroyed(entity);
+            systemManager->EntityDestroyed(entity);
+        }
+
+        entityPurgatory.clear();
     }
 } // Engine

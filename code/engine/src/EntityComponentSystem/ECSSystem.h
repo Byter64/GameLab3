@@ -1,5 +1,6 @@
 #pragma once
 #include <memory>
+#include <set>
 #include "EntityManager.h"
 #include "ComponentManager.h"
 #include "SystemManager.h"
@@ -12,11 +13,14 @@ namespace Engine
         std::unique_ptr<ComponentManager> componentManager;
         std::unique_ptr<SystemManager> systemManager;
 
+        std::set<Entity> entityPurgatory;
+
     public:
         void Init();
 
         Entity CreateEntity();
         void DestroyEntity(Entity entity);
+        void DestroyEntitiesForReal();
 
         template<typename T>
         void RegisterComponent()

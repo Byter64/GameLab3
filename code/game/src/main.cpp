@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../../engine/src/InputSystem.h"
 #include "../../engine/src/InputActions/InputActionVec2.h"
+#include "../../engine/src/EntityComponentSystem/ECSSystem.h"
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
@@ -75,6 +76,8 @@ void Endtest(glm::vec2 input)
     std::cout << "End: " << input.x << "|" << input.y << "\n";
 }
 
+Engine::ECSSystem ecsSystem;
+
 int main()
 {
     glfwInit();
@@ -100,6 +103,7 @@ int main()
         return -1;
     }
 
+    ecsSystem.Init();
     const char *vertexShaderSource = R"(
     #version 460 core
     layout (location = 0) in vec3 aPos;
