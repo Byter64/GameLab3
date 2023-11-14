@@ -54,4 +54,24 @@ namespace Engine
 
         return matrix;
     }
+
+    void Transform::SetParent(Transform *parent)
+    {
+        this->parent = parent;
+    }
+
+    Transform *Transform::GetParent()
+    {
+        return parent;
+    }
+
+    void Transform::AddChild(Transform *child)
+    {
+        children.insert(child);
+    }
+
+    void Transform::RemoveChild(Transform *child)
+    {
+        children.erase(child);
+    }
 } // Engine

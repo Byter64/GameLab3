@@ -1,6 +1,7 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "glm/ext/quaternion_float.hpp"
+#include <set>
 
 namespace Engine
 {
@@ -14,6 +15,9 @@ namespace Engine
         glm::vec3 translation = glm::vec3(0, 0, 0);
         glm::vec3 scale = glm::vec3(1, 1, 1);
         glm::quat rotation = glm::quat(0, 0, 0, 0);
+
+        Transform* parent;
+        std::set<Transform*> children;
 
     public:
         Transform() = default;
@@ -29,6 +33,13 @@ namespace Engine
         void SetRotation(const glm::quat& rotation);
 
         const glm::mat4x4& GetMatrix();
+
+
+        void SetParent(Transform* parent);
+        Transform* GetParent();
+
+        void AddChild(Transform* child);
+        void RemoveChild(Transform* child);
     };
 
 } // Engine
