@@ -25,7 +25,6 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/ECSSystem.h
         ../engine/src/EntityComponentSystem/Transform.cpp
         ../engine/src/EntityComponentSystem/Transform.h
-        ../engine/src/EntityComponentSystem/Material.h
         ../engine/src/EntityComponentSystem/MeshRenderer.cpp
         ../engine/src/EntityComponentSystem/MeshRenderer.h
 )

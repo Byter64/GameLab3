@@ -1,6 +1,5 @@
 #pragma once
 #include <memory>
-#include "Material.h"
 #include "../../extern/tinygltf/tiny_gltf.h"
 
 namespace Engine
