@@ -27,6 +27,8 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/Transform.h
         ../engine/src/EntityComponentSystem/MeshRenderer.cpp
         ../engine/src/EntityComponentSystem/MeshRenderer.h
+        ../engine/src/EntityComponentSystem/RenderSystem.cpp
+        ../engine/src/EntityComponentSystem/RenderSystem.h
 )
 
 set(EXE_FILE Game)

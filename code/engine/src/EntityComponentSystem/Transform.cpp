@@ -67,11 +67,22 @@ namespace Engine
 
     void Transform::AddChild(Transform *child)
     {
-        children.insert(child);
+        bool isAlreadyAChild = std::find(children.begin(), children.end(),child) != children.end();
+        if(isAlreadyAChild) return;
+
+        children.push_back(child);
     }
 
     void Transform::RemoveChild(Transform *child)
     {
-        children.erase(child);
+        bool isNotAChild = std::find(children.begin(), children.end(),child) == children.end();
+        if(isNotAChild) return;
+
+        children.remove(child);
+    }
+
+    const std::list<Transform*> &Transform::GetChildren()
+    {
+        return children;
     }
 } // Engine

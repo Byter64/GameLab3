@@ -1,7 +1,7 @@
 #pragma once
 #include "glm/glm.hpp"
 #include "glm/ext/quaternion_float.hpp"
-#include <set>
+#include <list>
 
 namespace Engine
 {
@@ -17,7 +17,7 @@ namespace Engine
         glm::quat rotation = glm::quat(0, 0, 0, 0);
 
         Transform* parent;
-        std::set<Transform*> children;
+        std::list<Transform*> children;
 
     public:
         Transform() = default;
@@ -40,6 +40,7 @@ namespace Engine
 
         void AddChild(Transform* child);
         void RemoveChild(Transform* child);
+        const std::list<Transform*>& GetChildren();
     };
 
 } // Engine

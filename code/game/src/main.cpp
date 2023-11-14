@@ -10,7 +10,7 @@
 
 Engine::InputSystem* inputSystem;
 
-Engine::ECSSystem ecsSystem;
+Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
 
 int SetupWindow();

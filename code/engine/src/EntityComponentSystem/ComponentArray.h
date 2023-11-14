@@ -45,18 +45,11 @@ namespace Engine
             size--;
         }
 
-        /**
-         * Returns a reference to the component of the given entity.
-         * @param entity
-         * @return a reference to the entitie's component or nullptr if the entity does not have one
-         */
         T& GetComponent(Entity entity)
         {
-            bool entityHasComponent = entityToIndex.find(entity) != entityToIndex.end();
-            if(entityHasComponent)
-                return components[entityToIndex[entity]];
-            else
-                return nullptr;
+            assert(entityToIndex.find(entity) != entityToIndex.end() && "This entity does not have such a component");
+
+            return components[entityToIndex[entity]];
         }
 
         void EntityDestroyed(Entity entity) override
