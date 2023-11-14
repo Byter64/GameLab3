@@ -317,6 +317,26 @@ GLFW_SOURCE_DIR:STATIC=C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/cod
 //Force use of high-performance GPU on hybrid systems
 GLFW_USE_HYBRID_HPG:BOOL=OFF
 
+//Build glTF builder example
+TINYGLTF_BUILD_BUILDER_EXAMPLE:BOOL=OFF
+
+//Build GL exampels(requires glfw, OpenGL, etc)
+TINYGLTF_BUILD_GL_EXAMPLES:BOOL=OFF
+
+//Build loader_example(load glTF and dump infos)
+TINYGLTF_BUILD_LOADER_EXAMPLE:BOOL=ON
+
+//Build validator exampe
+TINYGLTF_BUILD_VALIDATOR_EXAMPLE:BOOL=OFF
+
+//On: header-only mode. Off: create tinygltf library(No TINYGLTF_IMPLEMENTATION
+// required in your project)
+TINYGLTF_HEADER_ONLY:BOOL=OFF
+
+//Install tinygltf files during install step. Usually set to OFF
+// if you include tinygltf through add_subdirectory()
+TINYGLTF_INSTALL:BOOL=ON
+
 //Use MSVC runtime library DLL
 USE_MSVC_RUNTIME_LIBRARY_DLL:BOOL=ON
 
@@ -328,6 +348,15 @@ glm_IS_TOP_LEVEL:STATIC=OFF
 
 //Value Computed by CMake
 glm_SOURCE_DIR:STATIC=C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/extern/glm
+
+//Value Computed by CMake
+tinygltf_BINARY_DIR:STATIC=C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/extern/tinygltf
+
+//Value Computed by CMake
+tinygltf_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+tinygltf_SOURCE_DIR:STATIC=C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/extern/tinygltf
 
 
 ########################
@@ -458,7 +487,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_MT
 CMAKE_MT-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
 //Platform information initialized
 CMAKE_PLATFORM_INFO_INITIALIZED:INTERNAL=1
 //noop for ranlib

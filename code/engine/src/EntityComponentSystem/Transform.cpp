@@ -5,7 +5,7 @@ namespace Engine
 {
     Transform::Transform(glm::vec3 position, glm::vec3 scale, glm::quat rotation) : translation(position), scale(scale), rotation(rotation)
     {
-
+        parent = nullptr;
     }
 
     glm::vec3 Transform::GetTranslation()
