@@ -23,6 +23,8 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/SystemManager.h
         ../engine/src/EntityComponentSystem/ECSSystem.cpp
         ../engine/src/EntityComponentSystem/ECSSystem.h
+        ../engine/src/EntityComponentSystem/Transform.cpp
+        ../engine/src/EntityComponentSystem/Transform.h
 )
 
 set(EXE_FILE Game)
