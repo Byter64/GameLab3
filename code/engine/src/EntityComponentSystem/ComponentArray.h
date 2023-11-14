@@ -10,7 +10,7 @@ namespace Engine
     template<typename T>
     class ComponentArray : public IComponentArray
     {
-        size_t size;
+        size_t size = 0;
         std::array<T, MAX_ENTITIES> components;
         std::unordered_map<Entity, size_t> entityToIndex;
         std::unordered_map<size_t, Entity> indexToEntity;
@@ -45,11 +45,18 @@ namespace Engine
             size--;
         }
 
+        /**
+         * Returns a reference to the component of the given entity.
+         * @param entity
+         * @return a reference to the entitie's component or nullptr if the entity does not have one
+         */
         T& GetComponent(Entity entity)
         {
-            assert(entityToIndex.find(entity) != entityToIndex.end() && "This entity does not have such a component");
-
-            return components[entityToIndex[entity]];
+            bool entityHasComponent = entityToIndex.find(entity) != entityToIndex.end();
+            if(entityHasComponent)
+                return components[entityToIndex[entity]];
+            else
+                return nullptr;
         }
 
         void EntityDestroyed(Entity entity) override
