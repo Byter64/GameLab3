@@ -45,7 +45,7 @@ namespace Engine
 
 
             //█████████████████████████████████████████████████████████████████████████████████████
-            //██████████Setting Material data for Rendereing███████████████████████████████████████
+            //██████████Setting Material data for Rendering████████████████████████████████████████
             //█████████████████████████████████████████████████████████████████████████████████████
 
             //BaseColor
@@ -102,6 +102,11 @@ namespace Engine
                 glActiveTexture(GL_TEXTURE5);
                 glBindTexture(GL_TEXTURE_2D, data.material.emissiveID);
             }
+
+            const tinygltf::Accessor& indices = meshRenderer.model->accessors[primitive.indices];
+            glBindVertexArray(data.vaoID);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.indexBufferID);
+            glDrawElements(primitive.mode, indices.count, indices.componentType, (void*)indices.byteOffset);
         }
 
 
