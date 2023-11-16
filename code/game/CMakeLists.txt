@@ -29,6 +29,7 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/MeshRenderer.h
         ../engine/src/EntityComponentSystem/RenderSystem.cpp
         ../engine/src/EntityComponentSystem/RenderSystem.h
+        ../engine/src/EntityComponentSystem/Material.h
 )
 
 set(EXE_FILE Game)
