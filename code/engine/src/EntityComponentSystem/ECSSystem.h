@@ -59,6 +59,12 @@ namespace Engine
         }
 
         template<typename T>
+        Entity GetEntity(T& component)
+        {
+            return componentManager->GetEntity(component);
+        }
+
+        template<typename T>
         ComponentType GetComponentType()
         {
             return componentManager->GetComponentType<T>();

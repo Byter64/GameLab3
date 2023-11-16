@@ -2,8 +2,9 @@
 #include "IComponentArray.h"
 #include <array>
 #include <unordered_map>
-#include <assert.h>
+#include <cassert>
 #include "Entity.h"
+#include <iostream>
 
 namespace Engine
 {
@@ -50,6 +51,15 @@ namespace Engine
             assert(entityToIndex.find(entity) != entityToIndex.end() && "This entity does not have such a component");
 
             return components[entityToIndex[entity]];
+        }
+
+        Entity GetEntity(T& component)
+        {
+            T* firstElement = &components[0];
+            T* thisElement = &component;
+            int index = thisElement - firstElement;
+            std::cout << "GetEntity was used, which has not been properly tested yet \n" << "Please check if it worked correctly!!!\n";
+            return indexToEntity[index];
         }
 
         void EntityDestroyed(Entity entity) override

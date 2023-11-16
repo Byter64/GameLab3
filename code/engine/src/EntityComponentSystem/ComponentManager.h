@@ -68,6 +68,12 @@ namespace Engine
             return GetComponentArray<T>()->GetComponent(entity);
         }
 
+        template<typename T>
+        Entity GetEntity(T& component)
+        {
+            return GetComponentArray<T>()->GetEntity(component);
+        }
+
         void EntityDestroyed(Entity entity)
         {
             for(auto const& pair: componentArrays)
