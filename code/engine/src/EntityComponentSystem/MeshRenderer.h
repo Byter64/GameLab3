@@ -15,6 +15,7 @@ namespace Engine
         std::vector<PrimitiveData> primitiveData;
         GLuint shaderID;
 
+
         MeshRenderer(std::shared_ptr<tinygltf::Mesh> mesh, std::shared_ptr<tinygltf::Model> model);
 
         struct PrimitiveData

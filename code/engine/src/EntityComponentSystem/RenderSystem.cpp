@@ -4,6 +4,7 @@
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "glad/glad.h"
+#include <string>
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
@@ -123,6 +124,126 @@ namespace Engine
 
     RenderSystem::RenderSystem()
     {
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_DEPTH_CLAMP);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
 
+        assert(defaultShader != 0 && "Default shader has not been set, yet. You, crack pot, forgot to initialize it");
     }
+
+    void RenderSystem::LoadMesh(tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model)
+    {
+        for(const tinygltf::Primitive& primitive : mesh.primitives)
+        {
+            LoadVertexBuffer(primitive, *model);
+            if(primitive.indices > -1) { LoadIndexBuffer(primitive, *model); }
+            LoadVAO(primitive, *model);
+        }
+
+        //Textures need to be loaded
+
+        usedModels.insert(std::move(model));
+    }
+
+    void RenderSystem::LoadVertexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model)
+    {
+        if(loadedVertexBuffers.find(&primitive) != loadedVertexBuffers.end()) return;
+
+        int accessorIndex = primitive.attributes.begin()->second;
+        const tinygltf::BufferView& bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
+        const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+
+        GLuint bufferID;
+        glGenBuffers(1, &bufferID);
+        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+        glBufferData(GL_ARRAY_BUFFER, bufferView.byteLength, &buffer.data[bufferView.byteOffset], GL_STATIC_DRAW);
+
+        loadedVertexBuffers[&primitive] = bufferID;
+    }
+
+    void RenderSystem::LoadIndexBuffer(const tinygltf::Primitive &primitive, const tinygltf::Model &model)
+    {
+        if(loadedIndexBuffers.find(&primitive) != loadedIndexBuffers.end()) return;
+
+        int accessorIndex = primitive.indices;
+        const tinygltf::BufferView& bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
+        const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+
+        GLuint bufferID;
+        glGenBuffers(1, &bufferID);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferID);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, bufferView.byteLength, &buffer.data[bufferView.byteOffset], GL_STATIC_DRAW);
+
+        loadedIndexBuffers[&primitive] = bufferID;
+    }
+
+    void RenderSystem::LoadVAO(const tinygltf::Primitive &primitive, const tinygltf::Model &model)
+    {
+        if(loadedVaos.find(&primitive) != loadedVaos.end()) return;
+
+        GLuint vaoID;
+        glGenVertexArrays(1, &vaoID);
+        glBindVertexArray(vaoID);
+        glBindBuffer(GL_ARRAY_BUFFER, loadedVertexBuffers[&primitive]);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, loadedIndexBuffers[&primitive]);
+
+        const tinygltf::BufferView& bufferView = model.bufferViews[model.accessors[primitive.attributes.begin()->second].bufferView];
+        for(const auto& pair : primitive.attributes)
+        {
+            const std::string& name = pair.first;
+            const tinygltf::Accessor& data = model.accessors[pair.second];
+
+            unsigned int index = GetVertexAttributeIndex(name);
+
+            glEnableVertexAttribArray(index);
+            glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride, (void*)data.byteOffset);
+        }
+
+        loadedVaos[&primitive] = vaoID;
+    }
+
+    unsigned int RenderSystem::GetVertexAttributeIndex(const std::string &name)
+    {
+        //Is it ugly?
+        //--> Yes >:(
+        //Does it work?
+        //--> Yes -_-
+        static std::unordered_map<std::string, unsigned int> nameToIndex
+                {
+                        {"POSITION", 0},
+                        {"NORMAL", 1},
+                        {"TANGENT", 2},
+                        {"TEXCOORD_0", 3},
+                        {"TEXCOORD_1", 4},
+                        {"TEXCOORD_2", 5},
+                        {"TEXCOORD_3", 6},
+                        {"COLOR_0", 7},
+                        {"COLOR_1", 8},
+                        {"COLOR_2", 9},
+                        {"COLOR_3", 10},
+                };
+
+        return nameToIndex[name];
+    }
+
+    /**
+     * Only unloads vertex atrtibutes and indices. Does not unload Textures
+     * @param mesh
+     * @param model
+     */
+    void RenderSystem::UnloadMesh(tinygltf::Mesh &mesh)
+    {
+        for(const tinygltf::Primitive& primitive : mesh.primitives)
+        {
+            glDeleteBuffers(1, &loadedVertexBuffers[&primitive]);
+            glDeleteBuffers(1, &loadedIndexBuffers[&primitive]);
+            glDeleteVertexArrays(1, &loadedVaos[&primitive]);
+
+            loadedVertexBuffers.erase(&primitive);
+            loadedIndexBuffers.erase(&primitive);
+            loadedVaos.erase(&primitive);
+        }
+    }
+
 } // Engine

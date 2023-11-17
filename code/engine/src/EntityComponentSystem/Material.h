@@ -7,7 +7,7 @@ namespace Engine
 
     struct Material
     {
-        tinygltf::Material material;
+        tinygltf::Material& material;
 
         //Texture IDs
         GLuint baseColorID;
