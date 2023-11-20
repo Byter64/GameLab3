@@ -1,7 +1,6 @@
 #pragma once
 #include <memory>
 #include "../../extern/tinygltf/tiny_gltf.h"
-#include "GLFW/glfw3.h"
 #include "Material.h"
 namespace Engine
 {
@@ -10,18 +9,17 @@ namespace Engine
     {
         struct PrimitiveData;
 
-        std::shared_ptr<tinygltf::Mesh> mesh;
+        tinygltf::Mesh* mesh;
         std::shared_ptr<tinygltf::Model> model;
         std::vector<PrimitiveData> primitiveData;
-        GLuint shaderID;
+        GLuint shaderID = 0;
 
-
-        MeshRenderer(std::shared_ptr<tinygltf::Mesh> mesh, std::shared_ptr<tinygltf::Model> model);
+        MeshRenderer() = default;
 
         struct PrimitiveData
         {
-            GLuint vaoID;
-            GLuint indexBufferID;
+            GLuint vaoID = 0;
+            GLuint indexBufferID = 0;
             Material material;
         };
     };

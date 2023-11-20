@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -6,29 +7,60 @@
 #include <glm/gtc/type_ptr.hpp>
 #include "../../engine/src/InputSystem.h"
 #include "../../engine/src/InputActions/InputActionVec2.h"
-#include "../../engine/src/EntityComponentSystem/ECSSystem.h"
+#include "../../engine/src/Engine.h"
+//For whatever reason, these defines are not allowed to be written before glad is included (glad is also included in Engine.h)
+#define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define TINYGLTF_IMPLEMENTATION
+#include "../../extern/tinygltf/tiny_gltf.h"
 
 Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+std::shared_ptr<Engine::RenderSystem> renderSystem;
 GLFWwindow *window;
 
 int SetupWindow();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
 int main()
 {
     if(SetupWindow() == -1) return -1;
 
     ecsSystem.Init();
+    ecsSystem.RegisterComponent<Engine::Transform>();
+    ecsSystem.RegisterComponent<Engine::MeshRenderer>();
+    renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
+
+
+    bool hasWorked;
+    std::string error, warning;
+    std::string path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
+    std::shared_ptr<tinygltf::Model> model = std::make_shared<tinygltf::Model>();
+    tinygltf::TinyGLTF loader;
+
+    hasWorked = loader.LoadASCIIFromFile(model.get(), &error, &warning, path);
+
+    if (!hasWorked)
+    {
+        std::cout << error << std::endl;
+        return -1;
+    }
+
+    for(int nodeIndex : model->scenes[0].nodes)
+    {
+        const tinygltf::Node& node = model->nodes[nodeIndex];
+        LoadGLTFTree(node, nullptr, model);
+    }
 
 
     glfwSetTime(1.0/60);
-
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        renderSystem->Render();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -68,4 +100,31 @@ int SetupWindow()
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
+{
+    Engine::Entity entity = ecsSystem.CreateEntity();
+
+    Engine::Transform transform;
+    glm::vec3 translation {(float)root.translation[0],(float)root.translation[1],(float)root.translation[2]};
+    glm::vec3 scale {(float)root.scale[0],(float)root.scale[1],(float)root.scale[2]};
+    glm::quat rotation {(float)root.rotation[0],(float)root.translation[1],(float)root.translation[2], (float)root.rotation[3]};
+    transform.SetParent(parent);
+    transform.SetTranslation(translation);
+    transform.SetScale(scale);
+    transform.SetRotation(rotation);
+    ecsSystem.AddComponent(entity, transform);
+
+    if(root.mesh != -1)
+    {
+        Engine::MeshRenderer meshRenderer = renderSystem->CreateMeshRenderer(model->meshes[root.mesh], model);
+        ecsSystem.AddComponent(entity, meshRenderer);
+    }
+
+    for(int childIndex : root.children)
+    {
+        const tinygltf::Node& child = model->nodes[childIndex];
+        LoadGLTFTree(child, &ecsSystem.GetComponent<Engine::Transform>(entity), model);
+    }
 }

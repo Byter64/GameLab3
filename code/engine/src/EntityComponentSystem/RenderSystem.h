@@ -7,13 +7,14 @@
 #include "System.h"
 #include "ECSSystem.h"
 #include "Transform.h"
-#include "GLFW/glfw3.h"
+#include "MeshRenderer.h"
+#include "glad/glad.h"
 #include "../../extern/tinygltf/tiny_gltf.h"
 
 namespace Engine
 {
 
-    class RenderSystem : System
+    class RenderSystem : public System
     {
         GLuint defaultShader;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVertexBuffers;
@@ -39,7 +40,8 @@ namespace Engine
         RenderSystem();
 
         void Render();
-        void LoadMesh(tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
+        void LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
+        MeshRenderer CreateMeshRenderer(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
         void UnloadMesh(tinygltf::Mesh& mesh);
     };
 

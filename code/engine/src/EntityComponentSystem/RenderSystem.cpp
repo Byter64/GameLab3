@@ -1,10 +1,9 @@
 #include "RenderSystem.h"
+#include <string>
 #include "Entity.h"
 #include "ECSSystem.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
-#include "glad/glad.h"
-#include <string>
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
@@ -51,8 +50,9 @@ namespace Engine
 
             //BaseColor
             GLuint baseColorFactorLocation = glGetUniformLocation(defaultShader, "baseColorFactor");
-            std::vector<float> baseColorFactor{material.pbrMetallicRoughness.baseColorFactor.begin(),
-                                               material.pbrMetallicRoughness.baseColorFactor.end()};
+            std::vector<float> baseColorFactor{(float)material.pbrMetallicRoughness.baseColorFactor[0],
+                                               (float)material.pbrMetallicRoughness.baseColorFactor[1],
+                                               (float)material.pbrMetallicRoughness.baseColorFactor[2]};
             glUniform4fv(baseColorFactorLocation, 1, &baseColorFactor[0]);
             if (data.material.baseColorID > 0)
             {
@@ -96,7 +96,9 @@ namespace Engine
 
             //Emissive
             GLuint emissiveFactorLocation = glGetUniformLocation(defaultShader, "emissiveFactor");
-            std::vector<float> emissiveFactor{material.emissiveFactor.begin(), material.emissiveFactor.end()};
+            std::vector<float> emissiveFactor{(float)material.emissiveFactor[0],
+                                              (float)material.emissiveFactor[1],
+                                              (float)material.emissiveFactor[2]};
             glUniform4fv(emissiveFactorLocation, 1, &emissiveFactor[0]);
             if(data.material.emissiveID > 0)
             {
@@ -132,7 +134,7 @@ namespace Engine
         assert(defaultShader != 0 && "Default shader has not been set, yet. You, crack pot, forgot to initialize it");
     }
 
-    void RenderSystem::LoadMesh(tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model)
+    void RenderSystem::LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model)
     {
         for(const tinygltf::Primitive& primitive : mesh.primitives)
         {
@@ -244,6 +246,24 @@ namespace Engine
             loadedIndexBuffers.erase(&primitive);
             loadedVaos.erase(&primitive);
         }
+    }
+
+    MeshRenderer RenderSystem::CreateMeshRenderer(const tinygltf::Mesh &mesh, std::shared_ptr<tinygltf::Model> model)
+    {
+        MeshRenderer meshRenderer;
+        LoadMesh(mesh, model);
+
+        meshRenderer.model = model;
+        meshRenderer.mesh = &(tinygltf::Mesh&)mesh;
+
+        for(const tinygltf::Primitive& primitive : mesh.primitives)
+        {
+            MeshRenderer::PrimitiveData data;
+            data.vaoID = loadedVaos[&primitive];
+            data.indexBufferID = loadedIndexBuffers[&primitive];
+        }
+
+        return meshRenderer;
     }
 
 } // Engine

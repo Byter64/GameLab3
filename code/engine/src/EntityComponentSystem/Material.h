@@ -7,14 +7,14 @@ namespace Engine
 
     struct Material
     {
-        tinygltf::Material& material;
+         tinygltf::Material* material;
 
         //Texture IDs
-        GLuint baseColorID;
-        GLuint metallicRoughnessID;
-        GLuint normalID;
-        GLuint occlusionID;
-        GLuint emissiveID;
+        GLuint baseColorID = 0;
+        GLuint metallicRoughnessID = 0;
+        GLuint normalID = 0;
+        GLuint occlusionID = 0;
+        GLuint emissiveID = 0;
     };
 
 } // Engine

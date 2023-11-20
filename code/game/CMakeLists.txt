@@ -30,6 +30,7 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/RenderSystem.cpp
         ../engine/src/EntityComponentSystem/RenderSystem.h
         ../engine/src/EntityComponentSystem/Material.h
+        ../engine/src/Engine.h
 )
 
 set(EXE_FILE Game)
