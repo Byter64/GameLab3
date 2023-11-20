@@ -15,12 +15,12 @@ layout(location = 10)in vec3 colour_3;
 uniform mat4 model;
 uniform mat4 projectionView;
 
-out vec3 vertexColour;
+out vec3 vertexColor;
 out vec2 texCoord;
 
 void main() 
 {
     gl_Position = projectionView * model * vec4(position, 1.0);
-    vertexColour = colour_0;
+    vertexColor = colour_0;
     texCoord = texCoord_0;
 }

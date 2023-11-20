@@ -6,20 +6,14 @@
 #include "ECSSystem.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
+#include "../FileSystem.h"
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
-
     void RenderSystem::Render()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        std::cout << "Init 1 " << glGetError() << "\n";
-        GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
-        std::cout << "Init 2 " << glGetError() << "\n";
-        glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
-        glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
 
         for(Entity entity : entities)
         {
@@ -37,6 +31,19 @@ namespace Engine
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
         MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
         matrixStack.push(matrixStack.top() * transform.GetMatrix());
+
+        GLuint newShader = meshRenderer.shaderID > 0 ? meshRenderer.shaderID : defaultShader;
+        //Hier weiter machen
+        //Shader und Projektionsmatrix nur aktualisieren, wenn newShader tatsächlich ein neuer ist
+        //Testen: Spuckt Init 2 noch Fehler 1281 aus?
+        //if()
+
+        std::cout << "Init 1 " << glGetError() << "\n";
+        GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
+        std::cout << "Init 2 " << glGetError() << "\n";
+        glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
+        glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
+
 
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
         {
@@ -137,9 +144,10 @@ namespace Engine
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
 
-        defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
+        pathToDefaultVertexShader = Engine::Files::ASSETS / "Shaders/Default/VS_Default.vert";
+        pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/FS_Default.frag";
 
-        assert(defaultShader != 0 && "Default shader has not been set, yet. You, crack pot, forgot to initialize it");
+        defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
     }
 
     void RenderSystem::LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model)
@@ -274,7 +282,7 @@ namespace Engine
         return meshRenderer;
     }
 
-    std::unique_ptr<std::string> RenderSystem::ReadShaderFromFile(const std::string &filePath)
+    std::unique_ptr<std::string> RenderSystem::ReadShaderFromFile(const std::filesystem::path &filePath)
     {
         /*Code copied from : https://www.tutorialspoint.com/Read-whole-ASCII-file-into-Cplusplus-std-string
         Code has been modified*/
@@ -294,8 +302,10 @@ namespace Engine
 
     GLuint RenderSystem::CreateShaderProgram(const std::filesystem::path &pathToVertexShader, const std::filesystem::path &pathToFragmentShader)
     {
-        const char* vs_text = pathToVertexShader.u8string().c_str();
-        const char* fs_text = pathToFragmentShader.u8string().c_str();
+        std::unique_ptr<std::string> vs_text_str = ReadShaderFromFile(pathToVertexShader);
+        std::unique_ptr<std::string> fs_text_str = ReadShaderFromFile(pathToFragmentShader);
+        const char* vs_text = vs_text_str->c_str();
+        const char* fs_text = fs_text_str->c_str();
 
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
