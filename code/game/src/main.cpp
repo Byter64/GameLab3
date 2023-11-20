@@ -107,24 +107,31 @@ void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::sh
     Engine::Entity entity = ecsSystem.CreateEntity();
 
     Engine::Transform transform;
-    glm::vec3 translation {(float)root.translation[0],(float)root.translation[1],(float)root.translation[2]};
-    glm::vec3 scale {(float)root.scale[0],(float)root.scale[1],(float)root.scale[2]};
-    glm::quat rotation {(float)root.rotation[0],(float)root.translation[1],(float)root.translation[2], (float)root.rotation[3]};
+    glm::vec3 translation{0};
+    glm::vec3 scale{1};
+    glm::quat rotation = glm::identity<glm::quat>();
+    if (!root.translation.empty())
+    { translation = glm::vec3{(float) root.translation[0], (float) root.translation[1], (float) root.translation[2]}; }
+    if (!root.scale.empty())
+    { scale = glm::vec3{(float) root.scale[0], (float) root.scale[1], (float) root.scale[2]}; }
+    if (!root.rotation.empty())
+    { rotation = glm::quat{(float) root.rotation[0], (float) root.translation[1], (float) root.translation[2], (float) root.rotation[3]}; }
+
     transform.SetParent(parent);
     transform.SetTranslation(translation);
     transform.SetScale(scale);
     transform.SetRotation(rotation);
     ecsSystem.AddComponent(entity, transform);
 
-    if(root.mesh != -1)
+    if (root.mesh != -1)
     {
         Engine::MeshRenderer meshRenderer = renderSystem->CreateMeshRenderer(model->meshes[root.mesh], model);
         ecsSystem.AddComponent(entity, meshRenderer);
     }
 
-    for(int childIndex : root.children)
+    for (int childIndex: root.children)
     {
-        const tinygltf::Node& child = model->nodes[childIndex];
+        const tinygltf::Node &child = model->nodes[childIndex];
         LoadGLTFTree(child, &ecsSystem.GetComponent<Engine::Transform>(entity), model);
     }
 }
