@@ -32,7 +32,10 @@ int main()
     ecsSystem.RegisterComponent<Engine::Transform>();
     ecsSystem.RegisterComponent<Engine::MeshRenderer>();
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
-
+    Engine::Signature renderSignature;
+    renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+    renderSignature.set(ecsSystem.GetComponentType<Engine::MeshRenderer>());
+    ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
 
     bool hasWorked;
     std::string error, warning;
@@ -134,4 +137,5 @@ void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::sh
         const tinygltf::Node &child = model->nodes[childIndex];
         LoadGLTFTree(child, &ecsSystem.GetComponent<Engine::Transform>(entity), model);
     }
+
 }

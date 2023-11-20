@@ -21,7 +21,7 @@ namespace Engine
             auto const& systemSignature = signatures[type];
 
             //original comparison: (signature & systemSignature) == systemSignature
-            if(signature == systemSignature)
+            if((systemSignature &signature) == systemSignature)
             {
                 system->entities.insert(entity);
             }

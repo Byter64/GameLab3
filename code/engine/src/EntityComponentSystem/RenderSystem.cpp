@@ -261,6 +261,8 @@ namespace Engine
             MeshRenderer::PrimitiveData data;
             data.vaoID = loadedVaos[&primitive];
             data.indexBufferID = loadedIndexBuffers[&primitive];
+
+            meshRenderer.primitiveData.push_back(data);
         }
 
         return meshRenderer;
