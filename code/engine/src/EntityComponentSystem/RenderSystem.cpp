@@ -1,5 +1,7 @@
 #include "RenderSystem.h"
 #include <string>
+#include <fstream>
+#include <sstream>
 #include "Entity.h"
 #include "ECSSystem.h"
 #include "MeshRenderer.h"
@@ -13,7 +15,9 @@ namespace Engine
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        std::cout << "Init 1 " << glGetError() << "\n";
         GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
+        std::cout << "Init 2 " << glGetError() << "\n";
         glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
         glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
 
@@ -40,9 +44,11 @@ namespace Engine
             const MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
             const tinygltf::Material &material = meshRenderer.model->materials[primitive.material];
 
+            std::cout << glGetError() << std::endl;
             GLuint modelMatrixLocation = glGetUniformLocation(defaultShader, "model");
+            std::cout << glGetError() << std::endl;
             glUniformMatrix4fv(modelMatrixLocation, 1, false, &matrixStack.top()[0][0]);
-
+            std::cout << glGetError() << std::endl << std::endl;
 
             //█████████████████████████████████████████████████████████████████████████████████████
             //██████████Setting Material data for Rendering████████████████████████████████████████
@@ -131,6 +137,8 @@ namespace Engine
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
 
+        defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
+
         assert(defaultShader != 0 && "Default shader has not been set, yet. You, crack pot, forgot to initialize it");
     }
 
@@ -160,7 +168,6 @@ namespace Engine
         glGenBuffers(1, &bufferID);
         glBindBuffer(GL_ARRAY_BUFFER, bufferID);
         glBufferData(GL_ARRAY_BUFFER, bufferView.byteLength, &buffer.data[bufferView.byteOffset], GL_STATIC_DRAW);
-
         loadedVertexBuffers[&primitive] = bufferID;
     }
 
@@ -201,7 +208,6 @@ namespace Engine
             glEnableVertexAttribArray(index);
             glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride, (void*)data.byteOffset);
         }
-
         loadedVaos[&primitive] = vaoID;
     }
 
@@ -266,6 +272,76 @@ namespace Engine
         }
 
         return meshRenderer;
+    }
+
+    std::unique_ptr<std::string> RenderSystem::ReadShaderFromFile(const std::string &filePath)
+    {
+        /*Code copied from : https://www.tutorialspoint.com/Read-whole-ASCII-file-into-Cplusplus-std-string
+        Code has been modified*/
+
+        std::ifstream fileStream(filePath); //taking file as inputstream
+        std::unique_ptr<std::string> fileContent(new std::string());
+        if (fileStream)
+        {
+            std::ostringstream stringStream;
+            stringStream << fileStream.rdbuf(); // reading data
+            std::string text = stringStream.str();
+            fileContent->assign(text);
+        }
+
+        return fileContent;
+    }
+
+    GLuint RenderSystem::CreateShaderProgram(const std::filesystem::path &pathToVertexShader, const std::filesystem::path &pathToFragmentShader)
+    {
+        const char* vs_text = pathToVertexShader.u8string().c_str();
+        const char* fs_text = pathToFragmentShader.u8string().c_str();
+
+        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        glShaderSource(vertexShader, 1, &vs_text, nullptr);
+        glShaderSource(fragmentShader, 1, &fs_text, nullptr);
+        glCompileShader(vertexShader);
+        glCompileShader(fragmentShader);
+
+        int hasSuccessfullyCompiled;
+        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &hasSuccessfullyCompiled);
+        if (!hasSuccessfullyCompiled)
+        {
+            char infoLog[512];
+            glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
+            std::cout << "Error in Vertex shader: \n";
+            std::cout << infoLog;
+            exit(-1);
+        }
+
+        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &hasSuccessfullyCompiled);
+        if (!hasSuccessfullyCompiled)
+        {
+            char infoLog[512];
+            std::cout << "Error in Fragment shader: \n";
+            glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+            std::cout << infoLog;
+            exit(-1);
+        }
+
+        GLuint shaderProgram = glCreateProgram();
+        glAttachShader(shaderProgram, vertexShader);
+        glAttachShader(shaderProgram, fragmentShader);
+        glLinkProgram(shaderProgram);
+
+        glGetProgramiv(shaderProgram, GL_LINK_STATUS, &hasSuccessfullyCompiled);
+        if (!hasSuccessfullyCompiled)
+        {
+            char infoLog[512];
+            std::cout << "Error during linking the shaders: \n";
+            glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+            std::cout << infoLog;
+            exit(-1);
+        }
+
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
     }
 
 } // Engine

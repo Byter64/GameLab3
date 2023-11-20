@@ -31,11 +31,19 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/RenderSystem.h
         ../engine/src/EntityComponentSystem/Material.h
         ../engine/src/Engine.h
+        ../engine/src/FileSystem.cpp
+        ../engine/src/FileSystem.h
 )
 
 set(EXE_FILE Game)
-
 add_executable(${EXE_FILE} ${SOURCE_FILES})
 
+add_custom_command(
+        TARGET ${EXE_FILE} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/game/Assets
+        $<TARGET_FILE_DIR:${EXE_FILE}>/Assets)
+
+target_compile_definitions(${EXE_FILE} PRIVATE _ASSET_ROOT=Assets/)
 target_compile_features(${EXE_FILE} PRIVATE cxx_std_17)
 target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm) # Hallo ich bin ein Kommentar :)
