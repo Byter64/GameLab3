@@ -31,6 +31,11 @@ namespace Engine
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
         matrixStack.push(matrixStack.top() * transform.GetMatrix());
 
+
+        //Instead of iterating through all entities with only a transforms, one could only iterate through entities with
+        //a transform and a meshRenderer. Each transform should store its local and global matrix. If the parent has its
+        //global matrix changed, then the global matrix should be recalculated. This way, the matrix stack becomes obsolete
+        //and cache is king (because global matrix is now inside a component)
         if(ecsSystem.GetSignature(entity)[ecsSystem.GetComponentType<MeshRenderer>()] == 0) goto Recursion;
         MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
 
@@ -39,13 +44,11 @@ namespace Engine
         {
             glUseProgram(newShader);
             activeShader = newShader;
-
-            GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
-            glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
-            glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
-
         }
 
+        GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
+        glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
+        glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
 
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
         {
@@ -120,8 +123,16 @@ namespace Engine
 
             const tinygltf::Accessor& indices = meshRenderer.model->accessors[primitive.indices];
             glBindVertexArray(data.vaoID);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.indexBufferID);
-            glDrawElements(primitive.mode, indices.count, indices.componentType, (void*)indices.byteOffset);
+            if(data.indexBufferID > 0)
+            {
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.indexBufferID);
+                glDrawElements(primitive.mode, indices.count, indices.componentType, (void *) indices.byteOffset);
+            }
+            else
+            {
+                //Den Fall abfangen, dass ein Primitiv nicht indiziert ist
+                glDrawArrays(primitive.mode, 0, data.vertexCount);
+            }
         }
 
 Recursion:
@@ -142,6 +153,10 @@ Recursion:
         glEnable(GL_DEPTH_CLAMP);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LESS);
+
+        camera.SetTranslation(glm::vec3(0));
+        camera.SetScale(glm::vec3(1));
+        camera.SetRotation(glm::identity<glm::quat>());
 
         pathToDefaultVertexShader = Engine::Files::ASSETS / "Shaders/Default/VS_Default.vert";
         pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/FS_Default.frag";
@@ -165,11 +180,14 @@ Recursion:
 
     void RenderSystem::LoadVertexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model)
     {
-        if(loadedVertexBuffers.find(&primitive) != loadedVertexBuffers.end()) return;
-
+        if (loadedVertexBuffers.find(&primitive) != loadedVertexBuffers.end()) return;
+        //Als nächstes alle vertexattribute wieder einbauen
+        //Und schauen, dass nur ein Buffer geladen wird, falls alle in einem liegen
+        //und dass ansonsten so viele buffer wie nötig geladen werden
+        //Testen, ob man danach noch was sieht!!!!
         int accessorIndex = primitive.attributes.begin()->second;
-        const tinygltf::BufferView& bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
-        const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+        const tinygltf::BufferView &bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
+        const tinygltf::Buffer &buffer = model.buffers[bufferView.buffer];
 
         GLuint bufferID;
         glGenBuffers(1, &bufferID);
@@ -196,25 +214,22 @@ Recursion:
 
     void RenderSystem::LoadVAO(const tinygltf::Primitive &primitive, const tinygltf::Model &model)
     {
-        if(loadedVaos.find(&primitive) != loadedVaos.end()) return;
+        if (loadedVaos.find(&primitive) != loadedVaos.end()) return;
 
         GLuint vaoID;
         glGenVertexArrays(1, &vaoID);
         glBindVertexArray(vaoID);
+
+        const tinygltf::Accessor &data = model.accessors[((tinygltf::Primitive&)primitive).attributes["POSITION"]];
+        const tinygltf::BufferView &bufferView = model.bufferViews[data.bufferView];
+
+        unsigned int index = GetVertexAttributeIndex("POSITION");
+
         glBindBuffer(GL_ARRAY_BUFFER, loadedVertexBuffers[&primitive]);
+        glEnableVertexAttribArray(index);
+        glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride,
+                              (void *) data.byteOffset);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, loadedIndexBuffers[&primitive]);
-
-        const tinygltf::BufferView& bufferView = model.bufferViews[model.accessors[primitive.attributes.begin()->second].bufferView];
-        for(const auto& pair : primitive.attributes)
-        {
-            const std::string& name = pair.first;
-            const tinygltf::Accessor& data = model.accessors[pair.second];
-
-            unsigned int index = GetVertexAttributeIndex(name);
-
-            glEnableVertexAttribArray(index);
-            glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride, (void*)data.byteOffset);
-        }
         loadedVaos[&primitive] = vaoID;
     }
 
@@ -275,6 +290,7 @@ Recursion:
             data.vaoID = loadedVaos[&primitive];
             data.indexBufferID = loadedIndexBuffers[&primitive];
             data.material.material = &model->materials[primitive.material];
+            data.vertexCount = model->accessors[((tinygltf::Primitive&)primitive).attributes["POSITION"]].count;
             std::cout << "Material textures are not yet loaded onto the GPU nor are their indices assigned to the primitives \n";
             meshRenderer.primitiveData.push_back(data);
         }

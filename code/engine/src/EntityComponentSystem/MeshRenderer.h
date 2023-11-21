@@ -21,6 +21,7 @@ namespace Engine
             GLuint vaoID = 0;
             GLuint indexBufferID = 0;
             Material material;
+            unsigned int vertexCount = 0;
         };
     };
 

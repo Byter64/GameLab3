@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <cmath>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
@@ -36,8 +37,7 @@ int main()
     renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
     ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
 
-    renderSystem->camera.SetTranslation(glm::vec3(0, 0, 20));
-
+    auto temp = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 1000.0f);
     bool hasWorked;
     std::string error, warning;
     std::string path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
@@ -60,13 +60,28 @@ int main()
 
 
     glfwSetTime(1.0/60);
+    float time = 0;
     while (!glfwWindowShouldClose(window)) {
+        auto dir = glm::normalize(glm::vec3(-cosf(time), 0, -sinf(time)));
+        auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
+        renderSystem->camera.SetRotation(rot);
+
+        auto time1 = std::chrono::high_resolution_clock::now();
+
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         renderSystem->Render();
         glfwSwapBuffers(window);
         glfwPollEvents();
+
+
+        auto time2 = std::chrono::high_resolution_clock::now();
+        auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time1);
+        time +=  delta.count() / 1000.0f;
+
+        float pla = 180 / 3.14159f;
+        std::cout << delta.count() << " ms passed" << "\n";
     }
 
     glfwTerminate();
