@@ -29,20 +29,22 @@ namespace Engine
     void RenderSystem::Render(Entity entity, std::stack<glm::mat4x4>& matrixStack)
     {
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
-        MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
         matrixStack.push(matrixStack.top() * transform.GetMatrix());
 
-        GLuint newShader = meshRenderer.shaderID > 0 ? meshRenderer.shaderID : defaultShader;
-        //Hier weiter machen
-        //Shader und Projektionsmatrix nur aktualisieren, wenn newShader tatsächlich ein neuer ist
-        //Testen: Spuckt Init 2 noch Fehler 1281 aus?
-        //if()
+        if(ecsSystem.GetSignature(entity)[ecsSystem.GetComponentType<MeshRenderer>()] == 0) goto Recursion;
+        MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
 
-        std::cout << "Init 1 " << glGetError() << "\n";
-        GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
-        std::cout << "Init 2 " << glGetError() << "\n";
-        glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
-        glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
+        GLuint newShader = meshRenderer.shaderID > 0 ? meshRenderer.shaderID : defaultShader;
+        if(newShader != activeShader)
+        {
+            glUseProgram(newShader);
+            activeShader = newShader;
+
+            GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
+            glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
+            glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
+
+        }
 
 
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
@@ -51,18 +53,15 @@ namespace Engine
             const MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
             const tinygltf::Material &material = meshRenderer.model->materials[primitive.material];
 
-            std::cout << glGetError() << std::endl;
-            GLuint modelMatrixLocation = glGetUniformLocation(defaultShader, "model");
-            std::cout << glGetError() << std::endl;
+            GLuint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
             glUniformMatrix4fv(modelMatrixLocation, 1, false, &matrixStack.top()[0][0]);
-            std::cout << glGetError() << std::endl << std::endl;
 
             //█████████████████████████████████████████████████████████████████████████████████████
             //██████████Setting Material data for Rendering████████████████████████████████████████
             //█████████████████████████████████████████████████████████████████████████████████████
 
             //BaseColor
-            GLuint baseColorFactorLocation = glGetUniformLocation(defaultShader, "baseColorFactor");
+            GLuint baseColorFactorLocation = glGetUniformLocation(activeShader, "baseColorFactor");
             std::vector<float> baseColorFactor{(float)material.pbrMetallicRoughness.baseColorFactor[0],
                                                (float)material.pbrMetallicRoughness.baseColorFactor[1],
                                                (float)material.pbrMetallicRoughness.baseColorFactor[2]};
@@ -74,11 +73,11 @@ namespace Engine
             }
 
             //MetallicRoughness
-            GLuint metallicFactorLocation = glGetUniformLocation(defaultShader, "metallicFactor");
+            GLuint metallicFactorLocation = glGetUniformLocation(activeShader, "metallicFactor");
             float metallicFactor = material.pbrMetallicRoughness.metallicFactor;
             glUniform1fv(metallicFactorLocation, 1, &metallicFactor);
 
-            GLuint roughnessFactorLocation = glGetUniformLocation(defaultShader, "roughnessFactor");
+            GLuint roughnessFactorLocation = glGetUniformLocation(activeShader, "roughnessFactor");
             float roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
             glUniform1fv(roughnessFactorLocation, 1, &roughnessFactor);
             if(data.material.metallicRoughnessID > 0)
@@ -88,7 +87,7 @@ namespace Engine
             }
 
             //Normal
-            GLuint normalScaleLocation = glGetUniformLocation(defaultShader, "normalScale");
+            GLuint normalScaleLocation = glGetUniformLocation(activeShader, "normalScale");
             float normalScale = material.normalTexture.scale;
             glUniform1fv(normalScaleLocation, 1, &normalScale);
             if(data.material.normalID > 0)
@@ -98,7 +97,7 @@ namespace Engine
             }
 
             //Occlusion
-            GLuint occlusionStrengthLocation = glGetUniformLocation(defaultShader, "occlusionStrength");
+            GLuint occlusionStrengthLocation = glGetUniformLocation(activeShader, "occlusionStrength");
             float occlusionStrength = material.occlusionTexture.strength;
             glUniform1fv(occlusionStrengthLocation, 1, &occlusionStrength);
             if(data.material.occlusionID > 0)
@@ -108,7 +107,7 @@ namespace Engine
             }
 
             //Emissive
-            GLuint emissiveFactorLocation = glGetUniformLocation(defaultShader, "emissiveFactor");
+            GLuint emissiveFactorLocation = glGetUniformLocation(activeShader, "emissiveFactor");
             std::vector<float> emissiveFactor{(float)material.emissiveFactor[0],
                                               (float)material.emissiveFactor[1],
                                               (float)material.emissiveFactor[2]};
@@ -125,7 +124,7 @@ namespace Engine
             glDrawElements(primitive.mode, indices.count, indices.componentType, (void*)indices.byteOffset);
         }
 
-
+Recursion:
 
         auto children = transform.GetChildren();
         for(Transform* childTransform : children)
@@ -275,7 +274,8 @@ namespace Engine
             MeshRenderer::PrimitiveData data;
             data.vaoID = loadedVaos[&primitive];
             data.indexBufferID = loadedIndexBuffers[&primitive];
-
+            data.material.material = &model->materials[primitive.material];
+            std::cout << "Material textures are not yet loaded onto the GPU nor are their indices assigned to the primitives \n";
             meshRenderer.primitiveData.push_back(data);
         }
 
@@ -352,6 +352,8 @@ namespace Engine
 
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+
+        return shaderProgram;
     }
 
 } // Engine

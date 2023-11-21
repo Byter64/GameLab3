@@ -58,6 +58,8 @@ namespace Engine
             return componentManager->GetComponent<T>(entity);
         }
 
+        Signature GetSignature(Entity entity);
+
         template<typename T>
         Entity GetEntity(T& component)
         {

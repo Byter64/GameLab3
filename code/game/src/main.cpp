@@ -34,8 +34,9 @@ int main()
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
     renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
-    renderSignature.set(ecsSystem.GetComponentType<Engine::MeshRenderer>());
     ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
+
+    renderSystem->camera.SetTranslation(glm::vec3(0, 0, 20));
 
     bool hasWorked;
     std::string error, warning;

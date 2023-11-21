@@ -30,4 +30,9 @@ namespace Engine
 
         entityPurgatory.clear();
     }
+
+    Signature ECSSystem::GetSignature(Entity entity)
+    {
+        return entityManager->GetSignature(entity);
+    }
 } // Engine

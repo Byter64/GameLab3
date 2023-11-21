@@ -21,6 +21,7 @@ namespace Engine
         std::filesystem::path pathToDefaultFragmentShader;
 
         GLuint defaultShader = 0;
+        GLuint activeShader = 0;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVertexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedIndexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVaos;
