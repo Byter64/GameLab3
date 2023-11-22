@@ -40,7 +40,7 @@ namespace Engine
         static unsigned int GetVertexAttributeIndex(const std::string& name);
         static std::unique_ptr<std::string> ReadShaderFromFile(const std::filesystem::path& filePath);
     public:
-        glm::mat4x4 projectionMatrix = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 1000.0f);
+        glm::mat4x4 projectionMatrix = glm::perspective(glm::radians(90.0f), 16.0f / 9, 1.0f, 1000.0f);
         Transform camera;
 
 
