@@ -61,6 +61,7 @@ int main()
 
     glfwSetTime(1.0/60);
     float time = 0;
+    renderSystem->camera.SetTranslation(glm::vec3(0,0,-10));
     while (!glfwWindowShouldClose(window)) {
         auto dir = glm::normalize(glm::vec3(-cosf(time), 0, -sinf(time)));
         auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
