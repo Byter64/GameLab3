@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include <sstream>
+#include <array>
 #include "Entity.h"
 #include "ECSSystem.h"
 #include "MeshRenderer.h"
@@ -185,15 +186,29 @@ Recursion:
         //Und schauen, dass nur ein Buffer geladen wird, falls alle in einem liegen
         //und dass ansonsten so viele buffer wie nötig geladen werden
         //Testen, ob man danach noch was sieht!!!!
-        int accessorIndex = primitive.attributes.begin()->second;
-        const tinygltf::BufferView &bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
-        const tinygltf::Buffer &buffer = model.buffers[bufferView.buffer];
+        for(auto& pair : primitive.attributes)
+        {
+            int accessorIndex = pair.second;
+            unsigned int attributeIndex = GetVertexAttributeIndex(pair.first);
+            const tinygltf::BufferView &bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
+            const tinygltf::Buffer &buffer = model.buffers[bufferView.buffer];
 
-        GLuint bufferID;
-        glGenBuffers(1, &bufferID);
-        glBindBuffer(GL_ARRAY_BUFFER, bufferID);
-        glBufferData(GL_ARRAY_BUFFER, bufferView.byteLength, &buffer.data[bufferView.byteOffset], GL_STATIC_DRAW);
-        loadedVertexBuffers[&primitive] = bufferID;
+
+
+            if(loadedBufferViews.find(&bufferView) != loadedBufferViews.end())
+            {
+                loadedVertexBuffers[&primitive][attributeIndex] = loadedBufferViews[&bufferView];
+            }
+            else
+            {
+                GLuint bufferID;
+                glGenBuffers(1, &bufferID);
+                glBindBuffer(GL_ARRAY_BUFFER, bufferID);
+                glBufferData(GL_ARRAY_BUFFER, bufferView.byteLength, &buffer.data[bufferView.byteOffset], GL_STATIC_DRAW);
+                loadedVertexBuffers[&primitive][attributeIndex] = bufferID;
+                loadedBufferViews[&bufferView] = bufferID;
+            }
+        }
     }
 
     void RenderSystem::LoadIndexBuffer(const tinygltf::Primitive &primitive, const tinygltf::Model &model)
@@ -220,17 +235,23 @@ Recursion:
         glGenVertexArrays(1, &vaoID);
         glBindVertexArray(vaoID);
 
-        const tinygltf::Accessor &data = model.accessors[((tinygltf::Primitive&)primitive).attributes["POSITION"]];
-        const tinygltf::BufferView &bufferView = model.bufferViews[data.bufferView];
+        for(auto& pair: primitive.attributes)
+        {
+            const tinygltf::Accessor &data = model.accessors[pair.second];
+            const tinygltf::BufferView &bufferView = model.bufferViews[data.bufferView];
 
-        unsigned int index = GetVertexAttributeIndex("POSITION");
+            unsigned int index = GetVertexAttributeIndex(pair.first);
 
-        glBindBuffer(GL_ARRAY_BUFFER, loadedVertexBuffers[&primitive]);
-        glEnableVertexAttribArray(index);
-        glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride,
-                              (void *) data.byteOffset);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, loadedIndexBuffers[&primitive]);
-        loadedVaos[&primitive] = vaoID;
+
+            //Hier könnten noch ███████████████████████████
+            //Fehler    ████████████████████████████████████████
+            //Auftreten ██████████████████████████████████████
+            glBindBuffer(GL_ARRAY_BUFFER, loadedBufferViews[&bufferView]);
+            glEnableVertexAttribArray(index);
+            glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride, (void *) data.byteOffset);
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, loadedIndexBuffers[&primitive]);
+            loadedVaos[&primitive] = vaoID;
+        }
     }
 
     unsigned int RenderSystem::GetVertexAttributeIndex(const std::string &name)
@@ -262,11 +283,15 @@ Recursion:
      * @param mesh
      * @param model
      */
-    void RenderSystem::UnloadMesh(tinygltf::Mesh &mesh)
+    void RenderSystem::UnloadMesh(const tinygltf::Mesh &mesh, const tinygltf::Model &model)
     {
-        for(const tinygltf::Primitive& primitive : mesh.primitives)
+        for (const tinygltf::Primitive &primitive: mesh.primitives)
         {
-            glDeleteBuffers(1, &loadedVertexBuffers[&primitive]);
+            for (auto &pair: primitive.attributes)
+            {
+                const tinygltf::BufferView &bufferView = model.bufferViews[model.accessors[pair.second].bufferView];
+                glDeleteBuffers(1, &loadedBufferViews[&bufferView]);
+            }
             glDeleteBuffers(1, &loadedIndexBuffers[&primitive]);
             glDeleteVertexArrays(1, &loadedVaos[&primitive]);
 

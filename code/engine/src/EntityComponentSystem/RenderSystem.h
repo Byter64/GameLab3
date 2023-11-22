@@ -22,7 +22,8 @@ namespace Engine
 
         GLuint defaultShader = 0;
         GLuint activeShader = 0;
-        std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVertexBuffers;
+        std::unordered_map<const tinygltf::BufferView*, GLuint> loadedBufferViews; //as of now, elements of this map will not be deleted, even if the buffer in the GPU does not exist anymore!!!!!!!
+        std::unordered_map<const tinygltf::Primitive*, GLuint[11]> loadedVertexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedIndexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVaos;
         std::set<std::shared_ptr<tinygltf::Model>> usedModels;
@@ -48,7 +49,7 @@ namespace Engine
         void Render();
         MeshRenderer CreateMeshRenderer(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
         void LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
-        void UnloadMesh(tinygltf::Mesh& mesh);
+        void UnloadMesh(const tinygltf::Mesh &mesh, const tinygltf::Model & model);
         GLuint CreateShaderProgram(const std::filesystem::path& pathToVertexShader, const std::filesystem::path& pathToFragmentShader);
     };
 
