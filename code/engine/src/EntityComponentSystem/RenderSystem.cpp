@@ -182,18 +182,13 @@ Recursion:
     void RenderSystem::LoadVertexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model)
     {
         if (loadedVertexBuffers.find(&primitive) != loadedVertexBuffers.end()) return;
-        //Als nächstes alle vertexattribute wieder einbauen
-        //Und schauen, dass nur ein Buffer geladen wird, falls alle in einem liegen
-        //und dass ansonsten so viele buffer wie nötig geladen werden
-        //Testen, ob man danach noch was sieht!!!!
+
         for(auto& pair : primitive.attributes)
         {
             int accessorIndex = pair.second;
             unsigned int attributeIndex = GetVertexAttributeIndex(pair.first);
             const tinygltf::BufferView &bufferView = model.bufferViews[model.accessors[accessorIndex].bufferView];
             const tinygltf::Buffer &buffer = model.buffers[bufferView.buffer];
-
-
 
             if(loadedBufferViews.find(&bufferView) != loadedBufferViews.end())
             {
@@ -239,13 +234,8 @@ Recursion:
         {
             const tinygltf::Accessor &data = model.accessors[pair.second];
             const tinygltf::BufferView &bufferView = model.bufferViews[data.bufferView];
-
             unsigned int index = GetVertexAttributeIndex(pair.first);
 
-
-            //Hier könnten noch ███████████████████████████
-            //Fehler    ████████████████████████████████████████
-            //Auftreten ██████████████████████████████████████
             glBindBuffer(GL_ARRAY_BUFFER, loadedBufferViews[&bufferView]);
             glEnableVertexAttribArray(index);
             glVertexAttribPointer(index, data.type, data.componentType, data.normalized, bufferView.byteStride, (void *) data.byteOffset);
