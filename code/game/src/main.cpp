@@ -40,7 +40,7 @@ int main()
     auto temp = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 1000.0f);
     bool hasWorked;
     std::string error, warning;
-    std::string path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
+    std::string path = "C:/Users/Yanni/Desktop/BonkItWand/BonkItWall.gltf";
     std::shared_ptr<tinygltf::Model> model = std::make_shared<tinygltf::Model>();
     tinygltf::TinyGLTF loader;
 

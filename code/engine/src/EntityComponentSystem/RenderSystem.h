@@ -20,9 +20,11 @@ namespace Engine
         std::filesystem::path pathToDefaultVertexShader;
         std::filesystem::path pathToDefaultFragmentShader;
 
+        GLuint defaultTexture = 0;
         GLuint defaultShader = 0;
         GLuint activeShader = 0;
         std::unordered_map<const tinygltf::BufferView*, GLuint> loadedBufferViews; //as of now, elements of this map will not be deleted, even if the buffer in the GPU does not exist anymore!!!!!!!
+        std::unordered_map<const tinygltf::Texture*, GLuint> loadedTextures;
         std::unordered_map<const tinygltf::Primitive*, GLuint[11]> loadedVertexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedIndexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVaos;
@@ -35,6 +37,7 @@ namespace Engine
         void LoadVertexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadIndexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadVAO(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
+        void LoadTexture(const tinygltf::Texture &texture, const tinygltf::Model &model, int sourceFormat, int targetFormat);
         void Render(Entity entity, std::stack<glm::mat4x4>& matrixStack);
 
         static unsigned int GetVertexAttributeIndex(const std::string& name);

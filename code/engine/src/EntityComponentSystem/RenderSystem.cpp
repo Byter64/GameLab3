@@ -32,11 +32,6 @@ namespace Engine
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
         matrixStack.push(matrixStack.top() * transform.GetMatrix());
 
-
-        //Instead of iterating through all entities with only a transforms, one could only iterate through entities with
-        //a transform and a meshRenderer. Each transform should store its local and global matrix. If the parent has its
-        //global matrix changed, then the global matrix should be recalculated. This way, the matrix stack becomes obsolete
-        //and cache is king (because global matrix is now inside a component)
         if(ecsSystem.GetSignature(entity)[ecsSystem.GetComponentType<MeshRenderer>()] == 0) goto Recursion;
         MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
 
@@ -55,6 +50,7 @@ namespace Engine
         {
             const tinygltf::Primitive &primitive = meshRenderer.mesh->primitives[i];
             const MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
+            //Hier den Fall abfangen, dass ein Objekt kein Material hat
             const tinygltf::Material &material = meshRenderer.model->materials[primitive.material];
 
             GLuint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
@@ -132,6 +128,8 @@ namespace Engine
             else
             {
                 //Den Fall abfangen, dass ein Primitiv nicht indiziert ist
+                assert(false && "Tadaa, hier ist ein nicht indiziertes Modell. Jetzt musst du leider doch nichtindizierte Modelle unterstützen ;-)");
+
                 glDrawArrays(primitive.mode, 0, data.vertexCount);
             }
         }
@@ -163,6 +161,8 @@ Recursion:
         pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/FS_Default.frag";
 
         defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
+
+        assert(false && "You forgot to create a default texture. GET OWNED!");
     }
 
     void RenderSystem::LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model)
@@ -172,9 +172,39 @@ Recursion:
             LoadVertexBuffer(primitive, *model);
             if(primitive.indices > -1) { LoadIndexBuffer(primitive, *model); }
             LoadVAO(primitive, *model);
+
+            if(primitive.material > -1)
+            {
+                const tinygltf::Material& material = model->materials[primitive.material];
+                //By default the source format, which is delivered by tinyGLTF, is always RGBA
+                if(material.pbrMetallicRoughness.baseColorTexture.index > 0)
+                {
+                    const tinygltf::Texture &baseColor = model->textures[material.pbrMetallicRoughness.baseColorTexture.index];
+                    LoadTexture(baseColor, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
+                }
+                if(material.pbrMetallicRoughness.metallicRoughnessTexture.index > 0)
+                {
+                    const tinygltf::Texture &metallicRoughness = model->textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index];
+                    LoadTexture(metallicRoughness, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
+                }
+                if(material.normalTexture.index > 0)
+                {
+                    const tinygltf::Texture &normal = model->textures[material.normalTexture.index];
+                    LoadTexture(normal, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
+                }
+                if(material.occlusionTexture.index > 0)
+                {
+                    const tinygltf::Texture &occlusion = model->textures[material.occlusionTexture.index];
+                    LoadTexture(occlusion, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
+                }
+                if(material.emissiveTexture.index > 0)
+                {
+                    const tinygltf::Texture &emissive = model->textures[material.emissiveTexture.index];
+                    LoadTexture(emissive, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
+                }
+            }
         }
 
-        //Textures need to be loaded
 
         usedModels.insert(std::move(model));
     }
@@ -244,6 +274,25 @@ Recursion:
         }
     }
 
+    void RenderSystem::LoadTexture(const tinygltf::Texture &texture, const tinygltf::Model &model, int sourceFormat, int targetFormat)
+    {
+        if(loadedTextures.find(&texture) != loadedTextures.end()) return;
+
+        const tinygltf::Image& image = model.images[texture.source];
+        const tinygltf::Sampler& sampler = model.samplers[texture.sampler];
+        GLuint textureID;
+
+        glGenTextures(1, &textureID);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, sampler.wrapS);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, sampler.wrapT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, sourceFormat, image.width, image.height, 0, targetFormat, image.pixel_type, &image.image[0]);
+
+        loadedTextures[&texture] = textureID;
+    }
+
     unsigned int RenderSystem::GetVertexAttributeIndex(const std::string &name)
     {
         //Is it ugly?
@@ -304,9 +353,40 @@ Recursion:
             MeshRenderer::PrimitiveData data;
             data.vaoID = loadedVaos[&primitive];
             data.indexBufferID = loadedIndexBuffers[&primitive];
-            data.material.material = &model->materials[primitive.material];
+            if(primitive.material > 0)
+                data.material.material = &model->materials[primitive.material];
             data.vertexCount = model->accessors[((tinygltf::Primitive&)primitive).attributes["POSITION"]].count;
-            std::cout << "Material textures are not yet loaded onto the GPU nor are their indices assigned to the primitives \n";
+
+            Material& material = data.material;
+            material.baseColorFactor.x = (float)model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[0];
+            material.baseColorFactor.y = (float)model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[1];
+            material.baseColorFactor.z = (float)model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[2];
+
+            material.metallicFactor = (float)model->materials[primitive.material].pbrMetallicRoughness.metallicFactor;
+            material.roughnessFactor = (float)model->materials[primitive.material].pbrMetallicRoughness.roughnessFactor;
+            material.normalScale = (float)model->materials[primitive.material].normalTexture.scale;
+            material.occlusionStrength = (float)model->materials[primitive.material].occlusionTexture.strength;
+
+            material.emissiveFactor.x = (float)model->materials[primitive.material].emissiveFactor[0];
+            material.emissiveFactor.y = (float)model->materials[primitive.material].emissiveFactor[1];
+            material.emissiveFactor.z = (float)model->materials[primitive.material].emissiveFactor[2];
+
+            const tinygltf::Texture& baseColor = model->textures[model->materials[primitive.material].pbrMetallicRoughness.baseColorTexture.index];
+            material.baseColorID = loadedTextures.find(&baseColor) != loadedTextures.end() ? loadedTextures[&baseColor] : defaultTexture;
+
+            const tinygltf::Texture& metallicRoughness = model->textures[model->materials[primitive.material].pbrMetallicRoughness.metallicRoughnessTexture.index];
+            material.baseColorID = loadedTextures.find(&metallicRoughness) != loadedTextures.end() ? loadedTextures[&metallicRoughness] : defaultTexture;
+
+            const tinygltf::Texture& normal = model->textures[model->materials[primitive.material].normalTexture.index];
+            material.baseColorID = loadedTextures.find(&normal) != loadedTextures.end() ? loadedTextures[&normal] : defaultTexture;
+
+            const tinygltf::Texture& occlusion = model->textures[model->materials[primitive.material].occlusionTexture.index];
+            material.baseColorID = loadedTextures.find(&occlusion) != loadedTextures.end() ? loadedTextures[&occlusion] : 0;
+
+            const tinygltf::Texture& emissive = model->textures[model->materials[primitive.material].emissiveTexture.index];
+            material.baseColorID = loadedTextures.find(&emissive) != loadedTextures.end() ? loadedTextures[&emissive] : 0;
+
+
             meshRenderer.primitiveData.push_back(data);
         }
 

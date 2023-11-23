@@ -1,13 +1,23 @@
 #pragma once
 #include "../../extern/tinygltf/tiny_gltf.h"
 #include "glad/glad.h"
+#include "glm/glm.hpp"
 
 namespace Engine
 {
 
     struct Material
     {
-         tinygltf::Material* material;
+        //Might be removable
+        tinygltf::Material *material;
+
+        //Factors, or whatever they are called
+        glm::vec3 baseColorFactor{1};
+        float metallicFactor = 1;
+        float roughnessFactor = 1;
+        float normalScale = 1;
+        float occlusionStrength = 1;
+        glm::vec3 emissiveFactor{1};
 
         //Texture IDs
         GLuint baseColorID = 0;
