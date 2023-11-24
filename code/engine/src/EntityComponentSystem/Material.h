@@ -12,7 +12,7 @@ namespace Engine
         tinygltf::Material *material;
 
         //Factors, or whatever they are called
-        glm::vec3 baseColorFactor{1};
+        glm::vec4 baseColorFactor{1};
         float metallicFactor = 1;
         float roughnessFactor = 1;
         float normalScale = 1;

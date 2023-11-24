@@ -50,8 +50,7 @@ namespace Engine
         {
             const tinygltf::Primitive &primitive = meshRenderer.mesh->primitives[i];
             const MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
-            //Hier den Fall abfangen, dass ein Objekt kein Material hat
-            const tinygltf::Material &material = meshRenderer.model->materials[primitive.material];
+            const Material &material = data.material;
 
             GLuint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
             glUniformMatrix4fv(modelMatrixLocation, 1, false, &matrixStack.top()[0][0]);
@@ -62,60 +61,52 @@ namespace Engine
 
             //BaseColor
             GLuint baseColorFactorLocation = glGetUniformLocation(activeShader, "baseColorFactor");
-            std::vector<float> baseColorFactor{(float)material.pbrMetallicRoughness.baseColorFactor[0],
-                                               (float)material.pbrMetallicRoughness.baseColorFactor[1],
-                                               (float)material.pbrMetallicRoughness.baseColorFactor[2]};
-            glUniform4fv(baseColorFactorLocation, 1, &baseColorFactor[0]);
-            if (data.material.baseColorID > 0)
+			
+			//Please check, if material.baseColorFactor actually needs a "&" before it.
+            glUniform4fv(baseColorFactorLocation, 1, &material.baseColorFactor.x);
+            if (material.baseColorID > 0)
             {
                 glActiveTexture(GL_TEXTURE0);
-                glBindTexture(GL_TEXTURE_2D, data.material.baseColorID);
+                glBindTexture(GL_TEXTURE_2D, material.baseColorID);
             }
 
             //MetallicRoughness
             GLuint metallicFactorLocation = glGetUniformLocation(activeShader, "metallicFactor");
-            float metallicFactor = material.pbrMetallicRoughness.metallicFactor;
-            glUniform1fv(metallicFactorLocation, 1, &metallicFactor);
+            glUniform1fv(metallicFactorLocation, 1, &material.metallicFactor);
 
             GLuint roughnessFactorLocation = glGetUniformLocation(activeShader, "roughnessFactor");
-            float roughnessFactor = material.pbrMetallicRoughness.roughnessFactor;
-            glUniform1fv(roughnessFactorLocation, 1, &roughnessFactor);
-            if(data.material.metallicRoughnessID > 0)
+            glUniform1fv(roughnessFactorLocation, 1, &material.roughnessFactor);
+            if(material.metallicRoughnessID > 0)
             {
                 glActiveTexture(GL_TEXTURE1);
-                glBindTexture(GL_TEXTURE_2D, data.material.metallicRoughnessID);
+                glBindTexture(GL_TEXTURE_2D, material.metallicRoughnessID);
             }
 
             //Normal
             GLuint normalScaleLocation = glGetUniformLocation(activeShader, "normalScale");
-            float normalScale = material.normalTexture.scale;
-            glUniform1fv(normalScaleLocation, 1, &normalScale);
-            if(data.material.normalID > 0)
+            glUniform1fv(normalScaleLocation, 1, &material.normalScale);
+            if(material.normalID > 0)
             {
                 glActiveTexture(GL_TEXTURE3);
-                glBindTexture(GL_TEXTURE_2D, data.material.normalID);
+                glBindTexture(GL_TEXTURE_2D, material.normalID);
             }
 
             //Occlusion
             GLuint occlusionStrengthLocation = glGetUniformLocation(activeShader, "occlusionStrength");
-            float occlusionStrength = material.occlusionTexture.strength;
-            glUniform1fv(occlusionStrengthLocation, 1, &occlusionStrength);
-            if(data.material.occlusionID > 0)
+            glUniform1fv(occlusionStrengthLocation, 1, &material.occlusionStrength);
+            if(material.occlusionID > 0)
             {
                 glActiveTexture(GL_TEXTURE4);
-                glBindTexture(GL_TEXTURE_2D, data.material.occlusionID);
+                glBindTexture(GL_TEXTURE_2D, material.occlusionID);
             }
 
             //Emissive
             GLuint emissiveFactorLocation = glGetUniformLocation(activeShader, "emissiveFactor");
-            std::vector<float> emissiveFactor{(float)material.emissiveFactor[0],
-                                              (float)material.emissiveFactor[1],
-                                              (float)material.emissiveFactor[2]};
-            glUniform4fv(emissiveFactorLocation, 1, &emissiveFactor[0]);
-            if(data.material.emissiveID > 0)
+            glUniform4fv(emissiveFactorLocation, 1, &material.emissiveFactor.x);
+            if(material.emissiveID > 0)
             {
                 glActiveTexture(GL_TEXTURE5);
-                glBindTexture(GL_TEXTURE_2D, data.material.emissiveID);
+                glBindTexture(GL_TEXTURE_2D, material.emissiveID);
             }
 
             const tinygltf::Accessor& indices = meshRenderer.model->accessors[primitive.indices];
@@ -162,7 +153,12 @@ Recursion:
 
         defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
 
-        assert(false && "You forgot to create a default texture. GET OWNED!");
+        float white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+        glGenTextures(1, &defaultTexture);
+        glBindTexture(GL_TEXTURE_2D, defaultTexture);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_FLOAT, white);
     }
 
     void RenderSystem::LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model)
@@ -353,39 +349,42 @@ Recursion:
             MeshRenderer::PrimitiveData data;
             data.vaoID = loadedVaos[&primitive];
             data.indexBufferID = loadedIndexBuffers[&primitive];
-            if(primitive.material > 0)
+
+            if (primitive.material > -1)
+            {
                 data.material.material = &model->materials[primitive.material];
-            data.vertexCount = model->accessors[((tinygltf::Primitive&)primitive).attributes["POSITION"]].count;
+                data.vertexCount = model->accessors[((tinygltf::Primitive &) primitive).attributes["POSITION"]].count;
 
-            Material& material = data.material;
-            material.baseColorFactor.x = (float)model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[0];
-            material.baseColorFactor.y = (float)model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[1];
-            material.baseColorFactor.z = (float)model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[2];
+                Material &material = data.material;
+                material.baseColorFactor.x = (float) model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[0];
+                material.baseColorFactor.y = (float) model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[1];
+                material.baseColorFactor.z = (float) model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[2];
+                material.baseColorFactor.w = (float) model->materials[primitive.material].pbrMetallicRoughness.baseColorFactor[3];
 
-            material.metallicFactor = (float)model->materials[primitive.material].pbrMetallicRoughness.metallicFactor;
-            material.roughnessFactor = (float)model->materials[primitive.material].pbrMetallicRoughness.roughnessFactor;
-            material.normalScale = (float)model->materials[primitive.material].normalTexture.scale;
-            material.occlusionStrength = (float)model->materials[primitive.material].occlusionTexture.strength;
+                material.metallicFactor = (float) model->materials[primitive.material].pbrMetallicRoughness.metallicFactor;
+                material.roughnessFactor = (float) model->materials[primitive.material].pbrMetallicRoughness.roughnessFactor;
+                material.normalScale = (float) model->materials[primitive.material].normalTexture.scale;
+                material.occlusionStrength = (float) model->materials[primitive.material].occlusionTexture.strength;
 
-            material.emissiveFactor.x = (float)model->materials[primitive.material].emissiveFactor[0];
-            material.emissiveFactor.y = (float)model->materials[primitive.material].emissiveFactor[1];
-            material.emissiveFactor.z = (float)model->materials[primitive.material].emissiveFactor[2];
+                material.emissiveFactor.x = (float) model->materials[primitive.material].emissiveFactor[0];
+                material.emissiveFactor.y = (float) model->materials[primitive.material].emissiveFactor[1];
+                material.emissiveFactor.z = (float) model->materials[primitive.material].emissiveFactor[2];
 
-            const tinygltf::Texture& baseColor = model->textures[model->materials[primitive.material].pbrMetallicRoughness.baseColorTexture.index];
-            material.baseColorID = loadedTextures.find(&baseColor) != loadedTextures.end() ? loadedTextures[&baseColor] : defaultTexture;
+                int baseColorIndex = model->materials[primitive.material].pbrMetallicRoughness.baseColorTexture.index;
+                material.baseColorID = baseColorIndex > -1 ? loadedTextures[&model->textures[baseColorIndex]]: defaultTexture;
 
-            const tinygltf::Texture& metallicRoughness = model->textures[model->materials[primitive.material].pbrMetallicRoughness.metallicRoughnessTexture.index];
-            material.baseColorID = loadedTextures.find(&metallicRoughness) != loadedTextures.end() ? loadedTextures[&metallicRoughness] : defaultTexture;
+                int metallicRoughnessIndex = model->materials[primitive.material].pbrMetallicRoughness.metallicRoughnessTexture.index;
+                material.metallicRoughnessID = metallicRoughnessIndex > -1 ? loadedTextures[&model->textures[metallicRoughnessIndex]] : defaultTexture;
 
-            const tinygltf::Texture& normal = model->textures[model->materials[primitive.material].normalTexture.index];
-            material.baseColorID = loadedTextures.find(&normal) != loadedTextures.end() ? loadedTextures[&normal] : defaultTexture;
+                int normalIndex = model->materials[primitive.material].normalTexture.index;
+                material.normalID = normalIndex > -1 ? loadedTextures[&model->textures[normalIndex]] : defaultTexture;
 
-            const tinygltf::Texture& occlusion = model->textures[model->materials[primitive.material].occlusionTexture.index];
-            material.baseColorID = loadedTextures.find(&occlusion) != loadedTextures.end() ? loadedTextures[&occlusion] : 0;
+                int occlusionIndex = model->materials[primitive.material].occlusionTexture.index;
+                material.occlusionID = occlusionIndex > -1 ? loadedTextures[&model->textures[occlusionIndex]] : defaultTexture;
 
-            const tinygltf::Texture& emissive = model->textures[model->materials[primitive.material].emissiveTexture.index];
-            material.baseColorID = loadedTextures.find(&emissive) != loadedTextures.end() ? loadedTextures[&emissive] : 0;
-
+                int emissiveIndex = model->materials[primitive.material].emissiveTexture.index;
+                material.emissiveID =emissiveIndex > -1 ? loadedTextures[&model->textures[emissiveIndex]] : defaultTexture;
+            }
 
             meshRenderer.primitiveData.push_back(data);
         }
