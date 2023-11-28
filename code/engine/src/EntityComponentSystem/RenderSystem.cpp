@@ -173,27 +173,27 @@ Recursion:
             {
                 const tinygltf::Material& material = model->materials[primitive.material];
                 //By default the source format, which is delivered by tinyGLTF, is always RGBA
-                if(material.pbrMetallicRoughness.baseColorTexture.index > 0)
+                if(material.pbrMetallicRoughness.baseColorTexture.index > -1)
                 {
                     const tinygltf::Texture &baseColor = model->textures[material.pbrMetallicRoughness.baseColorTexture.index];
                     LoadTexture(baseColor, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
                 }
-                if(material.pbrMetallicRoughness.metallicRoughnessTexture.index > 0)
+                if(material.pbrMetallicRoughness.metallicRoughnessTexture.index > -1)
                 {
                     const tinygltf::Texture &metallicRoughness = model->textures[material.pbrMetallicRoughness.metallicRoughnessTexture.index];
                     LoadTexture(metallicRoughness, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
                 }
-                if(material.normalTexture.index > 0)
+                if(material.normalTexture.index > -1)
                 {
                     const tinygltf::Texture &normal = model->textures[material.normalTexture.index];
                     LoadTexture(normal, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
                 }
-                if(material.occlusionTexture.index > 0)
+                if(material.occlusionTexture.index > -1)
                 {
                     const tinygltf::Texture &occlusion = model->textures[material.occlusionTexture.index];
                     LoadTexture(occlusion, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
                 }
-                if(material.emissiveTexture.index > 0)
+                if(material.emissiveTexture.index > -1)
                 {
                     const tinygltf::Texture &emissive = model->textures[material.emissiveTexture.index];
                     LoadTexture(emissive, *model, TINYGLTF_TEXTURE_FORMAT_RGBA, TINYGLTF_TEXTURE_FORMAT_RGBA);
