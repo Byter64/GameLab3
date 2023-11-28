@@ -149,7 +149,7 @@ Recursion:
         camera.SetRotation(glm::identity<glm::quat>());
 
         pathToDefaultVertexShader = Engine::Files::ASSETS / "Shaders/Default/VS_Default.vert";
-        pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/FS_Default.frag";
+        pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/glTF-Sample-Viewer-main/pbr.frag";
 
         defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
 
@@ -408,6 +408,43 @@ Recursion:
         }
 
         return fileContent;
+    }
+
+    std::unique_ptr<std::string> RenderSystem::ResolveIncludesForGLSL(const std::filesystem::path &filePath, std::unique_ptr<std::string> file)
+    {
+        static const char* includeIdentifier = "#include";
+        std::unique_ptr<std::string> resolvedFile = std::make_unique<std::string>();
+
+        unsigned long long int position = 0;
+
+        while(position < resolvedFile->length())
+        {
+            position = resolvedFile->find(includeIdentifier);
+
+            while(resolvedFile->c_str()[position] != '<' && position < resolvedFile->length())
+                position++;
+            assert(position < resolvedFile->length() && "Syntax error: idk which line or which file, but you wrote \"#include\" without <filename>");
+
+            //position now points to '<'
+            position++;
+            //position now points to the first character of the filename
+
+            unsigned long long int lastPosOfName = position;
+            while(resolvedFile->c_str()[lastPosOfName] != '>' && lastPosOfName < resolvedFile->length())
+                lastPosOfName++;
+            assert(lastPosOfName < resolvedFile->length() && "Syntax error: idk which line or which file, but you wrote \"#include <filename\" without \'>\'");
+
+            //lastPosOfName now points to '>'
+            unsigned int length = lastPosOfName - position;
+
+            std::string fileName = file->substr(position, length);
+            std::filesystem::path includedFilePath = filePath / fileName;
+            std::ifstream fileStream(includedFilePath);
+            assert()
+        }
+
+
+        return resolvedFile;
     }
 
     GLuint RenderSystem::CreateShaderProgram(const std::filesystem::path &pathToVertexShader, const std::filesystem::path &pathToFragmentShader)
