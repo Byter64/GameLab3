@@ -45,10 +45,12 @@ namespace Engine
     {
         if(hasTransformChanged)
         {
-            matrix = glm::scale(glm::mat4x4(1), scale);
-            matrix = glm::toMat4(rotation) * matrix;
-            matrix = glm::translate(matrix, translation);
+            glm::mat4 scale = glm::scale(glm::mat4(1.0f), this->scale);
+            glm::mat4 rotation = glm::toMat4(this->rotation);
+            glm::mat4 translation = glm::translate(glm::mat4(1.0f), this->translation);
 
+
+            matrix = translation * rotation * scale;
             hasTransformChanged = false;
         }
 
@@ -84,5 +86,31 @@ namespace Engine
     const std::list<Transform*> &Transform::GetChildren()
     {
         return children;
+    }
+
+    std::string Transform::ToString()
+    {
+        const glm::mat4x4 &matrix = GetMatrix();
+        std::string result = std::to_string(matrix[0][0]) + ",\t ";
+        result += std::to_string(matrix[1][0]) + ",\t ";
+        result += std::to_string(matrix[2][0]) + ",\t ";
+        result += std::to_string(matrix[3][0]) + ",\t\n";
+
+        result += std::to_string(matrix[0][1]) + ",\t ";
+        result += std::to_string(matrix[1][1]) + ",\t ";
+        result += std::to_string(matrix[2][1]) + ",\t ";
+        result += std::to_string(matrix[3][1]) + ",\t\n";
+
+        result += std::to_string(matrix[0][2]) + ",\t ";
+        result += std::to_string(matrix[1][2]) + ",\t ";
+        result += std::to_string(matrix[2][2]) + ",\t ";
+        result += std::to_string(matrix[3][2]) + ",\t\n";
+
+        result += std::to_string(matrix[0][3]) + ",\t ";
+        result += std::to_string(matrix[1][3]) + ",\t ";
+        result += std::to_string(matrix[2][3]) + ",\t ";
+        result += std::to_string(matrix[3][3]) + ",\t\n";
+
+        return result;
     }
 } // Engine

@@ -58,7 +58,6 @@ namespace Engine
             T* firstElement = &components[0];
             T* thisElement = &component;
             int index = thisElement - firstElement;
-            std::cout << "GetEntity was used, which has not been properly tested yet \n" << "Please check if it worked correctly!!!\n";
             return indexToEntity[index];
         }
 

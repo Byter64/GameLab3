@@ -2,6 +2,7 @@
 #include "glm/glm.hpp"
 #include "glm/ext/quaternion_float.hpp"
 #include <list>
+#include <string>
 
 namespace Engine
 {
@@ -41,6 +42,7 @@ namespace Engine
         void AddChild(Transform* child);
         void RemoveChild(Transform* child);
         const std::list<Transform*>& GetChildren();
+        std::string ToString();
     };
 
 } // Engine

@@ -41,6 +41,8 @@ int main()
     bool hasWorked;
     std::string error, warning;
     std::string path = "C:/Users/Yanni/Desktop/BonkItWand/BonkItWall.gltf";
+    //std::string path = "C:/Users/Yanni/Desktop/BonkItWand/BonkItWall_Bar1.gltf";
+    //std::string path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
     std::shared_ptr<tinygltf::Model> model = std::make_shared<tinygltf::Model>();
     tinygltf::TinyGLTF loader;
 
@@ -65,7 +67,7 @@ int main()
     while (!glfwWindowShouldClose(window)) {
         auto dir = glm::normalize(glm::vec3(-cosf(time), 0, -sinf(time)));
         auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-        renderSystem->camera.SetRotation(rot);
+        //renderSystem->camera.SetRotation(rot);
 
         auto time1 = std::chrono::high_resolution_clock::now();
 
@@ -135,13 +137,18 @@ void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::sh
     if (!root.scale.empty())
     { scale = glm::vec3{(float) root.scale[0], (float) root.scale[1], (float) root.scale[2]}; }
     if (!root.rotation.empty())
-    { rotation = glm::quat{(float) root.rotation[0], (float) root.translation[1], (float) root.translation[2], (float) root.rotation[3]}; }
+    { rotation = glm::quat{ (float) root.rotation[3], (float) root.rotation[0], (float) root.rotation[1], (float) root.rotation[2]}; }
 
     transform.SetParent(parent);
     transform.SetTranslation(translation);
     transform.SetScale(scale);
     transform.SetRotation(rotation);
     ecsSystem.AddComponent(entity, transform);
+
+
+    if(parent != nullptr)
+        parent->AddChild(&ecsSystem.GetComponent<Engine::Transform>(entity));
+
 
     if (root.mesh != -1)
     {
