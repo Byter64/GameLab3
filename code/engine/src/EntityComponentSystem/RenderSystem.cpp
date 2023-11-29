@@ -35,14 +35,14 @@ namespace Engine
         if(ecsSystem.GetSignature(entity)[ecsSystem.GetComponentType<MeshRenderer>()] == 0) goto Recursion;
         MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
 
-        GLuint newShader = meshRenderer.shaderID > 0 ? meshRenderer.shaderID : defaultShader;
+        GLint newShader = meshRenderer.shaderID > 0 ? meshRenderer.shaderID : defaultShader;
         if(newShader != activeShader)
         {
             glUseProgram(newShader);
             activeShader = newShader;
         }
 
-        GLuint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
+        GLint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
         glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
         glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
 
@@ -52,7 +52,7 @@ namespace Engine
             const MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
             const Material &material = data.material;
 
-            GLuint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
+            GLint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
             glUniformMatrix4fv(modelMatrixLocation, 1, false, &matrixStack.top()[0][0]);
 
             //█████████████████████████████████████████████████████████████████████████████████████
@@ -60,7 +60,7 @@ namespace Engine
             //█████████████████████████████████████████████████████████████████████████████████████
 
             //BaseColor
-            GLuint baseColorFactorLocation = glGetUniformLocation(activeShader, "baseColorFactor");
+            GLint baseColorFactorLocation = glGetUniformLocation(activeShader, "baseColorFactor");
 			
 			//Please check, if material.baseColorFactor actually needs a "&" before it.
             glUniform4fv(baseColorFactorLocation, 1, &material.baseColorFactor.x);
@@ -71,10 +71,10 @@ namespace Engine
             }
 
             //MetallicRoughness
-            GLuint metallicFactorLocation = glGetUniformLocation(activeShader, "metallicFactor");
+            GLint metallicFactorLocation = glGetUniformLocation(activeShader, "metallicFactor");
             glUniform1fv(metallicFactorLocation, 1, &material.metallicFactor);
 
-            GLuint roughnessFactorLocation = glGetUniformLocation(activeShader, "roughnessFactor");
+            GLint roughnessFactorLocation = glGetUniformLocation(activeShader, "roughnessFactor");
             glUniform1fv(roughnessFactorLocation, 1, &material.roughnessFactor);
             if(material.metallicRoughnessID > 0)
             {
@@ -83,7 +83,7 @@ namespace Engine
             }
 
             //Normal
-            GLuint normalScaleLocation = glGetUniformLocation(activeShader, "normalScale");
+            GLint normalScaleLocation = glGetUniformLocation(activeShader, "normalScale");
             glUniform1fv(normalScaleLocation, 1, &material.normalScale);
             if(material.normalID > 0)
             {
@@ -92,7 +92,7 @@ namespace Engine
             }
 
             //Occlusion
-            GLuint occlusionStrengthLocation = glGetUniformLocation(activeShader, "occlusionStrength");
+            GLint occlusionStrengthLocation = glGetUniformLocation(activeShader, "occlusionStrength");
             glUniform1fv(occlusionStrengthLocation, 1, &material.occlusionStrength);
             if(material.occlusionID > 0)
             {
@@ -101,7 +101,7 @@ namespace Engine
             }
 
             //Emissive
-            GLuint emissiveFactorLocation = glGetUniformLocation(activeShader, "emissiveFactor");
+            GLint emissiveFactorLocation = glGetUniformLocation(activeShader, "emissiveFactor");
             glUniform4fv(emissiveFactorLocation, 1, &material.emissiveFactor.x);
             if(material.emissiveID > 0)
             {
