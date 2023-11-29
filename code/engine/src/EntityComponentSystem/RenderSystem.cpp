@@ -413,46 +413,57 @@ Recursion:
     std::unique_ptr<std::string> RenderSystem::ResolveIncludesForGLSL(const std::filesystem::path &filePath, std::unique_ptr<std::string> file)
     {
         static const char* includeIdentifier = "#include";
-        std::unique_ptr<std::string> resolvedFile = std::make_unique<std::string>();
 
         unsigned long long int position = 0;
+        unsigned long long int startOfInclude = 0;
 
-        while(position < resolvedFile->length())
+        while(position < file->length())
         {
-            position = resolvedFile->find(includeIdentifier);
+            position = file->find(includeIdentifier);
+            startOfInclude = position;
+            if(position == std::string::npos)
+                break;
 
-            while(resolvedFile->c_str()[position] != '<' && position < resolvedFile->length())
+            while(file->c_str()[position] != '<' && position < file->length())
                 position++;
-            assert(position < resolvedFile->length() && "Syntax error: idk which line or which file, but you wrote \"#include\" without <filename>");
+            assert(position < file->length() && "Syntax error: idk which line or which file, but you wrote \"#include\" without <filename>");
 
             //position now points to '<'
             position++;
             //position now points to the first character of the filename
 
             unsigned long long int lastPosOfName = position;
-            while(resolvedFile->c_str()[lastPosOfName] != '>' && lastPosOfName < resolvedFile->length())
+            while(file->c_str()[lastPosOfName] != '>' && lastPosOfName < file->length())
                 lastPosOfName++;
-            assert(lastPosOfName < resolvedFile->length() && "Syntax error: idk which line or which file, but you wrote \"#include <filename\" without \'>\'");
+            assert(lastPosOfName < file->length() && "Syntax error: idk which line or which file, but you wrote \"#include <filename\" without \'>\'");
 
             //lastPosOfName now points to '>'
-            unsigned int length = lastPosOfName - position;
+            unsigned int fileNameLength = lastPosOfName - position;
+            unsigned int includeStatementLength = lastPosOfName - startOfInclude + 1;
 
-            std::string fileName = file->substr(position, length);
-            std::filesystem::path includedFilePath = filePath / fileName;
+            std::string fileName = file->substr(position, fileNameLength);
+            std::filesystem::path includedFilePath = filePath.parent_path() / fileName;
             std::ifstream fileStream(includedFilePath);
-            assert()
+            assert(fileStream && "File not found");
+            std::ostringstream stringStream;
+            stringStream << fileStream.rdbuf();
+            file->replace(startOfInclude, includeStatementLength, stringStream.str());
+
+            position = startOfInclude;
         }
 
 
-        return resolvedFile;
+        return file;
     }
 
     GLuint RenderSystem::CreateShaderProgram(const std::filesystem::path &pathToVertexShader, const std::filesystem::path &pathToFragmentShader)
     {
-        std::unique_ptr<std::string> vs_text_str = ReadShaderFromFile(pathToVertexShader);
-        std::unique_ptr<std::string> fs_text_str = ReadShaderFromFile(pathToFragmentShader);
+        std::unique_ptr<std::string> vs_text_str = ResolveIncludesForGLSL(pathToVertexShader, ReadShaderFromFile(pathToVertexShader));
+        std::unique_ptr<std::string> fs_text_str = ResolveIncludesForGLSL(pathToFragmentShader, ReadShaderFromFile(pathToFragmentShader));
         const char* vs_text = vs_text_str->c_str();
         const char* fs_text = fs_text_str->c_str();
+        std::cout << "Resolved Vertex Shader is: \n" << vs_text << "\n";
+        std::cout << "Resolved Fragment Shader is: \n" << fs_text << "\n";
 
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
