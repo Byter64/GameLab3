@@ -1,3 +1,4 @@
+#version 460
 //
 // This fragment shader defines a reference implementation for Physically Based Shading of
 // a microfacet surface material defined by a glTF model.

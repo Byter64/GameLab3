@@ -452,7 +452,10 @@ Recursion:
             position = startOfInclude;
         }
 
-
+        std::string resolvedFileName = "Resolved" + filePath.filename().string();
+        std::ofstream outputStream(Engine::Files::ASSETS / "Shaders/ResolvedShaderOutput" / resolvedFileName, std::ios::trunc);
+        outputStream << file->c_str();
+        outputStream.close();
         return file;
     }
 
@@ -462,8 +465,6 @@ Recursion:
         std::unique_ptr<std::string> fs_text_str = ResolveIncludesForGLSL(pathToFragmentShader, ReadShaderFromFile(pathToFragmentShader));
         const char* vs_text = vs_text_str->c_str();
         const char* fs_text = fs_text_str->c_str();
-        std::cout << "Resolved Vertex Shader is: \n" << vs_text << "\n";
-        std::cout << "Resolved Fragment Shader is: \n" << fs_text << "\n";
 
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
