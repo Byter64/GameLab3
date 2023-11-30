@@ -9,5 +9,4 @@ namespace Engine
     typedef std::bitset<MAX_COMPONENTS> Signature;
     const Entity MAX_ENTITIES = 1000;
     const Entity INVALID_ENTITY_ID = MAX_ENTITIES;
-
 } // Engine

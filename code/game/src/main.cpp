@@ -31,6 +31,7 @@ int main()
     if(SetupWindow() == -1) return -1;
 
     ecsSystem.Init();
+    ecsSystem.RegisterComponent<Engine::Name>();
     ecsSystem.RegisterComponent<Engine::Transform>();
     ecsSystem.RegisterComponent<Engine::MeshRenderer>();
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
@@ -126,10 +127,10 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
 {
     Engine::Entity entity = ecsSystem.CreateEntity();
-    if(root.name == "Krawatterich")
-    {
-        krawatterich = entity;
-    }
+
+    Engine::Name name = root.name;
+    ecsSystem.AddComponent(entity, name);
+
     Engine::Transform transform;
     glm::vec3 translation{0};
     glm::vec3 scale{1};
