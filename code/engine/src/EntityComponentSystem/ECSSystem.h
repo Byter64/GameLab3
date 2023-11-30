@@ -57,6 +57,12 @@ namespace Engine
         {
             return componentManager->GetComponent<T>(entity);
         }
+        
+        template<typename T>
+        bool HasComponent(Entity entity)
+        {
+            return componentManager->HasComponent<T>(entity);
+        }
 
         Signature GetSignature(Entity entity);
 
@@ -65,6 +71,7 @@ namespace Engine
         {
             return componentManager->GetEntity(component);
         }
+
 
         template<typename T>
         ComponentType GetComponentType()

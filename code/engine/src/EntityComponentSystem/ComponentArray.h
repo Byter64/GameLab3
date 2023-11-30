@@ -53,6 +53,11 @@ namespace Engine
             return components[entityToIndex[entity]];
         }
 
+        bool HasComponent(Entity entity)
+        {
+            return entityToIndex.find(entity) != entityToIndex.end();
+        }
+
         Entity GetEntity(T& component)
         {
             T* firstElement = &components[0];

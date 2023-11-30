@@ -69,6 +69,12 @@ namespace Engine
         }
 
         template<typename T>
+        bool HasComponent(Entity entity)
+        {
+            return GetComponentArray<T>()->HasComponent(entity);
+        }
+
+        template<typename T>
         Entity GetEntity(T& component)
         {
             return GetComponentArray<T>()->GetEntity(component);
