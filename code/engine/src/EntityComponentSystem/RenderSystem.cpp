@@ -61,12 +61,13 @@ namespace Engine
 
             //BaseColor
             GLint baseColorFactorLocation = glGetUniformLocation(activeShader, "baseColorFactor");
-			
-			//Please check, if material.baseColorFactor actually needs a "&" before it.
+
             glUniform4fv(baseColorFactorLocation, 1, &material.baseColorFactor.x);
             if (material.baseColorID > 0)
             {
                 glActiveTexture(GL_TEXTURE0);
+                GLint test = glGetUniformLocation(activeShader, "baseColor");
+                glUniform1i(test, 0);
                 glBindTexture(GL_TEXTURE_2D, material.baseColorID);
             }
 
@@ -109,10 +110,15 @@ namespace Engine
                 glBindTexture(GL_TEXTURE_2D, material.emissiveID);
             }
 
-            const tinygltf::Accessor& indices = meshRenderer.model->accessors[primitive.indices];
             glBindVertexArray(data.vaoID);
+            if(data.material.isDoubleSided)
+                glDisable(GL_CULL_FACE);
+            else
+                glEnable(GL_CULL_FACE);
+
             if(data.indexBufferID > 0)
             {
+                const tinygltf::Accessor& indices = meshRenderer.model->accessors[primitive.indices];
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, data.indexBufferID);
                 glDrawElements(primitive.mode, indices.count, indices.componentType, (void *) indices.byteOffset);
             }
@@ -149,7 +155,7 @@ Recursion:
         camera.SetRotation(glm::identity<glm::quat>());
 
         pathToDefaultVertexShader = Engine::Files::ASSETS / "Shaders/Default/VS_Default.vert";
-        pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/glTF-Sample-Viewer-main/pbr.frag";
+        pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/FS_Default.frag";
 
         defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
 
@@ -285,6 +291,7 @@ Recursion:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexImage2D(GL_TEXTURE_2D, 0, sourceFormat, image.width, image.height, 0, targetFormat, image.pixel_type, &image.image[0]);
+        glGenerateMipmap(GL_TEXTURE_2D);
 
         loadedTextures[&texture] = textureID;
     }
@@ -384,6 +391,8 @@ Recursion:
 
                 int emissiveIndex = model->materials[primitive.material].emissiveTexture.index;
                 material.emissiveID =emissiveIndex > -1 ? loadedTextures[&model->textures[emissiveIndex]] : defaultTexture;
+
+                material.isDoubleSided = model->materials[primitive.material].doubleSided;
             }
 
             meshRenderer.primitiveData.push_back(data);

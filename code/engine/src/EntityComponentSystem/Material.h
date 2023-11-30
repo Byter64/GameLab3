@@ -25,6 +25,9 @@ namespace Engine
         GLuint normalID = 0;
         GLuint occlusionID = 0;
         GLuint emissiveID = 0;
+
+        //Miscellaneous
+        bool isDoubleSided = false;
     };
 
 } // Engine

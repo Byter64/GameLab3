@@ -20,6 +20,7 @@ Engine::InputSystem* inputSystem;
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem;
 GLFWwindow *window;
+Engine::Entity krawatterich;
 
 int SetupWindow();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -40,9 +41,7 @@ int main()
     auto temp = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 1000.0f);
     bool hasWorked;
     std::string error, warning;
-    std::string path = "C:/Users/Yanni/Desktop/BonkItWand/BonkItWall.gltf";
-    //std::string path = "C:/Users/Yanni/Desktop/BonkItWand/BonkItWall_Bar1.gltf";
-    //std::string path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
+    std::string path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
     std::shared_ptr<tinygltf::Model> model = std::make_shared<tinygltf::Model>();
     tinygltf::TinyGLTF loader;
 
@@ -63,11 +62,11 @@ int main()
 
     glfwSetTime(1.0/60);
     float time = 0;
-    renderSystem->camera.SetTranslation(glm::vec3(0,0,-10));
+    renderSystem->camera.SetTranslation(glm::vec3(0,-12,-15));
     while (!glfwWindowShouldClose(window)) {
-        auto dir = glm::normalize(glm::vec3(-cosf(time), 0, -sinf(time)));
+        auto dir = glm::normalize(glm::vec3(-cosf(time * 1.1f), cosf(time * 1.2f), -sinf(time)));
         auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-        //renderSystem->camera.SetRotation(rot);
+        ecsSystem.GetComponent<Engine::Transform>(krawatterich).SetTranslation(dir * 5.0f);
 
         auto time1 = std::chrono::high_resolution_clock::now();
 
@@ -127,7 +126,10 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
 {
     Engine::Entity entity = ecsSystem.CreateEntity();
-
+    if(root.name == "Krawatterich")
+    {
+        krawatterich = entity;
+    }
     Engine::Transform transform;
     glm::vec3 translation{0};
     glm::vec3 scale{1};
