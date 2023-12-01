@@ -71,7 +71,8 @@ namespace Engine
     }
 
     /**
-     * Loads a .gltf or .glb from the given path and returns an entity that is the root of all high nodes in the first scene.
+     * Loads a .gltf or .glb from the given path and returns an entity that is the root of all upper nodes in the first scene.
+     * Name, Transform and MeshRenderer components are automatically assigned to the entities in correspondence to the gltf.
      * Only the first scene is loaded, all others are ignored.
      * If the file format is .gltf, all resources need to be embedded into this file.
      * @param gltf

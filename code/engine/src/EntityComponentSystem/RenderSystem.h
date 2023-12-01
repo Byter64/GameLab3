@@ -2,6 +2,7 @@
 #include <memory>
 #include <stack>
 #include <unordered_map>
+#include <map>
 #include <filesystem>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -21,7 +22,7 @@ namespace Engine
         std::filesystem::path pathToDefaultFragmentShader;
 
         GLuint defaultTexture = 0;
-        GLuint defaultShader = 0;
+        Shader defaultShader;
         GLuint activeShader = 0;
         std::unordered_map<const tinygltf::BufferView*, GLuint> loadedBufferViews; //as of now, elements of this map will not be deleted, even if the buffer in the GPU does not exist anymore!!!!!!!
         std::unordered_map<const tinygltf::Texture*, GLuint> loadedTextures;
@@ -29,6 +30,7 @@ namespace Engine
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedIndexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVaos;
         std::set<std::shared_ptr<tinygltf::Model>> usedModels;
+        std::set<Shader> loadedShaders;
 
         /**
          * Loads a buffer onto the GPU and adds an entry to loadedVertexBuffers. If the buffer is already loaded, this method does nothing.
@@ -41,6 +43,7 @@ namespace Engine
         void LoadVAO(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadTexture(const tinygltf::Texture &texture, const tinygltf::Model &model, int sourceFormat, int targetFormat);
         void Render(Entity entity, std::stack<glm::mat4x4>& matrixStack);
+        void CreateShaderProgram(Shader& shader);
 
         static unsigned int GetVertexAttributeIndex(const std::string& name);
         static std::unique_ptr<std::string> ReadShaderFromFile(const std::filesystem::path& filePath);
@@ -54,7 +57,7 @@ namespace Engine
 
         void Render();
         MeshRenderer CreateMeshRenderer(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
-        GLuint CreateShaderProgram(const std::filesystem::path& pathToVertexShader, const std::filesystem::path& pathToFragmentShader);
+        GLuint LoadShader(const std::filesystem::path& pathToShader, GLenum shaderType);
     };
 
 } // Engine

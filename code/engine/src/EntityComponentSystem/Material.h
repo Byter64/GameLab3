@@ -8,9 +8,6 @@ namespace Engine
 
     struct Material
     {
-        //Might be removable
-        tinygltf::Material *material;
-
         //Factors, or whatever they are called
         glm::vec4 baseColorFactor{1};
         float metallicFactor = 1;

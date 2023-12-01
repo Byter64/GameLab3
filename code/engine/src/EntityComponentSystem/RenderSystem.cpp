@@ -35,22 +35,42 @@ namespace Engine
         if(ecsSystem.GetSignature(entity)[ecsSystem.GetComponentType<MeshRenderer>()] == 0) goto Recursion;
         MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
 
-        GLint newShader = meshRenderer.shaderID > 0 ? meshRenderer.shaderID : defaultShader;
-        if(newShader != activeShader)
-        {
-            glUseProgram(newShader);
-            activeShader = newShader;
-        }
-
-        GLint projectionViewMatrixLocation = glGetUniformLocation(defaultShader, "projectionView");
-        glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
-        glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
-
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
         {
             const tinygltf::Primitive &primitive = meshRenderer.mesh->primitives[i];
-            const MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
+            MeshRenderer::PrimitiveData &data = meshRenderer.primitiveData[i];
             const Material &material = data.material;
+
+            //I doubt that updating the shader should be handled here. But I don't know any better place right now
+            //hello World!!
+            if(data.shader.id == 0)
+            {
+                CreateShaderProgram(data.shader);
+            }
+            else if(data.shader.hasChanged)
+            {
+                const auto& bla = loadedShaders.find(data.shader);
+                if(bla != loadedShaders.end())
+                {
+                    data.shader.id = bla->id;
+                }
+                else
+                {
+                    CreateShaderProgram(data.shader);
+                }
+            }
+
+            GLuint newShader = data.shader.id;
+            if(newShader != activeShader)
+            {
+                glUseProgram(newShader);
+                activeShader = newShader;
+            }
+
+            GLint projectionViewMatrixLocation = glGetUniformLocation(newShader, "projectionView");
+            glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
+            glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
+
 
             GLint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
             glUniformMatrix4fv(modelMatrixLocation, 1, false, &matrixStack.top()[0][0]);
@@ -157,7 +177,8 @@ Recursion:
         pathToDefaultVertexShader = Engine::Files::ASSETS / "Shaders/Default/VS_Default.vert";
         pathToDefaultFragmentShader = Engine::Files::ASSETS / "Shaders/Default/FS_Default.frag";
 
-        defaultShader = CreateShaderProgram(pathToDefaultVertexShader, pathToDefaultFragmentShader);
+        defaultShader.SetVertexShader(LoadShader(pathToDefaultVertexShader, GL_VERTEX_SHADER));
+        defaultShader.SetFragmentShader(LoadShader(pathToDefaultFragmentShader, GL_FRAGMENT_SHADER));
 
         float white[4] = {1.0f, 1.0f, 1.0f, 1.0f};
         glGenTextures(1, &defaultTexture);
@@ -356,10 +377,10 @@ Recursion:
             MeshRenderer::PrimitiveData data;
             data.vaoID = loadedVaos[&primitive];
             data.indexBufferID = loadedIndexBuffers[&primitive];
+            data.shader = defaultShader;
 
             if (primitive.material > -1)
             {
-                data.material.material = &model->materials[primitive.material];
                 data.vertexCount = model->accessors[((tinygltf::Primitive &) primitive).attributes["POSITION"]].count;
 
                 Material &material = data.material;
@@ -468,60 +489,64 @@ Recursion:
         return file;
     }
 
-    GLuint RenderSystem::CreateShaderProgram(const std::filesystem::path &pathToVertexShader, const std::filesystem::path &pathToFragmentShader)
+    /**
+     *
+     * @param pathToShader
+     * @param shaderType One of GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, or GL_FRAGMENT_SHADER.
+     * @return
+     */
+    GLuint RenderSystem::LoadShader(const std::filesystem::path &pathToShader, GLenum shaderType)
     {
-        std::unique_ptr<std::string> vs_text_str = ResolveIncludesForGLSL(pathToVertexShader, ReadShaderFromFile(pathToVertexShader));
-        std::unique_ptr<std::string> fs_text_str = ResolveIncludesForGLSL(pathToFragmentShader, ReadShaderFromFile(pathToFragmentShader));
-        const char* vs_text = vs_text_str->c_str();
-        const char* fs_text = fs_text_str->c_str();
+        std::unique_ptr<std::string> shaderText = ResolveIncludesForGLSL(pathToShader, ReadShaderFromFile(pathToShader));
+        const char* shaderRawText = shaderText->c_str();
 
-        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(vertexShader, 1, &vs_text, nullptr);
-        glShaderSource(fragmentShader, 1, &fs_text, nullptr);
-        glCompileShader(vertexShader);
-        glCompileShader(fragmentShader);
+        GLuint shader = glCreateShader(shaderType);
+        glShaderSource(shader, 1, &shaderRawText, nullptr);
+        glCompileShader(shader);
 
         int hasSuccessfullyCompiled;
-        glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &hasSuccessfullyCompiled);
+        glGetShaderiv(shader, GL_COMPILE_STATUS, &hasSuccessfullyCompiled);
         if (!hasSuccessfullyCompiled)
         {
             char infoLog[512];
-            glGetShaderInfoLog(vertexShader, 512, nullptr, infoLog);
-            std::cout << "Error in Vertex shader: \n";
+            glGetShaderInfoLog(shader, 512, nullptr, infoLog);
+            std::cout << "Error in shader " << pathToShader << ": \n";
             std::cout << infoLog;
             exit(-1);
         }
+        return shader;
+    }
 
-        glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &hasSuccessfullyCompiled);
-        if (!hasSuccessfullyCompiled)
-        {
-            char infoLog[512];
-            std::cout << "Error in Fragment shader: \n";
-            glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
-            std::cout << infoLog;
-            exit(-1);
-        }
-
+    void RenderSystem::CreateShaderProgram(Shader &shader)
+    {
         GLuint shaderProgram = glCreateProgram();
-        glAttachShader(shaderProgram, vertexShader);
-        glAttachShader(shaderProgram, fragmentShader);
+        if(shader.vertexID != 0)
+            glAttachShader(shaderProgram, shader.vertexID);
+        if(shader.tesselationControlID != 0)
+            glAttachShader(shaderProgram, shader.tesselationControlID);
+        if(shader.tesselationEvaluationID != 0)
+            glAttachShader(shaderProgram, shader.tesselationEvaluationID);
+        if(shader.geometryID != 0)
+            glAttachShader(shaderProgram, shader.geometryID);
+        if(shader.fragmentID != 0)
+            glAttachShader(shaderProgram, shader.fragmentID);
+
         glLinkProgram(shaderProgram);
 
+        GLint hasSuccessfullyCompiled;
         glGetProgramiv(shaderProgram, GL_LINK_STATUS, &hasSuccessfullyCompiled);
         if (!hasSuccessfullyCompiled)
         {
             char infoLog[512];
-            std::cout << "Error during linking the shaders: \n";
-            glGetShaderInfoLog(fragmentShader, 512, nullptr, infoLog);
+            std::cout << "Error during linking a shader program. Good luck finding out, what the problem is. Here is a tip: \n";
+            glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
             std::cout << infoLog;
             exit(-1);
         }
 
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        shader.id = shaderProgram;
 
-        return shaderProgram;
+        loadedShaders.insert(shader);
     }
 
 } // Engine

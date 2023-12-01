@@ -2,6 +2,7 @@
 #include <memory>
 #include "../../extern/tinygltf/tiny_gltf.h"
 #include "Material.h"
+#include "Shader.h"
 namespace Engine
 {
 
@@ -12,12 +13,12 @@ namespace Engine
         tinygltf::Mesh* mesh;
         std::shared_ptr<tinygltf::Model> model;
         std::vector<PrimitiveData> primitiveData;
-        GLuint shaderID = 0;
 
         MeshRenderer() = default;
 
         struct PrimitiveData
         {
+            Shader shader;
             GLuint vaoID = 0;
             GLuint indexBufferID = 0;
             Material material;
