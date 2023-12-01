@@ -108,7 +108,7 @@ namespace Engine
             glUniform1fv(normalScaleLocation, 1, &material.normalScale);
             if(material.normalID > 0)
             {
-                glActiveTexture(GL_TEXTURE3);
+                glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D, material.normalID);
             }
 
@@ -117,16 +117,16 @@ namespace Engine
             glUniform1fv(occlusionStrengthLocation, 1, &material.occlusionStrength);
             if(material.occlusionID > 0)
             {
-                glActiveTexture(GL_TEXTURE4);
+                glActiveTexture(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, material.occlusionID);
             }
 
             //Emissive
             GLint emissiveFactorLocation = glGetUniformLocation(activeShader, "emissiveFactor");
-            glUniform4fv(emissiveFactorLocation, 1, &material.emissiveFactor.x);
+            glUniform3fv(emissiveFactorLocation, 1, &material.emissiveFactor.x);
             if(material.emissiveID > 0)
             {
-                glActiveTexture(GL_TEXTURE5);
+                glActiveTexture(GL_TEXTURE4);
                 glBindTexture(GL_TEXTURE_2D, material.emissiveID);
             }
 
