@@ -111,7 +111,6 @@ namespace Engine
             Entity entity = GenerateEntities(node, nullptr, model);
             Transform &transform = ecsSystem.GetComponent<Transform>(entity);
             transform.SetParent(&rootTransform);
-            rootTransform.AddChild(&transform);
         }
 
         return root;
@@ -135,16 +134,11 @@ namespace Engine
         if (!root.rotation.empty())
         { rotation = glm::quat{ (float) root.rotation[3], (float) root.rotation[0], (float) root.rotation[1], (float) root.rotation[2]}; }
 
-        transform.SetParent(parent);
         transform.SetTranslation(translation);
         transform.SetScale(scale);
         transform.SetRotation(rotation);
         ecsSystem.AddComponent(entity, transform);
-
-
-        if(parent != nullptr)
-            parent->AddChild(&ecsSystem.GetComponent<Engine::Transform>(entity));
-
+        ecsSystem.GetComponent<Engine::Transform>(entity).SetParent(parent);
 
         if (root.mesh != -1)
         {

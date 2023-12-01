@@ -1,6 +1,8 @@
 #include "Transform.h"
 #include "glm/gtx/quaternion.hpp"
 #include <iostream>
+#include "../Engine.h"
+extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
     Transform::Transform(glm::vec3 position, glm::vec3 scale, glm::quat rotation) : translation(position), scale(scale), rotation(rotation)
@@ -57,30 +59,27 @@ namespace Engine
         return matrix;
     }
 
+    /**
+     * Creates (and overwrites the old) parent-child relationship of this transform. Only use this method on components created by the ECS-System.
+     * @param parent
+     */
     void Transform::SetParent(Transform *parent)
     {
+        std::cout << "Added Parent: " << (parent != nullptr ? ecsSystem.GetComponent<Name>(ecsSystem.GetEntity(*parent)) : "NULL") << " to object: "
+                  <<  ecsSystem.GetComponent<Name>(ecsSystem.GetEntity(*this)) << "\n";
+        //Remove old parent-child relationship
+        if(this->parent != nullptr)
+            this->parent->children.remove(this);
+
+        //Create new parent-child relationship
         this->parent = parent;
+        if(parent != nullptr)
+            parent->children.push_back(this);
     }
 
     Transform *Transform::GetParent()
     {
         return parent;
-    }
-
-    void Transform::AddChild(Transform *child)
-    {
-        bool isAlreadyAChild = std::find(children.begin(), children.end(),child) != children.end();
-        if(isAlreadyAChild) return;
-
-        children.push_back(child);
-    }
-
-    void Transform::RemoveChild(Transform *child)
-    {
-        bool isNotAChild = std::find(children.begin(), children.end(),child) == children.end();
-        if(isNotAChild) return;
-
-        children.remove(child);
     }
 
     const std::list<Transform*> &Transform::GetChildren()

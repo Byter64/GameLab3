@@ -12,12 +12,12 @@ namespace Engine
     private:
         bool hasTransformChanged = false;
 
-        glm::mat4x4 matrix = glm::mat4x4(1);
+        glm::mat4 matrix = glm::mat4(1);
         glm::vec3 translation = glm::vec3(0, 0, 0);
         glm::vec3 scale = glm::vec3(1, 1, 1);
         glm::quat rotation = glm::quat(0, 0, 0, 0);
 
-        Transform* parent;
+        Transform* parent = nullptr;
         std::list<Transform*> children;
 
     public:
@@ -39,8 +39,6 @@ namespace Engine
         void SetParent(Transform* parent);
         Transform* GetParent();
 
-        void AddChild(Transform* child);
-        void RemoveChild(Transform* child);
         const std::list<Transform*>& GetChildren();
         std::string ToString();
     };
