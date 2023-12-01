@@ -65,8 +65,6 @@ namespace Engine
      */
     void Transform::SetParent(Transform *parent)
     {
-        std::cout << "Added Parent: " << (parent != nullptr ? ecsSystem.GetComponent<Name>(ecsSystem.GetEntity(*parent)) : "NULL") << " to object: "
-                  <<  ecsSystem.GetComponent<Name>(ecsSystem.GetEntity(*this)) << "\n";
         //Remove old parent-child relationship
         if(this->parent != nullptr)
             this->parent->children.remove(this);
