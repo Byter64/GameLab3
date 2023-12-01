@@ -34,6 +34,8 @@ namespace Engine
          * Loads a buffer onto the GPU and adds an entry to loadedVertexBuffers. If the buffer is already loaded, this method does nothing.
          * @param buffer
          */
+        void LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
+        void UnloadMesh(const tinygltf::Mesh &mesh, const tinygltf::Model & model);
         void LoadVertexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadIndexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadVAO(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
@@ -52,8 +54,6 @@ namespace Engine
 
         void Render();
         MeshRenderer CreateMeshRenderer(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
-        void LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
-        void UnloadMesh(const tinygltf::Mesh &mesh, const tinygltf::Model & model);
         GLuint CreateShaderProgram(const std::filesystem::path& pathToVertexShader, const std::filesystem::path& pathToFragmentShader);
     };
 
