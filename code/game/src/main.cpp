@@ -104,19 +104,50 @@ void InitializeECS()
     gameEventSignature.set(ecsSystem.GetComponentType<Engine::GameEvents>());
     ecsSystem.SetSystemSignature<Engine::GameEventSystem>(gameEventSignature);
 }
+
 float myTime = 0;
+glm::vec3 movement;
 void UpdateTest(float time)
 {
     myTime += time;
     auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
     auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-    krawatterich->GetComponent<Engine::Transform>().SetTranslation(dir * 5.0f);
-
+    krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
+    krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
     std::cout << time << " s passed" << "\n";
+}
+
+
+
+void MovementXY(glm::vec2 input)
+{
+    movement.x = input.x;
+    movement.y = input.y;
+
+    if(movement != glm::vec3(0,0,0))
+        movement = glm::normalize(movement) * 5.0f;
+}
+
+void MovementZ(glm::vec2 input)
+{
+    movement.z = input.x;
+
+    if(movement != glm::vec3(0,0,0))
+        movement = glm::normalize(movement) * 5.0f;
 }
 
 void LoadDemo()
 {
+    inputSystem = new Engine::InputSystem(window);
+    std::shared_ptr<Engine::InputActionVec2> movementXY = std::make_shared<Engine::InputActionVec2>("MovementXY");
+    movementXY->AddKeyboardBinding(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+    movementXY->AddOnValueChange(MovementXY);
+    inputSystem->Add(movementXY);
+    std::shared_ptr<Engine::InputActionVec2> movementZ = std::make_shared<Engine::InputActionVec2>("MovementZ");
+    movementZ->AddKeyboardBinding(GLFW_KEY_E, GLFW_KEY_Q, 0, 0);
+    movementZ->AddOnValueChange(MovementZ);
+    inputSystem->Add(movementZ);
+
     std::filesystem::path path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
     root = ecsSystem.CreateEntity();
     ecsSystem.AddComponent<Engine::Name>(root, "Root");
