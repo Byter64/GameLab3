@@ -50,6 +50,13 @@ namespace Engine
             return componentTypes[typeName];
         }
 
+        //Component data is undefined!!!
+        template<typename T>
+        void AddComponent(Entity entity)
+        {
+            GetComponentArray<T>()->AddComponent(entity);
+        }
+
         template<typename T>
         void AddComponent(Entity entity, T component)
         {

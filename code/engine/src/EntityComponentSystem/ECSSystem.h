@@ -28,6 +28,19 @@ namespace Engine
             componentManager->RegisterComponent<T>();
         }
 
+        //Component data is undefined!!!
+        template<typename T>
+        void AddComponent(Entity entity)
+        {
+            componentManager->AddComponent<T>(entity);
+
+            auto signature = entityManager->GetSignature(entity);
+            signature.set(componentManager->GetComponentType<T>(), true);
+            entityManager->SetSignature(entity, signature);
+
+            systemManager->EntitySignatureChanged(entity, signature);
+        }
+
         template<typename T>
         void AddComponent(Entity entity, T component)
         {

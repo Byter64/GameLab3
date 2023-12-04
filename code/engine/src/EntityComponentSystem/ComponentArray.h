@@ -17,6 +17,17 @@ namespace Engine
         std::unordered_map<size_t, Entity> indexToEntity;
 
     public:
+        //Component data is undefined!!!
+        void AddComponent(Entity entity)
+        {
+            assert(entityToIndex.find(entity) == entityToIndex.end() && "This type of component has already been added to this entity");
+
+            size_t index = size;
+            entityToIndex[entity] = index;
+            indexToEntity[index] = entity;
+            size++;
+        }
+
         void AddComponent(Entity entity, T component)
         {
             assert(entityToIndex.find(entity) == entityToIndex.end() && "This type of component has already been added to this entity");
