@@ -39,6 +39,9 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/Shader.h
         src/GameObject.cpp
         src/GameObject.h
+        ../engine/src/EntityComponentSystem/GameEvents.h
+        ../engine/src/EntityComponentSystem/GameEventSystem.cpp
+        ../engine/src/EntityComponentSystem/GameEventSystem.h
 )
 
 set(EXE_FILE Game)

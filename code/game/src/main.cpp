@@ -9,64 +9,41 @@
 #include "../../engine/src/InputSystem.h"
 #include "../../engine/src/InputActions/InputActionVec2.h"
 #include "../../engine/src/Engine.h"
+#include "GameObject.h"
 
 Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+std::shared_ptr<Engine::GameEventSystem> gameEventSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
-Engine::Entity krawatterich;
+GameObject *krawatterich;
 Engine::Entity root;
 
 int SetupWindow();
+void InitializeECS();
+void LoadDemo();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
 int main()
 {
     if(SetupWindow() == -1) return -1;
+    InitializeECS();
 
-    ecsSystem.Init();
-    ecsSystem.RegisterComponent<Engine::Name>();
-    ecsSystem.RegisterComponent<Engine::Transform>();
-    ecsSystem.RegisterComponent<Engine::MeshRenderer>();
-    renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
-    Engine::Signature renderSignature;
-    renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
-    ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
-
-    auto temp = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 1000.0f);
-
-    std::filesystem::path path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
-    root = ecsSystem.CreateEntity();
-    ecsSystem.AddComponent<Engine::Name>(root, "Root");
-    ecsSystem.AddComponent<Engine::Transform>(root, Engine::Transform());
-
-    for(Engine::Entity entity : Engine::ImportGLTF(path))
-    {
-        ecsSystem.GetComponent<Engine::Transform>(entity).SetParent(&ecsSystem.GetComponent<Engine::Transform>(root));
-    }
-    krawatterich = Engine::FindChild(root, "Krawatterich");
-
-    GLuint vertexColorshader = renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Default/FS_Default_VertexColor.frag", GL_FRAGMENT_SHADER);
-    Engine::Entity vertexPaintedSphere1 = Engine::FindChild(root, "VertexPaintedSphere");
-    ecsSystem.GetComponent<Engine::MeshRenderer>(vertexPaintedSphere1).primitiveData[0].shader.SetFragmentShader(vertexColorshader);
-    Engine::Entity vertexPaintedSphere2 = Engine::FindChild(root, "VertexPaintedSphere.001");
-    ecsSystem.GetComponent<Engine::MeshRenderer>(vertexPaintedSphere2).primitiveData[0].shader.SetFragmentShader(vertexColorshader);
+    LoadDemo();
 
     glfwSetTime(1.0/60);
-    float time = 0;
+    static float passedTimeInSeconds = 1.0f/60;
     renderSystem->camera.SetTranslation(glm::vec3(0,-12,-15));
     while (!glfwWindowShouldClose(window)) {
-        auto dir = glm::normalize(glm::vec3(-cosf(time * 1.1f), cosf(time * 1.2f), -sinf(time)));
-        auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-        ecsSystem.GetComponent<Engine::Transform>(krawatterich).SetTranslation(dir * 5.0f);
-
         auto time1 = std::chrono::high_resolution_clock::now();
 
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+
+        gameEventSystem->InvokeUpdate(passedTimeInSeconds);
         renderSystem->Render();
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -74,10 +51,7 @@ int main()
 
         auto time2 = std::chrono::high_resolution_clock::now();
         auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time1);
-        time +=  delta.count() / 1000.0f;
-
-        float pla = 180 / 3.14159f;
-        std::cout << delta.count() << " ms passed" << "\n";
+        passedTimeInSeconds = ((float)delta.count()) / 1000;
     }
 
     glfwTerminate();
@@ -110,6 +84,57 @@ int SetupWindow()
     }
 
     return 0;
+}
+
+void InitializeECS()
+{
+    ecsSystem.Init();
+    ecsSystem.RegisterComponent<Engine::Name>();
+    ecsSystem.RegisterComponent<Engine::Transform>();
+    ecsSystem.RegisterComponent<Engine::MeshRenderer>();
+    ecsSystem.RegisterComponent<Engine::GameEvents>();
+
+    renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
+    Engine::Signature renderSignature;
+    renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+    ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
+
+    gameEventSystem = ecsSystem.RegisterSystem<Engine::GameEventSystem>();
+    Engine::Signature gameEventSignature;
+    gameEventSignature.set(ecsSystem.GetComponentType<Engine::GameEvents>());
+    ecsSystem.SetSystemSignature<Engine::GameEventSystem>(gameEventSignature);
+}
+float myTime = 0;
+void UpdateTest(float time)
+{
+    myTime += time;
+    auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
+    auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
+    krawatterich->GetComponent<Engine::Transform>().SetTranslation(dir * 5.0f);
+
+    std::cout << time << " s passed" << "\n";
+}
+
+void LoadDemo()
+{
+    std::filesystem::path path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
+    root = ecsSystem.CreateEntity();
+    ecsSystem.AddComponent<Engine::Name>(root, "Root");
+    ecsSystem.AddComponent<Engine::Transform>(root, Engine::Transform());
+
+    for(Engine::Entity entity : Engine::ImportGLTF(path))
+    {
+        ecsSystem.GetComponent<Engine::Transform>(entity).SetParent(&ecsSystem.GetComponent<Engine::Transform>(root));
+    }
+    krawatterich = new GameObject(Engine::FindChild(root, "Krawatterich"));
+    krawatterich->SetUpdateMethod(UpdateTest);
+
+
+    GLuint vertexColorshader = renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Default/FS_Default_VertexColor.frag", GL_FRAGMENT_SHADER);
+    Engine::Entity vertexPaintedSphere1 = Engine::FindChild(root, "VertexPaintedSphere");
+    ecsSystem.GetComponent<Engine::MeshRenderer>(vertexPaintedSphere1).primitiveData[0].shader.SetFragmentShader(vertexColorshader);
+    Engine::Entity vertexPaintedSphere2 = Engine::FindChild(root, "VertexPaintedSphere.001");
+    ecsSystem.GetComponent<Engine::MeshRenderer>(vertexPaintedSphere2).primitiveData[0].shader.SetFragmentShader(vertexColorshader);
 }
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
