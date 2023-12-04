@@ -18,7 +18,7 @@ namespace Engine
 
     public:
         //Component data is undefined!!!
-        void AddComponent(Entity entity)
+        T& AddComponent(Entity entity)
         {
             assert(entityToIndex.find(entity) == entityToIndex.end() && "This type of component has already been added to this entity");
 
@@ -26,6 +26,8 @@ namespace Engine
             entityToIndex[entity] = index;
             indexToEntity[index] = entity;
             size++;
+
+            return components[index];
         }
 
         void AddComponent(Entity entity, T component)

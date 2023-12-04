@@ -30,15 +30,17 @@ namespace Engine
 
         //Component data is undefined!!!
         template<typename T>
-        void AddComponent(Entity entity)
+        T& AddComponent(Entity entity)
         {
-            componentManager->AddComponent<T>(entity);
+            T& component = componentManager->AddComponent<T>(entity);
 
             auto signature = entityManager->GetSignature(entity);
             signature.set(componentManager->GetComponentType<T>(), true);
             entityManager->SetSignature(entity, signature);
 
             systemManager->EntitySignatureChanged(entity, signature);
+
+            return component;
         }
 
         template<typename T>

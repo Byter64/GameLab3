@@ -37,6 +37,8 @@ set(SOURCE_FILES src/main.cpp
         ../engine/src/EntityComponentSystem/EntityUtility.h
         ../engine/src/EntityComponentSystem/Shader.cpp
         ../engine/src/EntityComponentSystem/Shader.h
+        src/GameObject.cpp
+        src/GameObject.h
 )
 
 set(EXE_FILE Game)

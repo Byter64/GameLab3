@@ -52,9 +52,9 @@ namespace Engine
 
         //Component data is undefined!!!
         template<typename T>
-        void AddComponent(Entity entity)
+        T& AddComponent(Entity entity)
         {
-            GetComponentArray<T>()->AddComponent(entity);
+            return GetComponentArray<T>()->AddComponent(entity);
         }
 
         template<typename T>
