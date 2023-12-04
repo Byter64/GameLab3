@@ -21,6 +21,12 @@ namespace Engine
         hasTransformChanged = true;
     }
 
+    void Transform::AddTranslation(const glm::vec3 &translation)
+    {
+        this->translation += translation;
+        hasTransformChanged = true;
+    }
+
     glm::vec3 Transform::GetScale()
     {
         return scale;
@@ -29,6 +35,12 @@ namespace Engine
     void Transform::SetScale(const glm::vec3 &scale)
     {
         this->scale = scale;
+        hasTransformChanged = true;
+    }
+
+    void Transform::AddScale(const glm::vec3 &scale)
+    {
+        this->scale += scale;
         hasTransformChanged = true;
     }
 

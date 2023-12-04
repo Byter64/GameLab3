@@ -26,9 +26,11 @@ namespace Engine
 
         glm::vec3 GetTranslation();
         void SetTranslation(const glm::vec3& translation);
+        void AddTranslation(const glm::vec3& translation);
 
         glm::vec3 GetScale();
         void SetScale(const glm::vec3& scale);
+        void AddScale(const glm::vec3& scale);
 
         glm::quat GetRotation();
         void SetRotation(const glm::quat& rotation);
