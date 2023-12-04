@@ -36,7 +36,7 @@ namespace Engine
         }
     }
 
-    void InputSystem::Add(std::unique_ptr<InputAction> inputAction)
+    void InputSystem::Add(std::shared_ptr<InputAction> inputAction)
     {
         inputAction->inputSystem = this;
 
@@ -47,10 +47,10 @@ namespace Engine
         inputActions.push_back(std::move(inputAction));
     }
 
-    std::unique_ptr<InputAction> InputSystem::Remove(std::string inputActionName)
+    std::shared_ptr<InputAction> InputSystem::Remove(std::string inputActionName)
     {
         //Find InputAction
-        auto result = std::find_if(inputActions.begin(), inputActions.end(), [&inputActionName](const std::unique_ptr<InputAction>& inputAction) {return inputAction->name == inputActionName;});
+        auto result = std::find_if(inputActions.begin(), inputActions.end(), [&inputActionName](const std::shared_ptr<InputAction>& inputAction) {return inputAction->name == inputActionName;});
         if(result == inputActions.end())
         {
             return nullptr;
