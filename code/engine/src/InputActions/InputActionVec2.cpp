@@ -110,6 +110,10 @@ namespace Engine
         glm::vec2 input(x,y);
         if(input == glm::vec2(0,0) && oldInput != glm::vec2 (0,0))
         {
+            for (const CallbackVec2 &callback: valueChangeCallbacks)
+            {
+                callback(input);
+            }
             for (const CallbackVec2 &callback: endCallbacks)
             {
                 callback(input);
@@ -123,6 +127,10 @@ namespace Engine
         input = glm::normalize(input);
         if(oldInput == glm::vec2(0,0))
         {
+            for (const CallbackVec2 &callback: valueChangeCallbacks)
+            {
+                callback(input);
+            }
             for (const CallbackVec2 &callback: startCallbacks)
             {
                 callback(input);
