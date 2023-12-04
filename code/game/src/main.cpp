@@ -112,7 +112,7 @@ void UpdateTest(float time)
     myTime += time;
     auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
     auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-    krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
+    //krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
     krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
     std::cout << time << " s passed" << "\n";
 }
@@ -125,7 +125,7 @@ void MovementXY(glm::vec2 input)
     movement.y = input.y;
 
     if(movement != glm::vec3(0,0,0))
-        movement = glm::normalize(movement) * 5.0f;
+        movement = glm::normalize(movement) * 8.0f;
 }
 
 void MovementZ(glm::vec2 input)
@@ -133,7 +133,7 @@ void MovementZ(glm::vec2 input)
     movement.z = input.x;
 
     if(movement != glm::vec3(0,0,0))
-        movement = glm::normalize(movement) * 5.0f;
+        movement = glm::normalize(movement) * 8.0f;
 }
 
 void LoadDemo()
