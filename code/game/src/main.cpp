@@ -48,6 +48,12 @@ int main()
     }
     krawatterich = Engine::FindChild(root, "Krawatterich");
 
+    GLuint vertexColorshader = renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Default/FS_Default_VertexColor.frag", GL_FRAGMENT_SHADER);
+    Engine::Entity vertexPaintedSphere1 = Engine::FindChild(root, "VertexPaintedSphere");
+    ecsSystem.GetComponent<Engine::MeshRenderer>(vertexPaintedSphere1).primitiveData[0].shader.SetFragmentShader(vertexColorshader);
+    Engine::Entity vertexPaintedSphere2 = Engine::FindChild(root, "VertexPaintedSphere.001");
+    ecsSystem.GetComponent<Engine::MeshRenderer>(vertexPaintedSphere2).primitiveData[0].shader.SetFragmentShader(vertexColorshader);
+
     glfwSetTime(1.0/60);
     float time = 0;
     renderSystem->camera.SetTranslation(glm::vec3(0,-12,-15));
