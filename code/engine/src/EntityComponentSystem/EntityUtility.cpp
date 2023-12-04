@@ -78,8 +78,9 @@ namespace Engine
      * @param gltf
      * @return
      */
-    Entity ImportGLTF(std::filesystem::path filePath)
+    std::vector<Entity> ImportGLTF(std::filesystem::path filePath)
     {
+        std::vector<Entity> entities;
         bool hasWorked;
         std::string error, warning;
         std::shared_ptr<tinygltf::Model> model = std::make_shared<tinygltf::Model>();
@@ -92,29 +93,25 @@ namespace Engine
         else
         {
             std::cout << "Unknown file extension of file: \n" << filePath << "\n";
-            return INVALID_ENTITY_ID;
+            return entities;
         }
 
         if (!hasWorked)
         {
             std::cout << error << std::endl;
-            return INVALID_ENTITY_ID;
+            return entities;
         }
-
-        Entity root = ecsSystem.CreateEntity();
-        ecsSystem.AddComponent(root, std::string("Root"));
-        ecsSystem.AddComponent(root, Transform());
-        Transform &rootTransform = ecsSystem.GetComponent<Transform>(root);
 
         for(int nodeIndex : model->scenes[0].nodes)
         {
             const tinygltf::Node& node = model->nodes[nodeIndex];
             Entity entity = GenerateEntities(node, nullptr, model);
             Transform &transform = ecsSystem.GetComponent<Transform>(entity);
-            transform.SetParent(&rootTransform);
+            transform.SetParent(nullptr);
+            entities.push_back(entity);
         }
 
-        return root;
+        return entities;
     }
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)

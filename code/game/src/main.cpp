@@ -38,7 +38,14 @@ int main()
     auto temp = glm::perspective(glm::radians(90.0f), 1.0f, 1.0f, 1000.0f);
 
     std::filesystem::path path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";
-    root = Engine::ImportGLTF(path);
+    root = ecsSystem.CreateEntity();
+    ecsSystem.AddComponent<Engine::Name>(root, "Root");
+    ecsSystem.AddComponent<Engine::Transform>(root, Engine::Transform());
+
+    for(Engine::Entity entity : Engine::ImportGLTF(path))
+    {
+        ecsSystem.GetComponent<Engine::Transform>(entity).SetParent(&ecsSystem.GetComponent<Engine::Transform>(root));
+    }
     krawatterich = Engine::FindChild(root, "Krawatterich");
 
     glfwSetTime(1.0/60);
