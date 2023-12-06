@@ -33,9 +33,9 @@ namespace Engine
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
         matrixStack.push(matrixStack.top() * transform.GetMatrix());
 
-        if(ecsSystem.GetSignature(entity)[ecsSystem.GetComponentType<MeshRenderer>()] == 0) goto Recursion;
-        MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
+        if(!ecsSystem.HasComponent<MeshRenderer>(entity)) goto Recursion;
 
+        MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
         {
             const tinygltf::Primitive &primitive = meshRenderer.mesh->primitives[i];
