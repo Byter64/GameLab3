@@ -11,6 +11,9 @@
 #include "../../engine/src/Engine.h"
 #include "GameObject.h"
 
+#define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
+#define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
+
 Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
@@ -34,8 +37,9 @@ int main()
     LoadDemo();
 
     glfwSetTime(1.0/60);
-    static float passedTimeInSeconds = 1.0f/60;
+    float passedTimeInSeconds = 1.0f/60;
     renderSystem->camera.SetTranslation(glm::vec3(0,-12,-15));
+
     while (!glfwWindowShouldClose(window)) {
         auto time1 = std::chrono::high_resolution_clock::now();
 
@@ -50,8 +54,11 @@ int main()
 
 
         auto time2 = std::chrono::high_resolution_clock::now();
-        auto delta = std::chrono::duration_cast<std::chrono::milliseconds>(time2 - time1);
-        passedTimeInSeconds = ((float)delta.count()) / 1000;
+        while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
+            time2 = std::chrono::high_resolution_clock::now();
+
+        auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
+        passedTimeInSeconds = ((float)delta.count()) / 1000000;
     }
 
     glfwTerminate();
@@ -112,7 +119,7 @@ void UpdateTest(float time)
     myTime += time;
     auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
     auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-    //krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
+    krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
     krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
     std::cout << time << " s passed" << "\n";
 }
@@ -139,10 +146,14 @@ void MovementZ(glm::vec2 input)
 void LoadDemo()
 {
     inputSystem = new Engine::InputSystem(window);
+
     std::shared_ptr<Engine::InputActionVec2> movementXY = std::make_shared<Engine::InputActionVec2>("MovementXY");
     movementXY->AddKeyboardBinding(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
     movementXY->AddOnValueChange(MovementXY);
+
     inputSystem->Add(movementXY);
+
+
     std::shared_ptr<Engine::InputActionVec2> movementZ = std::make_shared<Engine::InputActionVec2>("MovementZ");
     movementZ->AddKeyboardBinding(GLFW_KEY_E, GLFW_KEY_Q, 0, 0);
     movementZ->AddOnValueChange(MovementZ);
