@@ -10,3 +10,6 @@
 #include "EntityComponentSystem/RenderSystem.h"
 #include "EntityComponentSystem/GameEventSystem.h"
 #include "FileSystem.h"
+#include "InputSystem.h"
+#include "InputActions/InputActionVec2.h"
+#include "InputActions/InputActionButton.h"
