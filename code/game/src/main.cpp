@@ -43,9 +43,6 @@ int main()
     while (!glfwWindowShouldClose(window)) {
         auto time1 = std::chrono::high_resolution_clock::now();
 
-        glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
 
         gameEventSystem->InvokeUpdate(passedTimeInSeconds);
         renderSystem->Render();
