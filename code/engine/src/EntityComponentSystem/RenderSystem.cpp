@@ -9,6 +9,7 @@
 #include "Transform.h"
 #include "../FileSystem.h"
 
+#include "Name.h"
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
@@ -74,7 +75,7 @@ namespace Engine
 
 
             GLint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
-            glUniformMatrix4fv(modelMatrixLocation, 1, false, &matrixStack.top()[0][0]);
+            glUniformMatrix4fv(modelMatrixLocation, 1, false, &transform.GetGlobalMatrix()[0][0]);
 
             //█████████████████████████████████████████████████████████████████████████████████████
             //██████████Setting Material data for Rendering████████████████████████████████████████

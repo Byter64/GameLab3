@@ -24,7 +24,6 @@ int SetupWindow();
 void InitializeECS();
 void LoadDemo();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void LoadGLTFTree(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
 int main()
 {
