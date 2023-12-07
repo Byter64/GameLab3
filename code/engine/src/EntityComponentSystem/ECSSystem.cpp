@@ -16,19 +16,9 @@ namespace Engine
 
     void ECSSystem::DestroyEntity(Entity entity)
     {
-        entityPurgatory.insert(entity);
-    }
-
-    void ECSSystem::DestroyEntitiesForReal()
-    {
-        for(Entity entity : entityPurgatory)
-        {
-            entityManager->DestroyEntity(entity);
-            componentManager->EntityDestroyed(entity);
-            systemManager->EntityDestroyed(entity);
-        }
-
-        entityPurgatory.clear();
+        entityManager->DestroyEntity(entity);
+        componentManager->EntityDestroyed(entity);
+        systemManager->EntityDestroyed(entity);
     }
 
     Signature ECSSystem::GetSignature(Entity entity)

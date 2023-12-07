@@ -6,7 +6,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include "Engine.h"
-#include "../include/GameObject.h"
+#include "GameObjectManager.h"
+#include "GameObject.h"
 
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
@@ -16,6 +17,7 @@ Engine::InputSystem* inputSystem;
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::GameEventSystem> gameEventSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+GameObjectManager gameObjectManager;
 GLFWwindow *window;
 GameObject *krawatterich;
 Engine::Entity root;
@@ -44,7 +46,7 @@ int main()
         renderSystem->Render();
         glfwSwapBuffers(window);
         glfwPollEvents();
-
+        gameObjectManager.DeletePurgatory();
 
         auto time2 = std::chrono::high_resolution_clock::now();
         while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)

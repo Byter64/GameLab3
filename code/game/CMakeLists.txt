@@ -41,6 +41,8 @@ set(SOURCE_FILES src/main.cpp
         ../engine/include/GameEvents.h
         ../engine/src/EntityComponentSystem/GameEventSystem.cpp
         ../engine/include/GameEventSystem.h
+        src/GameObjectManager.cpp
+        include/GameObjectManager.h
 )
 
 set(EXE_FILE Game)

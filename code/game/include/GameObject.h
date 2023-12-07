@@ -2,23 +2,29 @@
 #include "Engine.h"
 #include <string>
 #include <memory>
+#include <vector>
 
 extern Engine::ECSSystem ecsSystem;
+class GameObjectManager;
+
 class GameObject
 {
+    friend class GameObjectManager;
+
     bool receivesGameEvents = false;
 
     Engine::Entity entity;
-    std::vector<std::shared_ptr<GameObject>> children;
+    std::vector<GameObject*> children;
     GameObject* parent;
 
+    ~GameObject();
 public:
     explicit GameObject(std::string name);
     explicit GameObject(Engine::Entity entity);
 
     unsigned int GetChildCount();
-    std::shared_ptr<GameObject> GetChild(unsigned int index);
-    void SetParent(std::shared_ptr<GameObject> parent);
+    GameObject* GetChild(unsigned int index);
+    void SetParent(GameObject* parent);
 
     void SetUpdateMethod(void (*updateMethod)(float time));
 
@@ -39,5 +45,9 @@ public:
     {
         return ecsSystem.HasComponent<T>(entity);
     }
-    ~GameObject();
+
+    void Destroy();
+
+    void * operator new[](size_t) = delete;
+    void operator delete [](void*) = delete;
 };

@@ -1,8 +1,10 @@
 #include "GameObject.h"
 #include <stdexcept>
 #include <string>
+#include "GameObjectManager.h"
 
 extern Engine::ECSSystem ecsSystem;
+extern GameObjectManager gameObjectManager;
 
 GameObject::GameObject(std::string name)
 {
@@ -24,7 +26,7 @@ GameObject::GameObject(Engine::Entity entity)
         Engine::Transform& transform = ecsSystem.GetComponent<Engine::Transform>(entity);
         for(Engine::Transform *childTransform: transform.GetChildren())
         {
-            std::shared_ptr<GameObject> child = std::make_shared<GameObject>(ecsSystem.GetEntity(*childTransform));
+            GameObject* child = new GameObject(ecsSystem.GetEntity(*childTransform));
             children.push_back(child);
             child->parent = this;
         }
@@ -33,6 +35,15 @@ GameObject::GameObject(Engine::Entity entity)
 
 GameObject::~GameObject()
 {
+    if(parent != nullptr)
+    {
+        parent->children.erase(std::find(parent->children.begin(), parent->children.end(), this));
+    }
+
+    for (GameObject* child :children)
+    {
+        delete child;
+    }
 
     ecsSystem.DestroyEntity(entity);
 }
@@ -42,7 +53,7 @@ unsigned int GameObject::GetChildCount()
     return children.size();
 }
 
-std::shared_ptr<GameObject> GameObject::GetChild(unsigned int index)
+GameObject* GameObject::GetChild(unsigned int index)
 {
     if(index >= children.size())
     {
@@ -51,17 +62,20 @@ std::shared_ptr<GameObject> GameObject::GetChild(unsigned int index)
         message += "was out of bounds";
         throw std::runtime_error(message);
     }
+
     return children[index];
 }
 
-void GameObject::SetParent(std::shared_ptr<GameObject> parent)
+void GameObject::SetParent(GameObject* parent)
 {
-    std::shared_ptr<GameObject> reference = *std::remove_if(this->parent->children.begin(), this->parent->children.end(), [this](std::shared_ptr<GameObject> gameObject){return gameObject.get() == this;});
-    if(parent.get() != nullptr)
+    if(this->parent != nullptr)
+        this->parent->children.erase(std::find(this->parent->children.begin(), this->parent->children.end(), this));
+
+    if(parent != nullptr)
     {
-        parent->children.push_back(reference);
+        parent->children.push_back(this);
     }
-    this->parent = parent.get();
+    this->parent = parent;
 }
 
 void GameObject::SetUpdateMethod(void (*updateMethod)(float))
@@ -78,4 +92,9 @@ void GameObject::SetUpdateMethod(void (*updateMethod)(float))
         updateEvent.update = updateMethod;
     }
 
+}
+
+void GameObject::Destroy()
+{
+    gameObjectManager.AddToPurgatory(this);
 }

@@ -20,7 +20,6 @@ namespace Engine
 
         Entity CreateEntity();
         void DestroyEntity(Entity entity);
-        void DestroyEntitiesForReal();
 
         template<typename T>
         void RegisterComponent()
