@@ -20,7 +20,7 @@ namespace Engine
         this->translation = translation;
         hasTransformChanged = true;
 
-        SetGlobalsNeedToBeUpdated();
+        SetIsGlobalTranslationOutdated();
     }
 
     void Transform::AddTranslation(const glm::vec3 &translation)
@@ -28,7 +28,7 @@ namespace Engine
         this->translation += translation;
         hasTransformChanged = true;
 
-        SetGlobalsNeedToBeUpdated();
+        SetIsGlobalTranslationOutdated();
     }
 
     glm::vec3 Transform::GetScale()
@@ -41,7 +41,7 @@ namespace Engine
         this->scale = scale;
         hasTransformChanged = true;
 
-        SetGlobalsNeedToBeUpdated();
+        SetIsGlobalScaleOutdated();
     }
 
     void Transform::AddScale(const glm::vec3 &scale)
@@ -49,7 +49,7 @@ namespace Engine
         this->scale += scale;
         hasTransformChanged = true;
 
-        SetGlobalsNeedToBeUpdated();
+        SetIsGlobalScaleOutdated();
     }
 
     glm::quat Transform::GetRotation()
@@ -62,7 +62,7 @@ namespace Engine
         this->rotation = rotation;
         hasTransformChanged = true;
 
-        SetGlobalsNeedToBeUpdated();
+        SetIsGlobalRotationOutdated();
     }
 
     const glm::mat4x4 &Transform::GetMatrix()
@@ -96,7 +96,7 @@ namespace Engine
         if(parent != nullptr)
             parent->children.push_back(this);
 
-        SetGlobalsNeedToBeUpdated();
+        SetIsGlobalTranslationOutdated();
     }
 
     Transform *Transform::GetParent()
@@ -137,9 +137,18 @@ namespace Engine
 
     glm::vec3 Transform::GetGlobalTranslation()
     {
-        if(globalsNeedToBeUpdated)
+        if(isGlobalTranslationOutdated)
         {
-            UpdateGlobals();
+            if(parent == nullptr)
+            {
+                globalTranslation = translation;
+            }
+            else
+            {
+                glm::mat4 parent = this->parent->GetGlobalMatrix();
+                globalTranslation = parent * glm::vec4(translation, 1);
+            }
+            isGlobalTranslationOutdated = false;
         }
 
         return globalTranslation;
@@ -148,9 +157,18 @@ namespace Engine
 
     glm::vec3 Transform::GetGlobalScale()
     {
-        if(globalsNeedToBeUpdated)
+        if(isGlobalScaleOutdated)
         {
-            UpdateGlobals();
+            if(parent == nullptr)
+            {
+                globalScale = scale;
+            }
+            else
+            {
+                glm::vec3 parent = this->parent->GetGlobalScale();
+                globalScale = glm::vec3(scale.x * parent.x, scale.y * parent.y, scale.z * parent.z);
+            }
+            isGlobalScaleOutdated = false;
         }
 
         return globalScale;
@@ -158,9 +176,19 @@ namespace Engine
 
     glm::quat Transform::GetGlobalRotation()
     {
-        if(globalsNeedToBeUpdated)
+        if(isGlobalRotationOutdated)
         {
-            UpdateGlobals();
+            if(parent == nullptr)
+            {
+                globalRotation = rotation;
+            }
+            else
+            {
+                glm::quat parent = this->parent->GetGlobalRotation();
+                globalRotation = parent * rotation;
+
+            }
+            isGlobalRotationOutdated = false;
         }
 
         return globalRotation;
@@ -168,54 +196,46 @@ namespace Engine
 
     const glm::mat4x4 &Transform::GetGlobalMatrix()
     {
-        if(globalsNeedToBeUpdated)
+        if(isGlobalMatrixOutdated)
         {
-            UpdateGlobals();
+            glm::mat4 scale = glm::scale(glm::mat4(1.0f), GetGlobalScale());
+            glm::mat4 rotation = glm::toMat4(GetGlobalRotation());
+            glm::mat4 translation = glm::translate(glm::mat4(1.0f), GetGlobalTranslation());
+            globalMatrix = translation * rotation * scale;
+
+            isGlobalMatrixOutdated = false;
         }
 
         return globalMatrix;
     }
 
-    void Transform::UpdateGlobals()
+    void Transform::SetIsGlobalTranslationOutdated()
     {
-        if(parent == nullptr)
-        {
-            globalTranslation = GetTranslation();
-            globalRotation = GetRotation();
-            globalScale = GetScale();
-            globalMatrix = GetMatrix();
-
-            globalsNeedToBeUpdated = false;
-            return;
-        }
-
-        const glm::mat4& parentMatrix = parent->GetGlobalMatrix();
-
-        glm::mat4 globalTranslationMatrix = parentMatrix * glm::translate(glm::identity<glm::mat4>(), GetTranslation());
-        globalTranslation = glm::vec3(globalTranslationMatrix[3]);
-
-        glm::mat4 globalRotationMatrix = parentMatrix * glm::mat4_cast(GetRotation());
-        globalRotation = glm::toQuat(globalRotationMatrix);
-
-        glm::mat4 globalScaleMatrix = parentMatrix * glm::scale(glm::identity<glm::mat4>(), GetScale());
-        globalScale = glm::vec3 (globalScaleMatrix[0][0],globalScaleMatrix[1][1],globalScaleMatrix[2][2]);
-
-
-        glm::mat4 scale = glm::scale(glm::mat4(1.0f), globalScale);
-        glm::mat4 rotation = glm::toMat4(this->rotation);
-        glm::mat4 translation = glm::translate(glm::mat4(1.0f), globalTranslation);
-        globalMatrix = translation * rotation * scale;
-
-
-        globalsNeedToBeUpdated = false;
-    }
-
-    void Transform::SetGlobalsNeedToBeUpdated()
-    {
-        globalsNeedToBeUpdated = true;
+        isGlobalTranslationOutdated = true;
+        isGlobalMatrixOutdated = true;
         for(Transform* child : children)
         {
-            child->SetGlobalsNeedToBeUpdated();
+            child->SetIsGlobalTranslationOutdated();
+        }
+    }
+
+    void Transform::SetIsGlobalScaleOutdated()
+    {
+        isGlobalScaleOutdated = true;
+        isGlobalMatrixOutdated = true;
+        for(Transform* child : children)
+        {
+            child->SetIsGlobalScaleOutdated();
+        }
+    }
+
+    void Transform::SetIsGlobalRotationOutdated()
+    {
+        isGlobalRotationOutdated = true;
+        isGlobalMatrixOutdated = true;
+        for(Transform* child : children)
+        {
+            child->SetIsGlobalRotationOutdated();
         }
     }
 } // Engine

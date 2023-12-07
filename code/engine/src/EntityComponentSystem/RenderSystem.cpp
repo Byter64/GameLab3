@@ -22,17 +22,14 @@ namespace Engine
         {
             Transform& transform = ecsSystem.GetComponent<Transform>(entity);
             if(transform.GetParent() != nullptr) continue;
-
-            std::stack<glm::mat4x4> matrixStack;
-            matrixStack.push(glm::mat4x4(1));
-            Render(entity, matrixStack);
+            
+            Render(entity);
         }
     }
 
-    void RenderSystem::Render(Entity entity, std::stack<glm::mat4x4>& matrixStack)
+    void RenderSystem::Render(Entity entity)
     {
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
-        matrixStack.push(matrixStack.top() * transform.GetMatrix());
 
         if(!ecsSystem.HasComponent<MeshRenderer>(entity)) goto Recursion;
 
@@ -159,10 +156,9 @@ Recursion:
         for(Transform* childTransform : children)
         {
             Entity childEntity = ecsSystem.GetEntity((*childTransform));
-            Render(childEntity, matrixStack);
+            Render(childEntity);
         }
 
-        matrixStack.pop();
     }
 
     RenderSystem::RenderSystem()

@@ -42,7 +42,7 @@ namespace Engine
         void LoadIndexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadVAO(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
         void LoadTexture(const tinygltf::Texture &texture, const tinygltf::Model &model, int sourceFormat, int targetFormat);
-        void Render(Entity entity, std::stack<glm::mat4x4>& matrixStack);
+        void Render(Entity entity);
         void CreateShaderProgram(Shader& shader);
 
         static unsigned int GetVertexAttributeIndex(const std::string& name);

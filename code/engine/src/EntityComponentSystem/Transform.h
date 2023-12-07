@@ -14,19 +14,23 @@ namespace Engine
         glm::mat4 matrix = glm::mat4(1);
         glm::vec3 translation = glm::vec3(0, 0, 0);
         glm::vec3 scale = glm::vec3(1, 1, 1);
-        glm::quat rotation = glm::quat(0, 0, 0, 0);
+        glm::quat rotation = glm::identity<glm::quat>();
 
-        bool globalsNeedToBeUpdated = true;
+        bool isGlobalTranslationOutdated = true;
+        bool isGlobalScaleOutdated = true;
+        bool isGlobalRotationOutdated = true;
+        bool isGlobalMatrixOutdated = true;
         glm::mat4 globalMatrix = glm::mat4(1);
         glm::vec3 globalTranslation = glm::vec3(0, 0, 0);
         glm::vec3 globalScale = glm::vec3(1, 1, 1);
-        glm::quat globalRotation = glm::quat(0, 0, 0, 0);
+        glm::quat globalRotation = glm::identity<glm::quat>();
 
         Transform* parent = nullptr;
         std::list<Transform*> children;
 
-        void UpdateGlobals();
-        void SetGlobalsNeedToBeUpdated();
+        void SetIsGlobalTranslationOutdated();
+        void SetIsGlobalScaleOutdated();
+        void SetIsGlobalRotationOutdated();
 
     public:
         Transform() = default;
