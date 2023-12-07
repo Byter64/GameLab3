@@ -1,6 +1,6 @@
-#include "GameEventSystem.h"
-#include "ECSSystem.h"
-#include "GameEvents.h"
+#include "../../include/GameEventSystem.h"
+#include "../../include/ECSSystem.h"
+#include "../../include/GameEvents.h"
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine

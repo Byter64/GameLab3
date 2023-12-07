@@ -1,15 +1,15 @@
-#include "RenderSystem.h"
+#include "../../include/RenderSystem.h"
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <array>
 #include <stdexcept>
-#include "Entity.h"
-#include "ECSSystem.h"
-#include "MeshRenderer.h"
-#include "Transform.h"
-#include "../FileSystem.h"
-#include "Name.h"
+#include "../../include/Entity.h"
+#include "../../include/ECSSystem.h"
+#include "../../include/MeshRenderer.h"
+#include "../../include/Transform.h"
+#include "FileSystem.h"
+#include "../../include/Name.h"
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine

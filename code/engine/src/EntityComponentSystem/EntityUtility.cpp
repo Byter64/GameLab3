@@ -1,8 +1,8 @@
-#include "EntityUtility.h"
-#include "Name.h"
-#include "Transform.h"
-#include "ECSSystem.h"
-#include "RenderSystem.h"
+#include "../../include/EntityUtility.h"
+#include "../../include/Name.h"
+#include "../../include/Transform.h"
+#include "../../include/ECSSystem.h"
+#include "../../include/RenderSystem.h"
 //For whatever reason, these defines are not allowed to be written before glad is included (glad is also included in Engine.h)
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION

@@ -7,5 +7,6 @@ add_subdirectory(extern/glad)
 add_subdirectory(extern/glfw)
 add_subdirectory(extern/glm)
 add_subdirectory(extern/tinygltf)
+add_subdirectory(engine)
 
 add_subdirectory(game)

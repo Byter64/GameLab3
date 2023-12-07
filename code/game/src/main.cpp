@@ -5,8 +5,8 @@
 #include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include "../../engine/src/Engine.h"
-#include "GameObject.h"
+#include "Engine.h"
+#include "../include/GameObject.h"
 
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps

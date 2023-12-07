@@ -1,6 +1,6 @@
 #include "InputActionVec2.h"
 #include "glm/glm.hpp"
-#include "../InputSystem.h"
+#include "InputSystem.h"
 #include <algorithm>
 
 namespace Engine

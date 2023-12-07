@@ -1,6 +1,6 @@
 #pragma once
 #include "GLFW/glfw3.h"
-#include "InputActions/InputAction.h"
+#include "InputAction.h"
 #include <list>
 #include <memory>
 #include <map>

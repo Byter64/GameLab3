@@ -1,6 +1,6 @@
 #include "GLFW/glfw3.h"
 #include "InputActionButton.h"
-#include "../InputSystem.h"
+#include "InputSystem.h"
 
 namespace Engine
 {

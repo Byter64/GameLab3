@@ -45,6 +45,11 @@ C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/ext
 C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/extern/tinygltf/CMakeFiles/list_install_components.dir
 C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/extern/tinygltf/CMakeFiles/install.dir
 C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/extern/tinygltf/CMakeFiles/install/local.dir
+C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/engine/CMakeFiles/edit_cache.dir
+C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/engine/CMakeFiles/rebuild_cache.dir
+C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/engine/CMakeFiles/list_install_components.dir
+C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/engine/CMakeFiles/install.dir
+C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/engine/CMakeFiles/install/local.dir
 C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/game/CMakeFiles/Game.dir
 C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/game/CMakeFiles/edit_cache.dir
 C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/game/CMakeFiles/rebuild_cache.dir

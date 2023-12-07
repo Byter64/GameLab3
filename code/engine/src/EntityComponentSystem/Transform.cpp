@@ -1,7 +1,7 @@
-#include "Transform.h"
+#include "../../include/Transform.h"
 #include "glm/gtx/quaternion.hpp"
 #include <iostream>
-#include "../Engine.h"
+#include "Engine.h"
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
