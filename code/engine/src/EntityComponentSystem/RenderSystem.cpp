@@ -21,8 +21,7 @@ namespace Engine
         for(Entity entity : entities)
         {
             Transform& transform = ecsSystem.GetComponent<Transform>(entity);
-            if(transform.GetParent() != nullptr) continue;
-            
+
             Render(entity);
         }
     }
@@ -30,10 +29,8 @@ namespace Engine
     void RenderSystem::Render(Entity entity)
     {
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
-
-        if(!ecsSystem.HasComponent<MeshRenderer>(entity)) goto Recursion;
-
         MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
+
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
         {
             const tinygltf::Primitive &primitive = meshRenderer.mesh->primitives[i];
@@ -149,16 +146,6 @@ namespace Engine
                 glDrawArrays(primitive.mode, 0, data.vertexCount);
             }
         }
-
-Recursion:
-
-        auto children = transform.GetChildren();
-        for(Transform* childTransform : children)
-        {
-            Entity childEntity = ecsSystem.GetEntity((*childTransform));
-            Render(childEntity);
-        }
-
     }
 
     RenderSystem::RenderSystem()

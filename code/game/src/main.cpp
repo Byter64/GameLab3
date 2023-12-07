@@ -97,6 +97,7 @@ void InitializeECS()
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
     renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+    renderSignature.set(ecsSystem.GetComponentType<Engine::MeshRenderer>());
     ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
 
     gameEventSystem = ecsSystem.RegisterSystem<Engine::GameEventSystem>();
