@@ -3,7 +3,7 @@
 #include "System.h"
 #include "Entity.h"
 #include <memory>
-#include <assert.h>
+#include <stdexcept>
 
 namespace Engine
 {
@@ -19,7 +19,13 @@ namespace Engine
         {
             const char* typeName = typeid(T).name();
 
-            assert(systems.find(typeName) == systems.end() && "System has already been registered");
+            if(systems.find(typeName) != systems.end())
+            {
+                std::string errorMessage{"System \""};
+                errorMessage += typeName;
+                errorMessage += "\" has already been registered";
+                throw std::runtime_error(errorMessage);
+            }
 
             auto system = std::make_shared<T>();
             systems.insert({typeName, system});
@@ -31,7 +37,13 @@ namespace Engine
         {
             const char* typeName = typeid(T).name();
 
-            assert(systems.find(typeName) != systems.end() && "System has not been registered yet");
+            if(systems.find(typeName) == systems.end())
+            {
+                std::string message{"System \""};
+                message += typeName;
+                message += "\" has not been registered yet";
+                throw std::runtime_error(message);
+            }
 
             signatures.insert({typeName, signature});
         }

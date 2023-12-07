@@ -1,5 +1,6 @@
 #include "GameObject.h"
-#include "../../engine/src/EntityComponentSystem/GameEvents.h"
+#include <stdexcept>
+#include <string>
 
 extern Engine::ECSSystem ecsSystem;
 
@@ -43,7 +44,13 @@ unsigned int GameObject::GetChildCount()
 
 std::shared_ptr<GameObject> GameObject::GetChild(unsigned int index)
 {
-    assert(index < children.size() && "Index was out of bounds");
+    if(index >= children.size())
+    {
+        std::string message{"Index "};
+        message += std::to_string(index);
+        message += "was out of bounds";
+        throw std::runtime_error(message);
+    }
     return children[index];
 }
 

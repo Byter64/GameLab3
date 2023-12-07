@@ -1,6 +1,7 @@
 #pragma once
 #include <unordered_map>
 #include <memory>
+#include <stdexcept>
 #include "ComponentType.h"
 #include "IComponentArray.h"
 #include "ComponentArray.h"
@@ -21,7 +22,13 @@ namespace Engine
         {
             const char* typeName = typeid(T).name();
 
-            assert(componentTypes.find(typeName) != componentTypes.end() && "This component has not been registered yet");
+            if(componentTypes.find(typeName) == componentTypes.end())
+            {
+                std::string message{"Component \""};
+                message += typeName;
+                message += "\" has not been registered yet";
+                throw std::runtime_error(message);
+            }
 
             return std::static_pointer_cast<ComponentArray<T>>(componentArrays[typeName]);
         }
@@ -32,7 +39,13 @@ namespace Engine
         {
             const char* typeName = typeid(T).name();
 
-            assert(componentTypes.find(typeName) == componentTypes.end() && "This component has already been registered");
+            if(componentTypes.find(typeName) != componentTypes.end())
+            {
+                std::string message{"Component \""};
+                message += typeName;
+                message += "\" has already been registered";
+                throw std::runtime_error(message);
+            }
 
             componentArrays.insert({typeName, std::make_shared<ComponentArray<T>>()});
 
@@ -45,7 +58,13 @@ namespace Engine
         {
             const char* typeName = typeid(T).name();
 
-            assert(componentTypes.find(typeName) != componentTypes.end() && "This component has not been registered yet");
+            if(componentTypes.find(typeName) == componentTypes.end())
+            {
+                std::string message{"Component \""};
+                message += typeName;
+                message += "\" has not been registered yet";
+                throw std::runtime_error(message);
+            }
 
             return componentTypes[typeName];
         }

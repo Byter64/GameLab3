@@ -3,13 +3,14 @@
 #include <fstream>
 #include <sstream>
 #include <array>
+#include <stdexcept>
 #include "Entity.h"
 #include "ECSSystem.h"
 #include "MeshRenderer.h"
 #include "Transform.h"
 #include "../FileSystem.h"
-
 #include "Name.h"
+
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
@@ -140,9 +141,6 @@ namespace Engine
             }
             else
             {
-                //Den Fall abfangen, dass ein Primitiv nicht indiziert ist
-                assert(false && "Tadaa, hier ist ein nicht indiziertes Modell. Jetzt musst du leider doch nichtindizierte Modelle unterstützen ;-)");
-
                 glDrawArrays(primitive.mode, 0, data.vertexCount);
             }
         }
@@ -441,7 +439,13 @@ namespace Engine
 
             while(file->c_str()[position] != '<' && position < file->length())
                 position++;
-            assert(position < file->length() && "Syntax error: idk which line or which file, but you wrote \"#include\" without <filename>");
+            if(position >= file->length())
+            {
+                std::string message{"Syntax error in: "};
+                message += filePath.string();
+                message += "\nidk which line or which file, but you wrote \"#include\" without <filename>";
+                throw std::runtime_error(message);
+            }
 
             //position now points to '<'
             position++;
@@ -450,7 +454,13 @@ namespace Engine
             unsigned long long int lastPosOfName = position;
             while(file->c_str()[lastPosOfName] != '>' && lastPosOfName < file->length())
                 lastPosOfName++;
-            assert(lastPosOfName < file->length() && "Syntax error: idk which line or which file, but you wrote \"#include <filename\" without \'>\'");
+            if(position >= file->length())
+            {
+                std::string message{"Syntax error in: "};
+                message += filePath.string();
+                message += "\nidk which line or which file, but you wrote \"#include <filename\" without \'>\'";
+                throw std::runtime_error(message);
+            }
 
             //lastPosOfName now points to '>'
             unsigned int fileNameLength = lastPosOfName - position;
@@ -459,7 +469,13 @@ namespace Engine
             std::string fileName = file->substr(position, fileNameLength);
             std::filesystem::path includedFilePath = filePath.parent_path() / fileName;
             std::ifstream fileStream(includedFilePath);
-            assert(fileStream && "File not found");
+            if(!fileStream)
+            {
+                std::string message{ "Include statement, File not found: "};
+                message += includedFilePath.string();
+                throw std::runtime_error(message);
+            }
+
             std::ostringstream stringStream;
             stringStream << fileStream.rdbuf();
             file->replace(startOfInclude, includeStatementLength, stringStream.str());

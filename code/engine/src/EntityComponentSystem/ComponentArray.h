@@ -2,7 +2,8 @@
 #include "IComponentArray.h"
 #include <array>
 #include <unordered_map>
-#include <cassert>
+#include <stdexcept>
+#include <string>
 #include "Entity.h"
 #include <iostream>
 
@@ -17,10 +18,18 @@ namespace Engine
         std::unordered_map<size_t, Entity> indexToEntity;
 
     public:
-        //Component data is undefined!!!
+        //Component data is undefined, when using this AddComponent overload!!!
         T& AddComponent(Entity entity)
         {
-            assert(entityToIndex.find(entity) == entityToIndex.end() && "This type of component has already been added to this entity");
+            if(entityToIndex.find(entity) != entityToIndex.end())
+            {
+                std::string message{"A component of type \""};
+                message += typeid(T).name();
+                message += "has already been added to entity ";
+                message += std::to_string(entity);
+
+                throw std::runtime_error(message);
+            }
 
             size_t index = size;
             entityToIndex[entity] = index;
@@ -32,8 +41,15 @@ namespace Engine
 
         void AddComponent(Entity entity, T component)
         {
-            assert(entityToIndex.find(entity) == entityToIndex.end() && "This type of component has already been added to this entity");
+            if(entityToIndex.find(entity) != entityToIndex.end())
+            {
+                std::string message{"A component of type \""};
+                message += typeid(T).name();
+                message += "has already been added to entity ";
+                message += std::to_string(entity);
 
+                throw std::runtime_error(message);
+            }
             size_t index = size;
             entityToIndex[entity] = index;
             indexToEntity[index] = entity;
@@ -43,8 +59,16 @@ namespace Engine
 
         void RemoveComponent(Entity entity)
         {
-            assert(entityToIndex.find(entity) != entityToIndex.end() && "This entity does not have a component of this type");
+            if(entityToIndex.find(entity) == entityToIndex.end())
+            {
+                std::string message{"The entity "};
+                message += std::to_string(entity);
+                message += " does not have a component of type \"";
+                message += typeid(T).name();
+                message += "\"";
 
+                throw std::runtime_error(message);
+            }
             size_t entityIndex = entityToIndex[entity];
             size_t lastIndex = size - 1;
             components[entityIndex] = components[lastIndex];
@@ -61,7 +85,16 @@ namespace Engine
 
         T& GetComponent(Entity entity)
         {
-            assert(entityToIndex.find(entity) != entityToIndex.end() && "This entity does not have such a component");
+            if(entityToIndex.find(entity) == entityToIndex.end())
+            {
+                std::string message{"The entity "};
+                message += std::to_string(entity);
+                message += " does not have a component of type \"";
+                message += typeid(T).name();
+                message += "\"";
+
+                throw std::runtime_error(message);
+            }
 
             return components[entityToIndex[entity]];
         }
