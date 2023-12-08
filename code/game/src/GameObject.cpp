@@ -144,11 +144,11 @@ GameObject* GameObject::CreateGameObjectFromGLTF(std::filesystem::path filePath)
 {
     std::vector<Engine::Entity> entities = Engine::ImportGLTF(filePath);
 
-    /*if(entities.size() == 1)
+    if(entities.size() == 1)
     {
         GameObject* child = new GameObject(entities[0]);
         return child;
-    }*/
+    }
 
     GameObject* gameObject = new GameObject(filePath.stem().string());
     for(Engine::Entity entity : entities)
