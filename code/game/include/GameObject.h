@@ -19,8 +19,10 @@ class GameObject
 
     ~GameObject();
 public:
+    GameObject(GameObject& gameObject);
     explicit GameObject(std::string name);
     explicit GameObject(Engine::Entity entity);
+    static GameObject* CreateGameObjectFromGLTF(std::filesystem::path filePath);
 
     unsigned int GetChildCount();
     GameObject* GetChild(unsigned int index);
