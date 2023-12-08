@@ -59,6 +59,7 @@ namespace Engine
 
         const std::list<Transform*>& GetChildren();
         std::string ToString();
+        std::string MatrixToString();
     };
 
 } // Engine

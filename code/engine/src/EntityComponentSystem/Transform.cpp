@@ -20,6 +20,8 @@ namespace Engine
         this->translation = translation;
         hasTransformChanged = true;
 
+        if(ecsSystem.HasComponent<Name>(ecsSystem.GetEntity(*this)))
+            std::cout << ecsSystem.GetComponent<Name>(ecsSystem.GetEntity(*this)) << " was set to: " << translation.x << " " << translation.y << "\n";
         SetIsGlobalTranslationOutdated();
     }
 
@@ -109,7 +111,7 @@ namespace Engine
         return children;
     }
 
-    std::string Transform::ToString()
+    std::string Transform::MatrixToString()
     {
         const glm::mat4x4 &matrix = GetMatrix();
         std::string result = std::to_string(matrix[0][0]) + ",\t ";
@@ -237,5 +239,68 @@ namespace Engine
         {
             child->SetIsGlobalRotationOutdated();
         }
+    }
+
+    std::string Transform::ToString()
+    {
+        std::string message{"LOCAL\n"};
+        message += "\tPosition: (";
+        message += std::to_string(translation.x);
+        message += ", ";
+        message += std::to_string(translation.y);
+        message += ", ";
+        message += std::to_string(translation.z);
+        message += ")\n";
+
+        message += "\tScale: (";
+        message += std::to_string(scale.x);
+        message += ", ";
+        message += std::to_string(scale.y);
+        message += ", ";
+        message += std::to_string(scale.z);
+        message += ")\n";
+
+        message += "\tRotation: (";
+        message += std::to_string(rotation.x);
+        message += ", ";
+        message += std::to_string(rotation.y);
+        message += ", ";
+        message += std::to_string(rotation.z);
+        message += ", ";
+        message += std::to_string(rotation.w);
+        message += ")\n";
+
+        glm::vec3 globalTranslation = GetGlobalTranslation();
+        message += "\nGLOBAL\n";
+        message += "\tPosition: (";
+        message += std::to_string(globalTranslation.x);
+        message += ", ";
+        message += std::to_string(globalTranslation.y);
+        message += ", ";
+        message += std::to_string(globalTranslation.z);
+        message += ")\n";
+
+        glm::vec3 globalScale = GetGlobalScale();
+        message += "\tScale: (";
+        message += std::to_string(globalScale.x);
+        message += ", ";
+        message += std::to_string(globalScale.y);
+        message += ", ";
+        message += std::to_string(globalScale.z);
+        message += ")\n";
+
+        glm::quat globalRotation = GetGlobalRotation();
+        message += "\tRotation: (";
+        message += std::to_string(globalRotation.x);
+        message += ", ";
+        message += std::to_string(globalRotation.y);
+        message += ", ";
+        message += std::to_string(globalRotation.z);
+        message += ", ";
+        message += std::to_string(globalRotation.w);
+        message += ")\n";
+
+
+        return message;
     }
 } // Engine
