@@ -23,7 +23,6 @@ set(SOURCE_FILES src/main.cpp
         ../engine/include/ECSSystem.h
         ../engine/src/EntityComponentSystem/Transform.cpp
         ../engine/include/Transform.h
-        ../engine/src/EntityComponentSystem/MeshRenderer.cpp
         ../engine/include/MeshRenderer.h
         ../engine/src/EntityComponentSystem/RenderSystem.cpp
         ../engine/include/RenderSystem.h
@@ -43,6 +42,8 @@ set(SOURCE_FILES src/main.cpp
         ../engine/include/GameEventSystem.h
         src/GameObjectManager.cpp
         include/GameObjectManager.h
+        src/Miscellaneous.cpp
+        include/Miscellaneous.h
 )
 
 set(EXE_FILE Game)

@@ -8,6 +8,7 @@
 #include "Engine.h"
 #include "GameObjectManager.h"
 #include "GameObject.h"
+#include "Miscellaneous.h"
 
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
@@ -31,21 +32,27 @@ int main()
 {
     if(SetupWindow() == -1) return -1;
     InitializeECS();
+    
+    GameObject* wallPrefab = GameObject::CreateGameObjectFromGLTF("C:\\Users\\Yanni\\Uni\\Game Lab\\Repositories\\02-gl3-stamm\\code\\game\\Assets\\Graphics\\Models\\Wall\\Wall.glb");
 
-    LoadDemo();
+    GameObject* dungeon = Miscellaneous::CreateDungeonFromImage(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab, -20);
+    dungeon->GetComponent<Engine::Transform>().AddTranslation(glm::vec3(0, 0,0));
+
+    wallPrefab->Destroy();
 
     glfwSetTime(1.0/60);
     float passedTimeInSeconds = 1.0f/60;
-    renderSystem->camera.SetTranslation(glm::vec3(0,-12,-15));
-
+    renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
+    renderSystem->camera.SetScale(glm::vec3(1));
     while (!glfwWindowShouldClose(window)) {
         auto time1 = std::chrono::high_resolution_clock::now();
 
 
+        glfwPollEvents();
         gameEventSystem->InvokeUpdate(passedTimeInSeconds);
+
         renderSystem->Render();
         glfwSwapBuffers(window);
-        glfwPollEvents();
         gameObjectManager.DeletePurgatory();
 
         auto time2 = std::chrono::high_resolution_clock::now();
@@ -115,8 +122,9 @@ void UpdateTest(float time)
     myTime += time;
     auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
     auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-    krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
-    krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
+    //krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
+    renderSystem->camera.AddTranslation(-movement * time);
+    //krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
     std::cout << time << " s passed" << "\n";
 }
 
@@ -166,7 +174,7 @@ void LoadDemo()
     }
     krawatterich = new GameObject(Engine::FindChild(root, "Krawatterich"));
     krawatterich->SetUpdateMethod(UpdateTest);
-
+    krawatterich->GetComponent<Engine::Transform>().SetTranslation(glm::vec3(-10,0,-5));
 
     GLuint vertexColorshader = renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Default/FS_Default_VertexColor.frag", GL_FRAGMENT_SHADER);
     Engine::Entity vertexPaintedSphere1 = Engine::FindChild(root, "VertexPaintedSphere");
