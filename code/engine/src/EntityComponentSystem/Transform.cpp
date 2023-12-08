@@ -41,6 +41,7 @@ namespace Engine
         this->scale = scale;
         hasTransformChanged = true;
 
+        SetIsGlobalTranslationOutdated();
         SetIsGlobalScaleOutdated();
     }
 
@@ -49,6 +50,7 @@ namespace Engine
         this->scale += scale;
         hasTransformChanged = true;
 
+        SetIsGlobalTranslationOutdated();
         SetIsGlobalScaleOutdated();
     }
 
@@ -62,6 +64,7 @@ namespace Engine
         this->rotation = rotation;
         hasTransformChanged = true;
 
+        SetIsGlobalTranslationOutdated();
         SetIsGlobalRotationOutdated();
     }
 
