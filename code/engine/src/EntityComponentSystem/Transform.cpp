@@ -19,9 +19,7 @@ namespace Engine
     {
         this->translation = translation;
         hasTransformChanged = true;
-
-        if(ecsSystem.HasComponent<Name>(ecsSystem.GetEntity(*this)))
-            std::cout << ecsSystem.GetComponent<Name>(ecsSystem.GetEntity(*this)) << " was set to: " << translation.x << " " << translation.y << "\n";
+        
         SetIsGlobalTranslationOutdated();
     }
 
