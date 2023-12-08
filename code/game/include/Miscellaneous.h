@@ -7,5 +7,5 @@ class Miscellaneous
 private:
 
 public:
-    static GameObject* CreateDungeonFromImage(std::filesystem::path image, GameObject* wallPrefab, float dungeonrotation);
+
 };

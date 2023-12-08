@@ -44,6 +44,8 @@ set(SOURCE_FILES src/main.cpp
         include/GameObjectManager.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
+        src/Dungeon.cpp
+        include/Dungeon.h
 )
 
 set(EXE_FILE Game)

@@ -8,7 +8,7 @@
 #include "Engine.h"
 #include "GameObjectManager.h"
 #include "GameObject.h"
-#include "Miscellaneous.h"
+#include "Dungeon.h"
 
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
@@ -32,11 +32,11 @@ int main()
 {
     if(SetupWindow() == -1) return -1;
     InitializeECS();
-    
+
     GameObject* wallPrefab = GameObject::CreateGameObjectFromGLTF("C:\\Users\\Yanni\\Uni\\Game Lab\\Repositories\\02-gl3-stamm\\code\\game\\Assets\\Graphics\\Models\\Wall\\Wall.glb");
 
-    GameObject* dungeon = Miscellaneous::CreateDungeonFromImage(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab, -20);
-    dungeon->GetComponent<Engine::Transform>().AddTranslation(glm::vec3(0, 0,0));
+    Dungeon* dungeon = new Dungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab);
+    dungeon->gameObject->GetComponent<Engine::Transform>().AddTranslation(glm::vec3(0, 0,0));
 
     wallPrefab->Destroy();
 
