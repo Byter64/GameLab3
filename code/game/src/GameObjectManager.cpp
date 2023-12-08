@@ -7,8 +7,10 @@ void GameObjectManager::AddToPurgatory(GameObject *gameObject)
 
 void GameObjectManager::DeletePurgatory()
 {
-    for(GameObject* gameObject : purgatory)
+    while(!purgatory.empty())
     {
+        GameObject* gameObject = *purgatory.begin();
+        purgatory.pop_front();
         delete gameObject;
     }
 }
