@@ -6,7 +6,7 @@
 class Dungeon
 {
 public:
-    inline static const float dungeonRotation = -20;
+    inline static const float dungeonRotation = 0;
 
     GameObject* gameObject;
     std::vector<std::vector<bool>> wallMap;

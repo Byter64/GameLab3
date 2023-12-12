@@ -50,6 +50,10 @@ GameObject::GameObject(GameObject &gameObject)
     if(ecsSystem.HasComponent<Engine::MeshRenderer>(gameObject.entity))
         ecsSystem.AddComponent<Engine::MeshRenderer>(entity, ecsSystem.GetComponent<Engine::MeshRenderer>(gameObject.entity));
 
+    if(ecsSystem.HasComponent<Engine::BoxCollider>(gameObject.entity))
+        ecsSystem.AddComponent<Engine::BoxCollider>(entity, ecsSystem.GetComponent<Engine::BoxCollider>(gameObject.entity));
+
+
     for (GameObject *originalChild: gameObject.children)
     {
         GameObject *child = new GameObject(*originalChild);

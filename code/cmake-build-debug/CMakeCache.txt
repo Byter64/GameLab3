@@ -317,6 +317,9 @@ GLFW_SOURCE_DIR:STATIC=C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/cod
 //Force use of high-performance GPU on hybrid systems
 GLFW_USE_HYBRID_HPG:BOOL=OFF
 
+//The directory containing a CMake configuration file for ReactPhysics3D.
+ReactPhysics3D_DIR:PATH=C:/Program Files (x86)/ReactPhysics3D/lib/cmake/ReactPhysics3D
+
 //Build glTF builder example
 TINYGLTF_BUILD_BUILDER_EXAMPLE:BOOL=OFF
 

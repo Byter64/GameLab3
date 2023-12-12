@@ -46,6 +46,10 @@ set(SOURCE_FILES src/main.cpp
         include/Miscellaneous.h
         src/Dungeon.cpp
         include/Dungeon.h
+        ../engine/src/CollisionSystem.cpp
+        ../engine/include/CollisionSystem.h
+        ../engine/include/BoxCollider.h
+        ../engine/src/EntityComponentSystem/BoxCollider.cpp
 )
 
 set(EXE_FILE Game)

@@ -18,6 +18,7 @@ Engine::InputSystem* inputSystem;
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::GameEventSystem> gameEventSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GameObjectManager gameObjectManager;
 GLFWwindow *window;
 GameObject *krawatterich;
@@ -33,7 +34,12 @@ int main()
     if(SetupWindow() == -1) return -1;
     InitializeECS();
 
+    LoadDemo();
     GameObject* wallPrefab = GameObject::CreateGameObjectFromGLTF("C:\\Users\\Yanni\\Uni\\Game Lab\\Repositories\\02-gl3-stamm\\code\\game\\Assets\\Graphics\\Models\\Wall\\Wall.glb");
+    Engine::BoxCollider& wallCollider = wallPrefab->AddComponent<Engine::BoxCollider>();
+    wallCollider.size = glm::vec3(1);
+    wallCollider.position = glm::vec3 (0);
+    wallCollider.isStatic = true;
 
     Dungeon* dungeon = new Dungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab);
     dungeon->gameObject->GetComponent<Engine::Transform>().AddTranslation(glm::vec3(0, 0,0));
@@ -50,6 +56,7 @@ int main()
 
         glfwPollEvents();
         gameEventSystem->InvokeUpdate(passedTimeInSeconds);
+        collisionSystem->CheckCollisions();
 
         renderSystem->Render();
         glfwSwapBuffers(window);
@@ -102,6 +109,7 @@ void InitializeECS()
     ecsSystem.RegisterComponent<Engine::Transform>();
     ecsSystem.RegisterComponent<Engine::MeshRenderer>();
     ecsSystem.RegisterComponent<Engine::GameEvents>();
+    ecsSystem.RegisterComponent<Engine::BoxCollider>();
 
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
@@ -113,6 +121,12 @@ void InitializeECS()
     Engine::Signature gameEventSignature;
     gameEventSignature.set(ecsSystem.GetComponentType<Engine::GameEvents>());
     ecsSystem.SetSystemSignature<Engine::GameEventSystem>(gameEventSignature);
+
+    collisionSystem = ecsSystem.RegisterSystem<Engine::CollisionSystem>();
+    Engine::Signature collisionSignature;
+    collisionSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+    collisionSignature.set(ecsSystem.GetComponentType<Engine::BoxCollider>());
+    ecsSystem.SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
 }
 
 float myTime = 0;
@@ -122,13 +136,24 @@ void UpdateTest(float time)
     myTime += time;
     auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
     auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-    //krawatterich->GetComponent<Engine::Transform>().SetRotation(rot);
-    renderSystem->camera.AddTranslation(-movement * time);
-    //krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
-    std::cout << time << " s passed" << "\n";
+    krawatterich->GetComponent<Engine::Transform>().AddTranslation(movement * time);
 }
 
-
+void Enter(Engine::BoxCollider& coll1, Engine::BoxCollider& coll2)
+{
+    std::cout << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll1)) << " entered collision with "
+              << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll2)) << "\n";
+}
+void Stay(Engine::BoxCollider& coll1, Engine::BoxCollider& coll2)
+{
+    std::cout << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll1)) << " stays in collision with "
+              << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll2)) << "\n";
+}
+void Exit(Engine::BoxCollider& coll1, Engine::BoxCollider& coll2)
+{
+    std::cout << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll1)) << " exited collision with "
+              << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll2)) << "\n";
+}
 
 void MovementXY(glm::vec2 input)
 {
@@ -174,7 +199,10 @@ void LoadDemo()
     }
     krawatterich = new GameObject(Engine::FindChild(root, "Krawatterich"));
     krawatterich->SetUpdateMethod(UpdateTest);
-    krawatterich->GetComponent<Engine::Transform>().SetTranslation(glm::vec3(-10,0,-5));
+    Engine::BoxCollider& boxCollider = krawatterich->AddComponent<Engine::BoxCollider>();
+    boxCollider.onCollisionStay = Stay;
+    boxCollider.onCollisionEnter = Enter;
+    boxCollider.onCollisionExit = Exit;
 
     GLuint vertexColorshader = renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Default/FS_Default_VertexColor.frag", GL_FRAGMENT_SHADER);
     Engine::Entity vertexPaintedSphere1 = Engine::FindChild(root, "VertexPaintedSphere");
