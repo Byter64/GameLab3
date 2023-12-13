@@ -34,8 +34,8 @@ int main()
     if(SetupWindow() == -1) return -1;
     InitializeECS();
 
-    LoadDemo();
-    GameObject* wallPrefab = GameObject::CreateGameObjectFromGLTF("C:\\Users\\Yanni\\Uni\\Game Lab\\Repositories\\02-gl3-stamm\\code\\game\\Assets\\Graphics\\Models\\Wall\\Wall.glb");
+    //LoadDemo();
+    GameObject* wallPrefab = GameObject::CreateGameObjectFromGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb");
     Engine::BoxCollider& wallCollider = wallPrefab->AddComponent<Engine::BoxCollider>();
     wallCollider.size = glm::vec3(1);
     wallCollider.position = glm::vec3 (0);
