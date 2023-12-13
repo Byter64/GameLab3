@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.18)
 
-set(SOURCE_FILES src/main.cpp
+set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/InputSystem.cpp
         ../engine/include/InputSystem.h
         ../engine/src/InputActions/InputAction.cpp
@@ -50,6 +50,10 @@ set(SOURCE_FILES src/main.cpp
         ../engine/include/CollisionSystem.h
         ../engine/include/BoxCollider.h
         ../engine/src/EntityComponentSystem/BoxCollider.cpp
+        ../engine/include/GlobalGameEvents.h
+        src/GlobalGameEvents.cpp
+        src/Player.cpp
+        include/Player.h
 )
 
 set(EXE_FILE Game)
