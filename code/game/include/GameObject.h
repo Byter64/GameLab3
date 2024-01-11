@@ -17,8 +17,8 @@ class GameObject
     std::vector<GameObject*> children;
     GameObject* parent;
 
-    ~GameObject();
 public:
+    ~GameObject();
     GameObject(GameObject& gameObject);
     explicit GameObject(std::string name);
     explicit GameObject(Engine::Entity entity);
