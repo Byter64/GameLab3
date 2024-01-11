@@ -5,7 +5,7 @@
 #include "GLFW/glfw3.h"
 #include "Engine.h"
 #include "GameObjectManager.h"
-#include "GameObject.h"
+#include "Entity.h"
 #include "Dungeon.h"
 #include "GlobalGameEvents.h"
 
@@ -92,7 +92,7 @@ void InitializeECS()
     ecsSystem.RegisterComponent<Engine::Name>();
     ecsSystem.RegisterComponent<Engine::Transform>();
     ecsSystem.RegisterComponent<Engine::MeshRenderer>();
-    ecsSystem.RegisterComponent<Engine::GameEvents>();
+    ecsSystem.RegisterComponent<Engine::GameEventHolder>();
     ecsSystem.RegisterComponent<Engine::BoxCollider>();
 
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
@@ -103,7 +103,7 @@ void InitializeECS()
 
     gameEventSystem = ecsSystem.RegisterSystem<Engine::GameEventSystem>();
     Engine::Signature gameEventSignature;
-    gameEventSignature.set(ecsSystem.GetComponentType<Engine::GameEvents>());
+    gameEventSignature.set(ecsSystem.GetComponentType<Engine::GameEventHolder>());
     ecsSystem.SetSystemSignature<Engine::GameEventSystem>(gameEventSignature);
 
     collisionSystem = ecsSystem.RegisterSystem<Engine::CollisionSystem>();

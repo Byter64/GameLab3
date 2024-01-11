@@ -1,6 +1,6 @@
 #include "GlobalGameEvents.h"
 #include "Engine.h"
-#include "GameObject.h"
+#include "Entity.h"
 #include "Dungeon.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
@@ -22,7 +22,7 @@ void Engine::OnStartGame()
     //LoadDemo();
     inputSystem = new Engine::InputSystem(window);
 
-    GameObject* wallPrefab = GameObject::CreateGameObjectFromGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb");
+    Entity* wallPrefab = Entity::CreateGameObjectFromGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb");
     Engine::BoxCollider& wallCollider = wallPrefab->AddComponent<Engine::BoxCollider>();
     wallCollider.size = glm::vec3(1);
     wallCollider.position = glm::vec3 (0);

@@ -11,6 +11,12 @@ void GameObjectManager::DeletePurgatory()
     {
         GameObject* gameObject = *purgatory.begin();
         purgatory.pop_front();
+        entityToGameObject.erase(gameObject->entity);
         delete gameObject;
     }
+}
+
+void GameObjectManager::RegisterGameObject(GameObject *gameObject)
+{
+    entityToGameObject[gameObject->entity] = gameObject;
 }

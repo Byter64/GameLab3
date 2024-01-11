@@ -1,11 +1,16 @@
 #pragma once
+#include "Engine.h"
 
 namespace Engine
 {
-
     struct GameEvents
     {
-        void (*update)(float time);
-    };
+        virtual void Update(float time) = 0;
 
-} // Engine
+        virtual void OnCollisionEnter(Engine::BoxCollider &other) = 0;
+
+        virtual void OnCollisionStay(Engine::BoxCollider &other) = 0;
+
+        virtual void OnCollisionExit(Engine::BoxCollider &other) = 0;
+    };
+}

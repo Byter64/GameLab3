@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "Entity.h"
 #include <vector>
 #include <filesystem>
 

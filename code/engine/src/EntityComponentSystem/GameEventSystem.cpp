@@ -1,6 +1,6 @@
 #include "../../include/GameEventSystem.h"
 #include "../../include/ECSSystem.h"
-#include "../../include/GameEvents.h"
+#include "../../include/GameEventHolder.h"
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
@@ -9,7 +9,7 @@ namespace Engine
     {
         for(Entity entity : entities)
         {
-            ecsSystem.GetComponent<GameEvents>(entity).update(time);
+            ecsSystem.GetComponent<GameEventHolder>(entity).update(time);
         }
     }
 } // Engine

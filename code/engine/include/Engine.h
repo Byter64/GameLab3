@@ -7,7 +7,7 @@
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "BoxCollider.h"
-#include "GameEvents.h"
+#include "GameEventHolder.h"
 #include "RenderSystem.h"
 #include "GameEventSystem.h"
 #include "CollisionSystem.h"
