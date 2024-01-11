@@ -4,7 +4,7 @@
 #include <sstream>
 #include <array>
 #include <stdexcept>
-#include "../../include/Entity.h"
+#include "ECS/Entity.h"
 #include "../../include/ECSSystem.h"
 #include "../../include/MeshRenderer.h"
 #include "../../include/Transform.h"

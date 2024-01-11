@@ -1,4 +1,4 @@
-#include "../../include/EntityManager.h"
+#include "ECS/EntityManager.h"
 
 namespace Engine
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "ECS/Entity.h"
 #include "Name.h"
 #include <filesystem>
 #include <vector>

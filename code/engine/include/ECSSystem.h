@@ -1,9 +1,9 @@
 #pragma once
 #include <memory>
 #include <set>
-#include "EntityManager.h"
-#include "ComponentManager.h"
-#include "SystemManager.h"
+#include "ECS/EntityManager.h"
+#include "ECS/ComponentManager.h"
+#include "ECS/SystemManager.h"
 namespace Engine
 {
 

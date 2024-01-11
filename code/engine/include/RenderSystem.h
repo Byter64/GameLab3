@@ -6,7 +6,7 @@
 #include <filesystem>
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "System.h"
+#include "ECS/System.h"
 #include "ECSSystem.h"
 #include "Transform.h"
 #include "MeshRenderer.h"
