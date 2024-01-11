@@ -9,6 +9,7 @@ namespace Engine
     {
     public:
         std::set<Entity> entities;
+        virtual void EntityRemoved(Entity entity) = 0;
     };
 
 } // Engine
