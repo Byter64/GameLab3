@@ -35,13 +35,13 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/EntityUtility.h
         ../engine/src/EntityComponentSystem/Shader.cpp
         ../engine/include/Shader.h
-        ../engine/src/EntityComponentSystem/GameObject.cpp
-        include/Entity.h
-        ../engine/include/GameEventHolder.h
+        src/GameObject.cpp
+        include/GameObject.h
+        ../engine/include/GameEvents.h
         ../engine/src/EntityComponentSystem/GameEventSystem.cpp
         ../engine/include/GameEventSystem.h
         src/GameObjectManager.cpp
-        ../engine/include/GameObjectManager.h
+        include/GameObjectManager.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
         src/Dungeon.cpp
@@ -54,7 +54,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/GlobalGameEvents.cpp
         src/Player.cpp
         include/Player.h
-        ../engine/include/GameEvents.h
 )
 
 set(EXE_FILE Game)

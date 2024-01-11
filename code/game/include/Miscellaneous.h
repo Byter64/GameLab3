@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "GameObject.h"
 #include <filesystem>
 
 class Miscellaneous
