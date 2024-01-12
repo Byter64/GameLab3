@@ -1,4 +1,4 @@
-#include "../../include/RenderSystem.h"
+#include "ECS/Systems/RenderSystem.h"
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -6,10 +6,10 @@
 #include <stdexcept>
 #include "ECS/Entity.h"
 #include "../../include/ECSSystem.h"
-#include "../../include/MeshRenderer.h"
+#include "ECS/Components/MeshRenderer.h"
 #include "ECS/Components/Transform.h"
 #include "FileSystem.h"
-#include "../../include/Name.h"
+#include "ECS/Components/Name.h"
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine

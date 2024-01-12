@@ -9,9 +9,9 @@
 #include "ECS/System.h"
 #include "ECSSystem.h"
 #include "ECS/Components/Transform.h"
-#include "MeshRenderer.h"
+#include "ECS/Components/MeshRenderer.h"
 #include "glad/glad.h"
-#include "../../extern/tinygltf/tiny_gltf.h"
+#include "../../../../extern/tinygltf/tiny_gltf.h"
 
 namespace Engine
 {

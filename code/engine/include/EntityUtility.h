@@ -1,6 +1,6 @@
 #pragma once
 #include "ECS/Entity.h"
-#include "Name.h"
+#include "ECS/Components/Name.h"
 #include <filesystem>
 #include <vector>
 namespace Engine

@@ -1,24 +1,11 @@
-#include "CollisionSystem.h"
-#include "BoxCollider.h"
+#include "ECS/Systems/CollisionSystem.h"
+#include "ECS/Components/BoxCollider.h"
+#include "ECS/Collision.h"
 #include <cstdlib>
 
 extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
-
-    void CollisionSystem::CheckCollisions()
-    {
-        for(auto entity1 = entities.begin(); entity1 != entities.end(); entity1++)
-        {
-            if(ecsSystem.GetComponent<BoxCollider>(*entity1).isStatic) continue;
-
-            for(auto entity2 = std::next(entity1); entity2 != entities.end(); entity2++)
-            {
-                CheckCollision(*entity1, *entity2);
-            }
-        }
-    }
-
     void CollisionSystem::CheckCollision(Entity entity1, Entity entity2)
     {
         BoxCollider& collider1 = ecsSystem.GetComponent<BoxCollider>(entity1);
@@ -41,15 +28,17 @@ namespace Engine
         if ( std::abs(position1[1] - position2[1]) > (size1[1] + size2[1]) ) areColliding = false;
         if ( std::abs(position1[2] - position2[2]) > (size1[2] + size2[2]) ) areColliding = false;
 
-        Collision collision = {entity1, entity2};
+        Collision collision1 = {entity1, entity2};
+        Collision collision2 = {entity2, entity1};
 
-        if(areColliding == false)
+        if(!areColliding)
         {
-            if(activeCollisions.find(collision) != activeCollisions.end())
+            //End Collision
+            auto collision = collider1.collisions.find(collision1);
+            if(collision != collider1.collisions.end())
             {
-                activeCollisions.erase(collision);
-                collider1.onCollisionExit(collider1, collider2);
-                collider2.onCollisionExit(collider2, collider1);
+                collider1.collisions[collision1] = Collision::State::EXIT;
+                collider2.collisions[collision2] = Collision::State::EXIT;
             }
 
             return;
@@ -57,30 +46,51 @@ namespace Engine
 
         if(activeCollisions.find(collision) != activeCollisions.end())
         {
+            //Stay Collision
             collider1.onCollisionStay(collider1, collider2);
             collider2.onCollisionStay(collider2, collider1);
         }
         else
         {
+            //Enter
             activeCollisions.insert(collision);
             collider1.onCollisionEnter(collider1, collider2);
             collider2.onCollisionEnter(collider2, collider1);
         }
     }
 
-    bool CollisionSystem::Collision::operator==(const CollisionSystem::Collision &other)
+    void CollisionSystem::CheckCollisions()
     {
-        return (entity1 == other.entity1 && entity2 == other.entity2) ||
-                (entity2 == other.entity1 && entity1 == other.entity2);
+        for(Entity entity : entities)
+        {
+            CleanExitCollision(entity);
+        }
+
+        for(auto entity1 = entities.begin(); entity1 != entities.end(); entity1++)
+        {
+            if(ecsSystem.GetComponent<BoxCollider>(*entity1).isStatic) continue;
+
+            for(auto entity2 = std::next(entity1); entity2 != entities.end(); entity2++)
+            {
+                CheckCollision(*entity1, *entity2);
+            }
+        }
     }
 
-    bool CollisionSystem::Collision::operator!=(const CollisionSystem::Collision &other)
+    void CollisionSystem::CleanExitCollision(Entity entity)
     {
-        return !(*this == other);
-    }
+        BoxCollider& collider = ecsSystem.GetComponent<BoxCollider>(entity);
 
-    bool CollisionSystem::Collision::operator<(const CollisionSystem::Collision &other) const
-    {
-        return entity1 < other.entity1 || (entity1 == other.entity1 && entity2 < other.entity2);
+        for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
+        {
+            if(iter->second == Collision::State::EXIT)
+            {
+                collider.collisions.erase(iter);
+            }
+            else
+            {
+                iter++;
+            }
+        }
     }
 } // Engine

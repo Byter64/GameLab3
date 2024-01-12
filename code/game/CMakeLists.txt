@@ -23,23 +23,23 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECSSystem.h
         ../engine/src/ECS/Transform.cpp
         ../engine/include/ECS/Components/Transform.h
-        ../engine/include/MeshRenderer.h
+        ../engine/include/ECS/Components/MeshRenderer.h
         ../engine/src/ECS/RenderSystem.cpp
-        ../engine/include/RenderSystem.h
+        ../engine/include/ECS/Systems/RenderSystem.h
         ../engine/include/Material.h
         ../engine/include/Engine.h
         ../engine/src/FileSystem.cpp
         ../engine/include/FileSystem.h
-        ../engine/include/Name.h
+        ../engine/include/ECS/Components/Name.h
         ../engine/src/ECS/EntityUtility.cpp
         ../engine/include/EntityUtility.h
         ../engine/src/ECS/Shader.cpp
         ../engine/include/Shader.h
         src/GameObject.cpp
         include/GameObject.h
-        ../engine/include/GameEvents.h
+        ../engine/include/ECS/Components/GameEvents.h
         ../engine/src/ECS/GameEventSystem.cpp
-        ../engine/include/GameEventSystem.h
+        ../engine/include/ECS/Systems/GameEventSystem.h
         src/GameObjectManager.cpp
         include/GameObjectManager.h
         src/Miscellaneous.cpp
@@ -47,16 +47,16 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/Dungeon.cpp
         include/Dungeon.h
         ../engine/src/CollisionSystem.cpp
-        ../engine/include/CollisionSystem.h
-        ../engine/include/BoxCollider.h
-        ../engine/src/ECS/BoxCollider.cpp
+        ../engine/include/ECS/Systems/CollisionSystem.h
+        ../engine/include/ECS/Components/BoxCollider.h
         ../engine/include/GlobalGameEvents.h
         src/GlobalGameEvents.cpp
         src/Player.cpp
         include/Player.h
         ../engine/include/ECS/Systems/TransformParentSystem.h
         ../engine/src/ECS/Systems/TransformParentSystem.cpp
-        ../engine/src/ECS/Systems/TransformParentSystem.h
+        ../engine/include/ECS/Collision.h
+        ../engine/src/ECS/Collision.cpp
 )
 
 set(EXE_FILE Game)
