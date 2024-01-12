@@ -31,31 +31,17 @@ namespace Engine
         Collision collision1 = {entity1, entity2};
         Collision collision2 = {entity2, entity1};
 
-        if(!areColliding)
+        if(!areColliding && collider1.collisions.find(collision1) != collider1.collisions.end())
         {
-            //End Collision
-            auto collision = collider1.collisions.find(collision1);
-            if(collision != collider1.collisions.end())
-            {
-                collider1.collisions[collision1] = Collision::State::EXIT;
-                collider2.collisions[collision2] = Collision::State::EXIT;
-            }
-
-            return;
+            //End collision
+            collider1.collisions[collision1] = Collision::State::EXIT;
+            collider2.collisions[collision2] = Collision::State::EXIT;
         }
-
-        if(activeCollisions.find(collision) != activeCollisions.end())
+        else if (areColliding && collider1.collisions.find(collision1) == collider1.collisions.end())
         {
-            //Stay Collision
-            collider1.onCollisionStay(collider1, collider2);
-            collider2.onCollisionStay(collider2, collider1);
-        }
-        else
-        {
-            //Enter
-            activeCollisions.insert(collision);
-            collider1.onCollisionEnter(collider1, collider2);
-            collider2.onCollisionEnter(collider2, collider1);
+            //Start collision
+            collider1.collisions[collision1] = Collision::State::ENTER;
+            collider2.collisions[collision2] = Collision::State::ENTER;
         }
     }
 
@@ -63,6 +49,7 @@ namespace Engine
     {
         for(Entity entity : entities)
         {
+            CleanEnterCollision(entity);
             CleanExitCollision(entity);
         }
 
@@ -92,5 +79,28 @@ namespace Engine
                 iter++;
             }
         }
+    }
+
+    void CollisionSystem::CleanEnterCollision(Entity entity)
+    {
+        BoxCollider& collider = ecsSystem.GetComponent<BoxCollider>(entity);
+
+        for(auto pair : collider.collisions)
+        {
+            if(pair.second == Collision::State::ENTER)
+            {
+                pair.second = Collision::State::STAY;
+            }
+        }
+    }
+
+    void CollisionSystem::EntityAdded(Entity entity)
+    {
+
+    }
+
+    void CollisionSystem::EntityRemoved(Entity entity)
+    {
+
     }
 } // Engine
