@@ -99,18 +99,12 @@ void InitializeECS()
     Engine::Signature transformSignature;
     transformSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
 
-
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
     renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
     renderSignature.set(ecsSystem.GetComponentType<Engine::MeshRenderer>());
     ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
-
-    gameEventSystem = ecsSystem.RegisterSystem<Engine::GameEventSystem>();
-    Engine::Signature gameEventSignature;
-    gameEventSignature.set(ecsSystem.GetComponentType<Engine::GameEvents>());
-    ecsSystem.SetSystemSignature<Engine::GameEventSystem>(gameEventSignature);
-
+    
     collisionSystem = ecsSystem.RegisterSystem<Engine::CollisionSystem>();
     Engine::Signature collisionSignature;
     collisionSignature.set(ecsSystem.GetComponentType<Engine::Transform>());

@@ -550,4 +550,14 @@ namespace Engine
         loadedShaders.insert(shader);
     }
 
+    void RenderSystem::EntityAdded(Entity entity)
+    {
+
+    }
+
+    void RenderSystem::EntityRemoved(Entity entity)
+    {
+
+    }
+
 } // Engine

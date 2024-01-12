@@ -32,10 +32,9 @@ namespace Engine
         std::set<std::shared_ptr<tinygltf::Model>> usedModels;
         std::set<Shader> loadedShaders;
 
-        /**
-         * Loads a buffer onto the GPU and adds an entry to loadedVertexBuffers. If the buffer is already loaded, this method does nothing.
-         * @param buffer
-         */
+
+        void EntityAdded(Entity entity) override;
+        void EntityRemoved(Entity entity) override;
         void LoadMesh(const tinygltf::Mesh& mesh, std::shared_ptr<tinygltf::Model> model);
         void UnloadMesh(const tinygltf::Mesh &mesh, const tinygltf::Model & model);
         void LoadVertexBuffer(const tinygltf::Primitive& primitive, const tinygltf::Model& model);

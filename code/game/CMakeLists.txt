@@ -39,7 +39,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/GameObject.h
         ../engine/include/ECS/Components/GameEvents.h
         ../engine/src/ECS/GameEventSystem.cpp
-        ../engine/include/ECS/Systems/GameEventSystem.h
         src/GameObjectManager.cpp
         include/GameObjectManager.h
         src/Miscellaneous.cpp
