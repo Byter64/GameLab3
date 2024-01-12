@@ -95,6 +95,11 @@ void InitializeECS()
     ecsSystem.RegisterComponent<Engine::GameEvents>();
     ecsSystem.RegisterComponent<Engine::BoxCollider>();
 
+    ecsSystem.RegisterSystem<Engine::TransformParentSystem>();
+    Engine::Signature transformSignature;
+    transformSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+
+
     renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
     renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());

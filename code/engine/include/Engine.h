@@ -5,6 +5,7 @@
 #include "ECSSystem.h"
 #include "Name.h"
 #include "ECS/Components/Transform.h"
+#include "ECS/Systems/TransformParentSystem.h"
 #include "MeshRenderer.h"
 #include "BoxCollider.h"
 #include "GameEvents.h"
