@@ -57,7 +57,7 @@ namespace Engine
         void SetParent(Transform* parent);
         Transform* GetParent();
 
-        const std::list<Transform*>& GetChildren();
+        std::list<Transform*>& GetChildren();
         std::string ToString();
         std::string MatrixToString();
     };

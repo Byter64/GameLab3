@@ -7,7 +7,7 @@
 #include "ECS/Entity.h"
 #include "../../include/ECSSystem.h"
 #include "../../include/MeshRenderer.h"
-#include "../../include/Transform.h"
+#include "ECS/Components/Transform.h"
 #include "FileSystem.h"
 #include "../../include/Name.h"
 

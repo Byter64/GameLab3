@@ -24,6 +24,8 @@ namespace Engine
 
             if((systemSignature &signature) == systemSignature)
             {
+                if(system->entities.find(entity) == system->entities.end())
+                    system->EntityAdded(entity);
                 system->entities.insert(entity);
             }
             else

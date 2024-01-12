@@ -1,4 +1,4 @@
-#include "../../include/Transform.h"
+#include "ECS/Components/Transform.h"
 #include "glm/gtx/quaternion.hpp"
 #include <iostream>
 #include "Engine.h"
@@ -107,7 +107,7 @@ namespace Engine
         return parent;
     }
 
-    const std::list<Transform*> &Transform::GetChildren()
+    std::list<Transform*> &Transform::GetChildren()
     {
         return children;
     }

@@ -22,7 +22,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/ECSSystem.cpp
         ../engine/include/ECSSystem.h
         ../engine/src/ECS/Transform.cpp
-        ../engine/include/Transform.h
+        ../engine/include/ECS/Components/Transform.h
         ../engine/include/MeshRenderer.h
         ../engine/src/ECS/RenderSystem.cpp
         ../engine/include/RenderSystem.h
@@ -54,6 +54,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/GlobalGameEvents.cpp
         src/Player.cpp
         include/Player.h
+        ../engine/include/ECS/Systems/TransformParentSystem.h
+        ../engine/src/ECS/Systems/TransformParentSystem.cpp
+        ../engine/src/ECS/Systems/TransformParentSystem.h
 )
 
 set(EXE_FILE Game)
