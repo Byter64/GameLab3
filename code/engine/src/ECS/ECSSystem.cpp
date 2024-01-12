@@ -16,9 +16,9 @@ namespace Engine
 
     void ECSSystem::DestroyEntity(Entity entity)
     {
+        systemManager->EntityDestroyed(entity);
         entityManager->DestroyEntity(entity);
         componentManager->EntityDestroyed(entity);
-        systemManager->EntityDestroyed(entity);
     }
 
     Signature ECSSystem::GetSignature(Entity entity)

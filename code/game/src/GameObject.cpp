@@ -122,13 +122,13 @@ void GameObject::SetUpdateMethod(void (*updateMethod)(float))
     if(!receivesGameEvents)
     {
         receivesGameEvents = true;
-        Engine::GameEvents& updateEvent = ecsSystem.AddComponent<Engine::GameEvents>(entity);
-        updateEvent.update = updateMethod;
+        //Engine::GameEvents& updateEvent = ecsSystem.AddComponent<Engine::GameEvents>(entity);
+        //updateEvent.update = updateMethod;
     }
     else
     {
-        Engine::GameEvents& updateEvent = ecsSystem.GetComponent<Engine::GameEvents>(entity);
-        updateEvent.update = updateMethod;
+        //Engine::GameEvents& updateEvent = ecsSystem.GetComponent<Engine::GameEvents>(entity);
+        //updateEvent.update = updateMethod;
     }
 
 }

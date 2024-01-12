@@ -16,7 +16,6 @@ Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-std::shared_ptr<Engine::GameEventSystem> gameEventSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GameObjectManager gameObjectManager;
 GLFWwindow *window;
@@ -38,7 +37,6 @@ int main()
 
 
         glfwPollEvents();
-        gameEventSystem->InvokeUpdate(passedTimeInSeconds);
         collisionSystem->CheckCollisions();
 
         renderSystem->Render();
@@ -92,7 +90,6 @@ void InitializeECS()
     ecsSystem.RegisterComponent<Engine::Name>();
     ecsSystem.RegisterComponent<Engine::Transform>();
     ecsSystem.RegisterComponent<Engine::MeshRenderer>();
-    ecsSystem.RegisterComponent<Engine::GameEvents>();
     ecsSystem.RegisterComponent<Engine::BoxCollider>();
 
     ecsSystem.RegisterSystem<Engine::TransformParentSystem>();
@@ -104,7 +101,7 @@ void InitializeECS()
     renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
     renderSignature.set(ecsSystem.GetComponentType<Engine::MeshRenderer>());
     ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
-    
+
     collisionSystem = ecsSystem.RegisterSystem<Engine::CollisionSystem>();
     Engine::Signature collisionSignature;
     collisionSignature.set(ecsSystem.GetComponentType<Engine::Transform>());

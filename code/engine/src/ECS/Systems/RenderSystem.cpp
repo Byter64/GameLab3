@@ -5,7 +5,7 @@
 #include <array>
 #include <stdexcept>
 #include "ECS/Entity.h"
-#include "../../include/ECSSystem.h"
+#include "ECSSystem.h"
 #include "ECS/Components/MeshRenderer.h"
 #include "ECS/Components/Transform.h"
 #include "FileSystem.h"

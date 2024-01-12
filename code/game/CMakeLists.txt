@@ -21,10 +21,10 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/SystemManager.h
         ../engine/src/ECS/ECSSystem.cpp
         ../engine/include/ECSSystem.h
-        ../engine/src/ECS/Transform.cpp
+        ../engine/src/ECS/Components/Transform.cpp
         ../engine/include/ECS/Components/Transform.h
         ../engine/include/ECS/Components/MeshRenderer.h
-        ../engine/src/ECS/RenderSystem.cpp
+        ../engine/src/ECS/Systems/RenderSystem.cpp
         ../engine/include/ECS/Systems/RenderSystem.h
         ../engine/include/Material.h
         ../engine/include/Engine.h
@@ -38,14 +38,13 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/GameObject.cpp
         include/GameObject.h
         ../engine/include/ECS/Components/GameEvents.h
-        ../engine/src/ECS/GameEventSystem.cpp
         src/GameObjectManager.cpp
         include/GameObjectManager.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
         src/Dungeon.cpp
         include/Dungeon.h
-        ../engine/src/CollisionSystem.cpp
+        ../engine/src/ECS/Systems/CollisionSystem.cpp
         ../engine/include/ECS/Systems/CollisionSystem.h
         ../engine/include/ECS/Components/BoxCollider.h
         ../engine/include/GlobalGameEvents.h

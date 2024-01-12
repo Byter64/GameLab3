@@ -111,9 +111,9 @@ void LoadDemo()
     krawatterich = new GameObject(Engine::FindChild(root, "Krawatterich"));
     krawatterich->SetUpdateMethod(UpdateTest);
     Engine::BoxCollider& boxCollider = krawatterich->AddComponent<Engine::BoxCollider>();
-    boxCollider.onCollisionStay = Stay;
-    boxCollider.onCollisionEnter = Enter;
-    boxCollider.onCollisionExit = Exit;
+    //boxCollider.onCollisionStay = Stay;
+    //boxCollider.onCollisionEnter = Enter;
+    //boxCollider.onCollisionExit = Exit;
 
     GLuint vertexColorshader = renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Default/FS_Default_VertexColor.frag", GL_FRAGMENT_SHADER);
     Engine::Entity vertexPaintedSphere1 = Engine::FindChild(root, "VertexPaintedSphere");
