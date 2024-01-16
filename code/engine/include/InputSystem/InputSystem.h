@@ -26,6 +26,7 @@ namespace Engine
         explicit InputSystem(GLFWwindow* window);
         ~InputSystem();
         void Add(std::shared_ptr<InputAction> inputAction);
+        std::shared_ptr<InputAction> Remove(std::shared_ptr<InputAction> inputAction);
         std::shared_ptr<InputAction> Remove(std::string inputActionName);
         int GetKeyState(int key);
     };

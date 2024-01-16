@@ -54,6 +54,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/TransformParentSystem.cpp
         ../engine/include/ECS/Helpers/Collision.h
         ../engine/src/ECS/Helpers/Collision.cpp
+        ../engine/src/ECS/Components/PlayerController.cpp
+        ../engine/include/ECS/Components/PlayerController.h
 )
 
 set(EXE_FILE Game)

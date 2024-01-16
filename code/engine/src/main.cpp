@@ -27,8 +27,6 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 int main()
 {
 
-
-
     if(SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::OnStartGame();
@@ -37,7 +35,6 @@ int main()
     glfwSetTime(passedTimeInSeconds);
     while (!glfwWindowShouldClose(window)) {
         auto time1 = std::chrono::high_resolution_clock::now();
-
 
         glfwPollEvents();
         collisionSystem->CheckCollisions();

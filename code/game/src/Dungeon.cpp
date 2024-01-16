@@ -3,6 +3,7 @@
 #define STBI_FAILURE_USERMSG
 #include <stdexcept>
 #include <string>
+#include "ECS/Components/PlayerController.h"
 
 Dungeon::Dungeon(std::filesystem::path pathToImage, GameObject* wallPrefab)
 {
@@ -43,6 +44,13 @@ Dungeon::Dungeon(std::filesystem::path pathToImage, GameObject* wallPrefab)
             name += ")";
 
             GameObject* wall = new GameObject(*wallPrefab);
+
+            if(rand() % 2 == 0)
+            {
+                //Ich wollte den PlayerCOntroller testen, aber der meckert hier rum, dass irgendwas mit destruktor
+                wall->AddComponent<Engine::PlayerController>();
+            }
+
             wall->GetComponent<Engine::Name>() = name;
             wall->GetComponent<Engine::Transform>().SetTranslation(glm::vec3(x - width / 2, y - height / 2, 0));
             wall->SetParent(gameObject);
