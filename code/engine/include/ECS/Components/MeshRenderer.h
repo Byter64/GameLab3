@@ -1,8 +1,8 @@
 #pragma once
 #include <memory>
 #include "../../../../extern/tinygltf/tiny_gltf.h"
-#include "Material.h"
-#include "Shader.h"
+#include "ECS/Helpers/Material.h"
+#include "ECS/Helpers/Shader.h"
 namespace Engine
 {
 

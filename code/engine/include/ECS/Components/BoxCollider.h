@@ -1,6 +1,6 @@
 #pragma once
 #include "glm/glm.hpp"
-#include "ECS/Collision.h"
+#include "ECS/Helpers/Collision.h"
 #include <map>
 
 namespace Engine

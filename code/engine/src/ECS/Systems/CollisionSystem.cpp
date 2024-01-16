@@ -1,6 +1,6 @@
 #include "ECS/Systems/CollisionSystem.h"
 #include "ECS/Components/BoxCollider.h"
-#include "ECS/Collision.h"
+#include "ECS/Helpers/Collision.h"
 #include <cstdlib>
 
 extern Engine::ECSSystem ecsSystem;

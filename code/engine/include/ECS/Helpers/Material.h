@@ -1,5 +1,5 @@
 #pragma once
-#include "../../extern/tinygltf/tiny_gltf.h"
+#include "../../../../extern/tinygltf/tiny_gltf.h"
 #include "glad/glad.h"
 #include "glm/glm.hpp"
 

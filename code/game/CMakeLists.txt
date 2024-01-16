@@ -26,7 +26,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Components/MeshRenderer.h
         ../engine/src/ECS/Systems/RenderSystem.cpp
         ../engine/include/ECS/Systems/RenderSystem.h
-        ../engine/include/Material.h
+        ../engine/include/ECS/Helpers/Material.h
         ../engine/include/Engine.h
         ../engine/src/FileSystem.cpp
         ../engine/include/FileSystem.h
@@ -34,10 +34,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/EntityUtility.cpp
         ../engine/include/EntityUtility.h
         ../engine/src/ECS/Shader.cpp
-        ../engine/include/Shader.h
+        ../engine/include/ECS/Helpers/Shader.h
         src/GameObject.cpp
         include/GameObject.h
-        ../engine/include/ECS/Components/GameEvents.h
         src/GameObjectManager.cpp
         include/GameObjectManager.h
         src/Miscellaneous.cpp
@@ -53,7 +52,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Player.h
         ../engine/include/ECS/Systems/TransformParentSystem.h
         ../engine/src/ECS/Systems/TransformParentSystem.cpp
-        ../engine/include/ECS/Collision.h
+        ../engine/include/ECS/Helpers/Collision.h
         ../engine/src/ECS/Collision.cpp
 )
 
