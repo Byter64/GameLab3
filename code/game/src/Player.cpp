@@ -15,7 +15,7 @@ Player::Player(std::string name, int playerIndex) : gameObject(name)
 
         std::shared_ptr<Engine::InputActionVec2> movementXY = std::make_shared<Engine::InputActionVec2>("MovementXY");
         movementXY->AddKeyboardBinding(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-        movementXY->AddOnValueChange(Player1Movement);
+        movementXY->AddOnValueChange(this, PlayerMovement);
 
         inputSystem->Add(movementXY);
     }
@@ -34,14 +34,10 @@ void Player::SetMovement(glm::vec2 input)
     movementInput = input;
 }
 
-void Player::Player1Movement(glm::vec2 input)
+void Player::PlayerMovement(void* object, glm::vec2 input)
 {
-    players[0]->SetMovement(input);
-}
-
-void Player::Player2Movement(glm::vec2 input)
-{
-    players[1]->SetMovement(input);
+    Player* player = static_cast<Player*>(object);
+    player->SetMovement(input);
 }
 
 

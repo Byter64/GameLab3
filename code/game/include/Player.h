@@ -11,6 +11,5 @@ public:
 
     void SetMovement(glm::vec2 input);
 
-    static void Player1Movement(glm::vec2 input);
-    static void Player2Movement(glm::vec2 input);
+    static void PlayerMovement(void* object, glm::vec2 input);
 };

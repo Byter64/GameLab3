@@ -10,7 +10,7 @@ namespace Engine
 
     class InputSystem
     {
-        inline static std::list<InputSystem*> activeInputSystems;
+        inline static InputSystem* instance;
 
 
         int keyStates[GLFW_KEY_LAST - 1];

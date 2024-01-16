@@ -1,14 +1,14 @@
 cmake_minimum_required(VERSION 3.18)
 
 set(SOURCE_FILES ../engine/src/main.cpp
-        ../engine/src/InputSystem.cpp
-        ../engine/include/InputSystem.h
-        ../engine/src/InputActions/InputAction.cpp
-        ../engine/include/InputAction.h
-        ../engine/src/InputActions/InputActionButton.cpp
-        ../engine/include/InputActionButton.h
-        ../engine/include/InputActionVec2.h
-        ../engine/src/InputActions/InputActionVec2.cpp
+        ../engine/src/InputSystem/InputSystem.cpp
+        ../engine/include/InputSystem/InputSystem.h
+        ../engine/src/InputSystem/InputAction.cpp
+        ../engine/include/InputSystem/InputAction.h
+        ../engine/src/InputSystem/InputActionButton.cpp
+        ../engine/include/InputSystem/InputActionButton.h
+        ../engine/include/InputSystem/InputActionVec2.h
+        ../engine/src/InputSystem/InputActionVec2.cpp
         ../engine/include/ECS/Entity.h
         ../engine/src/ECS/EntityManager.cpp
         ../engine/include/ECS/EntityManager.h
@@ -33,7 +33,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Components/Name.h
         ../engine/src/ECS/EntityUtility.cpp
         ../engine/include/EntityUtility.h
-        ../engine/src/ECS/Shader.cpp
+        ../engine/src/ECS/Helpers/Shader.cpp
         ../engine/include/ECS/Helpers/Shader.h
         src/GameObject.cpp
         include/GameObject.h
@@ -53,7 +53,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Systems/TransformParentSystem.h
         ../engine/src/ECS/Systems/TransformParentSystem.cpp
         ../engine/include/ECS/Helpers/Collision.h
-        ../engine/src/ECS/Collision.cpp
+        ../engine/src/ECS/Helpers/Collision.cpp
 )
 
 set(EXE_FILE Game)

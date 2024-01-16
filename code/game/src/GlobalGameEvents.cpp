@@ -67,7 +67,7 @@ void Exit(Engine::BoxCollider& coll1, Engine::BoxCollider& coll2)
               << ecsSystem.GetComponent<Engine::Name>(ecsSystem.GetEntity(coll2)) << "\n";
 }
 
-void MovementXY(glm::vec2 input)
+void MovementXY(void*, glm::vec2 input)
 {
     movement.x = input.x;
     movement.y = input.y;
@@ -76,7 +76,7 @@ void MovementXY(glm::vec2 input)
         movement = glm::normalize(movement) * 8.0f;
 }
 
-void MovementZ(glm::vec2 input)
+void MovementZ(void*, glm::vec2 input)
 {
     movement.z = input.x;
 
@@ -89,14 +89,14 @@ void LoadDemo()
 
     std::shared_ptr<Engine::InputActionVec2> movementXY = std::make_shared<Engine::InputActionVec2>("MovementXY");
     movementXY->AddKeyboardBinding(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-    movementXY->AddOnValueChange(MovementXY);
+    movementXY->AddOnValueChange(nullptr, MovementXY);
 
     inputSystem->Add(movementXY);
 
 
     std::shared_ptr<Engine::InputActionVec2> movementZ = std::make_shared<Engine::InputActionVec2>("MovementZ");
     movementZ->AddKeyboardBinding(GLFW_KEY_E, GLFW_KEY_Q, 0, 0);
-    movementZ->AddOnValueChange(MovementZ);
+    movementZ->AddOnValueChange(nullptr, MovementZ);
     inputSystem->Add(movementZ);
 
     std::filesystem::path path = "C:/Users/Yanni/Desktop/Fliegengesicht.gltf";

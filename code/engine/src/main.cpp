@@ -26,6 +26,9 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 int main()
 {
+
+
+
     if(SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::OnStartGame();

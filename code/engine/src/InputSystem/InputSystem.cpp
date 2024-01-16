@@ -1,4 +1,4 @@
-#include "InputSystem.h"
+#include "InputSystem/InputSystem.h"
 #include "GLFW/glfw3.h"
 
 namespace Engine
@@ -6,7 +6,7 @@ namespace Engine
     InputSystem::InputSystem(GLFWwindow* window) : window(window)
     {
         glfwSetKeyCallback(window, KeyCallback);
-        activeInputSystems.push_back(this);
+        instance = this;
 
         for(int i = 0; i < GLFW_KEY_LAST - 2; i++)
         {
@@ -16,23 +16,16 @@ namespace Engine
 
     InputSystem::~InputSystem()
     {
-        activeInputSystems.remove(this);
-        if(activeInputSystems.empty())
-        {
-            glfwSetKeyCallback(window, nullptr);
-        }
+        glfwSetKeyCallback(window, nullptr);
     }
 
     void InputSystem::KeyCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
     {
-        for(InputSystem* inputSystem : activeInputSystems)
-        {
-            inputSystem->keyStates[key] = action;
+        instance->keyStates[key] = action;
 
-            for(const auto& inputAction : inputSystem->keyToInputActions[key])
-            {
-                inputAction->Update(key);
-            }
+        for (const auto &inputAction: instance->keyToInputActions[key])
+        {
+            inputAction->Update(key);
         }
     }
 

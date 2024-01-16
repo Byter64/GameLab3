@@ -1,6 +1,6 @@
-#include "InputActionVec2.h"
+#include "InputSystem/InputActionVec2.h"
 #include "glm/glm.hpp"
-#include "InputSystem.h"
+#include "InputSystem/InputSystem.h"
 #include <algorithm>
 
 namespace Engine
@@ -64,34 +64,34 @@ namespace Engine
         keyboardBindings.remove(downKey);
     }
 
-    void InputActionVec2::AddOnStart(InputActionVec2::CallbackVec2 callback)
+    void InputActionVec2::AddOnStart(void* object, InputActionVec2::CallbackVec2 callback)
     {
-        startCallbacks.push_back(callback);
+        startCallbacks.push_back(std::make_pair(object, callback));
     }
 
-    void InputActionVec2::RemoveOnStart(InputActionVec2::CallbackVec2 callback)
+    void InputActionVec2::RemoveOnStart(void* object, InputActionVec2::CallbackVec2 callback)
     {
-        startCallbacks.remove(callback);
+        startCallbacks.remove(std::make_pair(object, callback));
     }
 
-    void InputActionVec2::AddOnValueChange(InputActionVec2::CallbackVec2 callback)
+    void InputActionVec2::AddOnValueChange(void* object, InputActionVec2::CallbackVec2 callback)
     {
-        valueChangeCallbacks.push_back(callback);
+        valueChangeCallbacks.push_back(std::make_pair(object, callback));
     }
 
-    void InputActionVec2::RemoveOnValueChange(InputActionVec2::CallbackVec2 callback)
+    void InputActionVec2::RemoveOnValueChange(void* object, InputActionVec2::CallbackVec2 callback)
     {
-        valueChangeCallbacks.remove(callback);
+        valueChangeCallbacks.remove(std::make_pair(object, callback));
     }
 
-    void InputActionVec2::AddOnEnd(InputActionVec2::CallbackVec2 callback)
+    void InputActionVec2::AddOnEnd(void* object, InputActionVec2::CallbackVec2 callback)
     {
-        endCallbacks.push_back(callback);
+        endCallbacks.push_back(std::make_pair(object, callback));
     }
 
-    void InputActionVec2::RemoveOnEnd(InputActionVec2::CallbackVec2 callback)
+    void InputActionVec2::RemoveOnEnd(void* object, InputActionVec2::CallbackVec2 callback)
     {
-        endCallbacks.push_back(callback);
+        endCallbacks.remove(std::make_pair(object, callback));
     }
 
     void InputActionVec2::Update(int key)
@@ -110,13 +110,13 @@ namespace Engine
         glm::vec2 input(x,y);
         if(input == glm::vec2(0,0) && oldInput != glm::vec2 (0,0))
         {
-            for (const CallbackVec2 &callback: valueChangeCallbacks)
+            for (auto pair: valueChangeCallbacks)
             {
-                callback(input);
+                pair.second(pair.first, input);
             }
-            for (const CallbackVec2 &callback: endCallbacks)
+            for (auto pair: endCallbacks)
             {
-                callback(input);
+                pair.second(pair.first, input);
             }
             oldInput = input;
             return;
@@ -127,13 +127,13 @@ namespace Engine
         input = glm::normalize(input);
         if(oldInput == glm::vec2(0,0))
         {
-            for (const CallbackVec2 &callback: valueChangeCallbacks)
+            for (auto pair: valueChangeCallbacks)
             {
-                callback(input);
+                pair.second(pair.first, input);
             }
-            for (const CallbackVec2 &callback: startCallbacks)
+            for (auto pair: startCallbacks)
             {
-                callback(input);
+                pair.second(pair.first, input);
             }
             oldInput = input;
             return;
@@ -141,9 +141,9 @@ namespace Engine
         //Check for value change of input
         else if(input != oldInput)
         {
-            for (const CallbackVec2 &callback: valueChangeCallbacks)
+            for (auto pair: valueChangeCallbacks)
             {
-                callback(input);
+                pair.second(pair.first, input);
             }
             oldInput = input;
             return;
