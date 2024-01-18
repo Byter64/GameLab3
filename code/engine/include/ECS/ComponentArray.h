@@ -14,14 +14,14 @@ namespace Engine
     {
         size_t size = 0;
         std::array<T, Entity::MAX_ENTITIES> components;
-        std::unordered_map<Entity, size_t> entityToIndex;
-        std::unordered_map<size_t, Entity> indexToEntity;
+        std::unordered_map<std::uint32_t, size_t> entityToIndex;
+        std::unordered_map<size_t, std::uint32_t> indexToEntity;
 
     public:
         //Component data is undefined, when using this AddComponent overload!!!
         T& AddComponent(Entity entity)
         {
-            if(entityToIndex.find(entity) != entityToIndex.end())
+            if(entityToIndex.find(entity.id) != entityToIndex.end())
             {
                 std::string message{"A component of type \""};
                 message += typeid(T).name();
@@ -32,8 +32,8 @@ namespace Engine
             }
 
             size_t index = size;
-            entityToIndex[entity] = index;
-            indexToEntity[index] = entity;
+            entityToIndex[entity.id] = index;
+            indexToEntity[index] = entity.id;
             size++;
 
             return components[index];
@@ -41,7 +41,7 @@ namespace Engine
 
         void AddComponent(Entity entity, T component)
         {
-            if(entityToIndex.find(entity) != entityToIndex.end())
+            if(entityToIndex.find(entity.id) != entityToIndex.end())
             {
                 std::string message{"A component of type \""};
                 message += typeid(T).name();
@@ -51,15 +51,15 @@ namespace Engine
                 throw std::runtime_error(message);
             }
             size_t index = size;
-            entityToIndex[entity] = index;
-            indexToEntity[index] = entity;
+            entityToIndex[entity.id] = index;
+            indexToEntity[index] = entity.id;
             components[index] = component;
             size++;
         }
 
         void RemoveComponent(Entity entity)
         {
-            if(entityToIndex.find(entity) == entityToIndex.end())
+            if(entityToIndex.find(entity.id) == entityToIndex.end())
             {
                 std::string message{"The entity "};
                 message += std::to_string(entity.id);
@@ -69,15 +69,15 @@ namespace Engine
 
                 throw std::runtime_error(message);
             }
-            size_t entityIndex = entityToIndex[entity];
+            size_t entityIndex = entityToIndex[entity.id];
             size_t lastIndex = size - 1;
             components[entityIndex] = components[lastIndex];
 
             Entity lastEntity = indexToEntity[lastIndex];
-            entityToIndex[lastEntity] = entityIndex;
-            indexToEntity[entityIndex] = lastEntity;
+            entityToIndex[lastEntity.id] = entityIndex;
+            indexToEntity[entityIndex] = lastEntity.id;
 
-            entityToIndex.erase(entity);
+            entityToIndex.erase(entity.id);
             indexToEntity.erase(lastIndex);
 
             size--;
@@ -85,7 +85,7 @@ namespace Engine
 
         T& GetComponent(Entity entity)
         {
-            if(entityToIndex.find(entity) == entityToIndex.end())
+            if(entityToIndex.find(entity.id) == entityToIndex.end())
             {
                 std::string message{"The entity "};
                 message += std::to_string(entity.id);
@@ -96,12 +96,12 @@ namespace Engine
                 throw std::runtime_error(message);
             }
 
-            return components[entityToIndex[entity]];
+            return components[entityToIndex[entity.id]];
         }
 
         bool HasComponent(Entity entity)
         {
-            return entityToIndex.find(entity) != entityToIndex.end();
+            return entityToIndex.find(entity.id) != entityToIndex.end();
         }
 
         Entity GetEntity(T& component)
@@ -114,7 +114,7 @@ namespace Engine
 
         void EntityDestroyed(Entity entity) override
         {
-            if(entityToIndex.find(entity) != entityToIndex.end())
+            if(entityToIndex.find(entity.id) != entityToIndex.end())
             {
                 RemoveComponent(entity);
             }

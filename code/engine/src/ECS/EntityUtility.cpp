@@ -30,7 +30,7 @@ namespace Engine
         {
             std::cout << "ERROR: FindChild(Entity root, Name name) was called with a root that does not have a Name component. \n"
                       << "EntityID of root is: " << root << "\n";
-            return INVALID_ENTITY_ID;
+            return Entity::INVALID_ENTITY_ID;
         }
 
         if(!ecsSystem.HasComponent<Transform>(root))
@@ -38,7 +38,7 @@ namespace Engine
             std::cout << "ERROR: FindChild(Entity root, Name name) was called with a root that does not have a Transform component. \n"
                       << "EntityID of root is: " << root << "\n"
                       << "Entity name of root is: " << ecsSystem.GetComponent<Name>(root).c_str() << "\n";
-            return INVALID_ENTITY_ID;
+            return Entity::INVALID_ENTITY_ID;
         }
 
         if(ecsSystem.GetComponent<Name>(root) == name)
@@ -67,7 +67,7 @@ namespace Engine
 
         std::cout << "WARNING: No child with name \"" << name << "\" in " << root << " found. \n"
                   << "Root name is: \"" << ecsSystem.GetComponent<Name>(root) << "\".\n";
-        return INVALID_ENTITY_ID;
+        return Entity::INVALID_ENTITY_ID;
     }
 
     /**
