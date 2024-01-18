@@ -4,11 +4,12 @@
 #include <stdexcept>
 #include <string>
 #include "ECS/Components/PlayerController.h"
+#include "Engine.h"
 
-Dungeon::Dungeon(std::filesystem::path pathToImage, GameObject* wallPrefab)
+Dungeon::Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
 {
-    gameObject = new GameObject("Dungeon");
-    gameObject->GetComponent<Engine::Transform>().SetRotation(glm::quat(glm::vec3(glm::radians(dungeonRotation), 0, 0)));
+    ecsSystem->GetComponent<Engine::Transform>(gameObject).SetRotation(glm::quat(glm::vec3(glm::radians
+    (dungeonRotation), 0, 0)));
 
     int width, height, channels;
     std::string path = pathToImage.string();
@@ -43,7 +44,7 @@ Dungeon::Dungeon(std::filesystem::path pathToImage, GameObject* wallPrefab)
             name += std::to_string(y);
             name += ")";
 
-            GameObject* wall = new GameObject(*wallPrefab);
+            Engine::Entity wall = new GameObject(*wallPrefab);
 
             if(rand() % 2 == 0)
             {

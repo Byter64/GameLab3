@@ -1,9 +1,10 @@
 #pragma once
-#include "GameObject.h"
+#include "ECSSystem.h"
+#include "glm/glm.hpp"
 
 class Player
 {
-    GameObject gameObject;
+    Engine::Entity gameObject;
     inline static Player* players[2];
     glm::vec2 movementInput;
 public:

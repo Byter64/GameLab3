@@ -30,4 +30,12 @@ namespace Engine
     {
         entityManager->DeletePurgatory();
     }
+
+    /*
+     * Returns the component type with the highest ID.
+     */
+    ComponentType ECSSystem::GetHighestComponentType() const
+    {
+        return componentManager->GetHighestComponentType();
+    }
 } // Engine

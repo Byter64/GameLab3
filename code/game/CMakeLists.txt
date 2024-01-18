@@ -35,10 +35,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/EntityUtility.h
         ../engine/src/ECS/Helpers/Shader.cpp
         ../engine/include/ECS/Helpers/Shader.h
-        src/GameObject.cpp
-        include/GameObject.h
-        src/Miscellaneous.cpp
-        include/Miscellaneous.h
         src/Dungeon.cpp
         include/Dungeon.h
         ../engine/src/ECS/Systems/CollisionSystem.cpp
@@ -57,6 +53,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/PlayerControllerSystem.cpp
         ../engine/include/ECS/Systems/PlayerControllerSystem.h
         ../engine/src/ECS/Entity.cpp
+        ../engine/src/ECS/ComponentManager.cpp
 )
 
 set(EXE_FILE Game)

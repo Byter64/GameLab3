@@ -114,6 +114,8 @@ namespace Engine
                 component->EntityDestroyed(entity);
             }
         }
+
+        ComponentType GetHighestComponentType() const;
     };
 
 } // Engine

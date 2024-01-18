@@ -114,6 +114,18 @@ namespace Engine
         return entities;
     }
 
+    Entity CopyEntity(Entity entity)
+    {
+        Entity newEntity = ecsSystem->CreateEntity();
+
+        for(Engine::ComponentType type = 0; type < ecsSystem->GetHighestComponentType(); type++)
+        {
+            //Wie kann ich durch alle registrierten typen durchiterieren bzw.
+            //Wie kann ich alle Komponenten erhalten, die eine Entity hat?
+            if(ecsSystem->HasComponent<type>(entity))
+        }
+    }
+
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
     {
         Engine::Entity entity = ecsSystem.CreateEntity();

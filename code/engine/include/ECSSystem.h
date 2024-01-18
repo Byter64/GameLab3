@@ -22,6 +22,8 @@ namespace Engine
         void DeleteEntity(Entity entity);
         void DeletePurgatory();
 
+        ComponentType GetHighestComponentType() const;
+
         template<typename T>
         void RegisterComponent()
         {
@@ -108,3 +110,5 @@ namespace Engine
     };
 
 } // Engine
+
+extern Engine::ECSSystem* ecsSystem;
