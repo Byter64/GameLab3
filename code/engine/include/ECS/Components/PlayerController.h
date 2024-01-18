@@ -5,18 +5,23 @@
 namespace Engine
 {
 
-    class PlayerController
+    struct PlayerController
     {
-        std::shared_ptr<InputActionVec2> inputAction;
         glm::vec2 movementInput;
+
+        /*
+         * Units per second
+         */
+        float speed;
 
         PlayerController() = default;
         ~PlayerController();
+        void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey);
+
+    private:
+        std::shared_ptr<InputActionVec2> inputAction;
 
         static void GetMovement(void* object, glm::vec2 input);
-
-    public:
-        void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey);
     };
 
 } // Engine

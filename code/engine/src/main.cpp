@@ -17,6 +17,9 @@ Engine::InputSystem* inputSystem;
 Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
+// being declared
+// somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GameObjectManager gameObjectManager;
 GLFWwindow *window;
 
@@ -37,6 +40,7 @@ int main()
         auto time1 = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
+        playerControllerSystem->Update(passedTimeInSeconds);
         collisionSystem->CheckCollisions();
 
         renderSystem->Render();
@@ -91,6 +95,7 @@ void InitializeECS()
     ecsSystem.RegisterComponent<Engine::Transform>();
     ecsSystem.RegisterComponent<Engine::MeshRenderer>();
     ecsSystem.RegisterComponent<Engine::BoxCollider>();
+    ecsSystem.RegisterComponent<Engine::PlayerController>();
 
     ecsSystem.RegisterSystem<Engine::TransformParentSystem>();
     Engine::Signature transformSignature;
@@ -107,6 +112,12 @@ void InitializeECS()
     collisionSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
     collisionSignature.set(ecsSystem.GetComponentType<Engine::BoxCollider>());
     ecsSystem.SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
+
+    playerControllerSystem = ecsSystem.RegisterSystem<Engine::PlayerControllerSystem>();
+    Engine::Signature  playerControllerSignature;
+    playerControllerSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+    playerControllerSignature.set(ecsSystem.GetComponentType<Engine::PlayerController>());
+    ecsSystem.SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
 }
 
 

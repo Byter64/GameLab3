@@ -47,8 +47,9 @@ Dungeon::Dungeon(std::filesystem::path pathToImage, GameObject* wallPrefab)
 
             if(rand() % 2 == 0)
             {
-                //Ich wollte den PlayerCOntroller testen, aber der meckert hier rum, dass irgendwas mit destruktor
-                wall->AddComponent<Engine::PlayerController>();
+                Engine::PlayerController& controller = wall->AddComponent<Engine::PlayerController>();
+                controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
+                controller.speed = ((rand() % 1000) + 1) / 100.0f;
             }
 
             wall->GetComponent<Engine::Name>() = name;

@@ -21,6 +21,7 @@ namespace Engine
         inputAction = std::make_shared<Engine::InputActionVec2>("Movement");
         inputAction->AddKeyboardBinding(leftKey, rightKey, upKey, downKey);
         inputAction->AddOnValueChange(this, GetMovement);
+        inputSystem->Add(inputAction);
     }
 
     PlayerController::~PlayerController()

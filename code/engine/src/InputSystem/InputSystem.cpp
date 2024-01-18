@@ -1,6 +1,6 @@
 #include "InputSystem/InputSystem.h"
 #include "GLFW/glfw3.h"
-
+#include <iostream>
 namespace Engine
 {
     InputSystem::InputSystem(GLFWwindow* window) : window(window)
@@ -75,5 +75,4 @@ namespace Engine
     {
         return keyStates[key];
     }
-
 } // Engine
