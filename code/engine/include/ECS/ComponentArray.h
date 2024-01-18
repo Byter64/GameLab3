@@ -13,7 +13,7 @@ namespace Engine
     class ComponentArray : public IComponentArray
     {
         size_t size = 0;
-        std::array<T, MAX_ENTITIES> components;
+        std::array<T, Entity::MAX_ENTITIES> components;
         std::unordered_map<Entity, size_t> entityToIndex;
         std::unordered_map<size_t, Entity> indexToEntity;
 
@@ -26,7 +26,7 @@ namespace Engine
                 std::string message{"A component of type \""};
                 message += typeid(T).name();
                 message += "has already been added to entity ";
-                message += std::to_string(entity);
+                message += std::to_string(entity.id);
 
                 throw std::runtime_error(message);
             }
@@ -46,7 +46,7 @@ namespace Engine
                 std::string message{"A component of type \""};
                 message += typeid(T).name();
                 message += "has already been added to entity ";
-                message += std::to_string(entity);
+                message += std::to_string(entity.id);
 
                 throw std::runtime_error(message);
             }
@@ -62,7 +62,7 @@ namespace Engine
             if(entityToIndex.find(entity) == entityToIndex.end())
             {
                 std::string message{"The entity "};
-                message += std::to_string(entity);
+                message += std::to_string(entity.id);
                 message += " does not have a component of type \"";
                 message += typeid(T).name();
                 message += "\"";
@@ -88,7 +88,7 @@ namespace Engine
             if(entityToIndex.find(entity) == entityToIndex.end())
             {
                 std::string message{"The entity "};
-                message += std::to_string(entity);
+                message += std::to_string(entity.id);
                 message += " does not have a component of type \"";
                 message += typeid(T).name();
                 message += "\"";

@@ -11,6 +11,7 @@ namespace Engine
 
     void TransformParentSystem::EntityRemoved(Entity entity)
     {
+        //Does not provide a call operator?!?!?!?!
         Transform& transform = ecsSystem.GetComponent<Transform>(entity);
 
         if(transform.GetParent() != nullptr)

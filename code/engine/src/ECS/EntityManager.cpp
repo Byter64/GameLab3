@@ -12,7 +12,7 @@ namespace Engine
 
     bool EntityManager::AddNewEntitiesToPool(unsigned int amount)
     {
-        unsigned int unpooledEntities = MAX_ENTITIES - pooledEntitiesCount;
+        unsigned int unpooledEntities = Entity::MAX_ENTITIES - pooledEntitiesCount;
 
         amount = amount > unpooledEntities ? unpooledEntities : amount;
 
@@ -32,7 +32,7 @@ namespace Engine
         if(activeEntitiesCount == pooledEntitiesCount)
         {
             bool hasWorked = AddNewEntitiesToPool(100);
-            if(!hasWorked) return INVALID_ENTITY_ID;
+            if(!hasWorked) return Entity::INVALID_ENTITY_ID;
         }
 
         activeEntitiesCount++;
@@ -44,24 +44,24 @@ namespace Engine
 
     void EntityManager::DestroyEntity(Entity entity)
     {
-        if(entity == INVALID_ENTITY_ID) return;
+        if(entity == Entity::INVALID_ENTITY_ID) return;
 
-        signatures[entity].reset();
+        signatures[entity.id].reset();
         pooledEntities.push(entity);
         activeEntitiesCount--;
     }
 
     void EntityManager::SetSignature(Entity entity, Signature signature)
     {
-        if(entity == INVALID_ENTITY_ID) return;
+        if(entity == Entity::INVALID_ENTITY_ID) return;
 
-        signatures[entity] = signature;
+        signatures[entity.id] = signature;
     }
 
     Signature EntityManager::GetSignature(Entity entity)
     {
-        if(entity == INVALID_ENTITY_ID) return 0;
+        if(entity == Entity::INVALID_ENTITY_ID) return 0;
 
-        return signatures[entity];
+        return signatures[entity.id];
     }
 } // Engine

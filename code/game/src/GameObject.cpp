@@ -6,9 +6,8 @@
 extern Engine::ECSSystem ecsSystem;
 extern GameObjectManager gameObjectManager;
 
-GameObject::GameObject(std::string name)
+GameObject::GameObject(std::string name) : entity(ecsSystem.CreateEntity())
 {
-    entity = ecsSystem.CreateEntity();
     ecsSystem.AddComponent<Engine::Name>(entity, name);
     Engine::Transform& transform = ecsSystem.AddComponent<Engine::Transform>(entity);
     transform = Engine::Transform();

@@ -58,6 +58,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Components/PlayerController.h
         ../engine/src/ECS/Systems/PlayerControllerSystem.cpp
         ../engine/include/ECS/Systems/PlayerControllerSystem.h
+        ../engine/src/ECS/Entity.cpp
 )
 
 set(EXE_FILE Game)
