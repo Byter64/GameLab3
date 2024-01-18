@@ -1,10 +1,8 @@
 #include "GameObject.h"
 #include <stdexcept>
 #include <string>
-#include "GameObjectManager.h"
 
 extern Engine::ECSSystem ecsSystem;
-extern GameObjectManager gameObjectManager;
 
 GameObject::GameObject(std::string name) : entity(ecsSystem.CreateEntity())
 {
@@ -73,7 +71,7 @@ GameObject::~GameObject()
         delete child;
     }
 
-    ecsSystem.DestroyEntity(entity);
+    ecsSystem.DeleteEntity(entity);
 }
 
 unsigned int GameObject::GetChildCount()
@@ -134,7 +132,7 @@ void GameObject::SetUpdateMethod(void (*updateMethod)(float))
 
 void GameObject::Destroy()
 {
-    gameObjectManager.AddToPurgatory(this);
+    //gameObjectManager.AddToPurgatory(this);
 }
 
 /**

@@ -4,7 +4,6 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Engine.h"
-#include "GameObjectManager.h"
 #include "GameObject.h"
 #include "Dungeon.h"
 #include "GlobalGameEvents.h"
@@ -20,7 +19,6 @@ std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this na
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-GameObjectManager gameObjectManager;
 GLFWwindow *window;
 
 int SetupWindow();
@@ -45,7 +43,7 @@ int main()
 
         renderSystem->Render();
         glfwSwapBuffers(window);
-        gameObjectManager.DeletePurgatory();
+        ecsSystem.DeletePurgatory();
 
         auto time2 = std::chrono::high_resolution_clock::now();
         while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)

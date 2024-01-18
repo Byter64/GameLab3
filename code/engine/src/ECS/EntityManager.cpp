@@ -42,13 +42,9 @@ namespace Engine
         return id;
     }
 
-    void EntityManager::DestroyEntity(Entity entity)
+    void EntityManager::DeleteEntity(Entity entity)
     {
-        if(entity == Entity::INVALID_ENTITY_ID) return;
-
-        signatures[entity.id].reset();
-        pooledEntities.push(entity);
-        activeEntitiesCount--;
+        purgatory.insert(entity);
     }
 
     void EntityManager::SetSignature(Entity entity, Signature signature)
@@ -63,5 +59,22 @@ namespace Engine
         if(entity == Entity::INVALID_ENTITY_ID) return 0;
 
         return signatures[entity.id];
+    }
+
+    void EntityManager::DestroyEntity(Entity entity)
+    {
+        if(entity == Entity::INVALID_ENTITY_ID) return;
+
+        signatures[entity.id].reset();
+        pooledEntities.push(entity);
+        activeEntitiesCount--;
+    }
+
+    void EntityManager::DeletePurgatory()
+    {
+        for(Entity entity : purgatory)
+        {
+            DestroyEntity(entity);
+        }
     }
 } // Engine

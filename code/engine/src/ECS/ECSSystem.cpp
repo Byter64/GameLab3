@@ -14,15 +14,20 @@ namespace Engine
         return entityManager->CreateEntity();
     }
 
-    void ECSSystem::DestroyEntity(Entity entity)
+    void ECSSystem::DeleteEntity(Entity entity)
     {
         systemManager->EntityDestroyed(entity);
-        entityManager->DestroyEntity(entity);
+        entityManager->DeleteEntity(entity);
         componentManager->EntityDestroyed(entity);
     }
 
     Signature ECSSystem::GetSignature(Entity entity)
     {
         return entityManager->GetSignature(entity);
+    }
+
+    void ECSSystem::DeletePurgatory()
+    {
+        entityManager->DeletePurgatory();
     }
 } // Engine

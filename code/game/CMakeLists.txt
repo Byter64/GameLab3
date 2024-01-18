@@ -37,8 +37,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Helpers/Shader.h
         src/GameObject.cpp
         include/GameObject.h
-        src/GameObjectManager.cpp
-        include/GameObjectManager.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
         src/Dungeon.cpp

@@ -6,8 +6,8 @@
 
 namespace Engine
 {
-    //typedef std::uint32_t Entity;
     typedef std::bitset<MAX_COMPONENTS> Signature;
+
     struct Entity
     {
         static const std::uint32_t MAX_ENTITIES = 10000;
