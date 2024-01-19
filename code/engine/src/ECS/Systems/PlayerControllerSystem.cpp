@@ -2,6 +2,7 @@
 #include "ECSSystem.h"
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/PlayerController.h"
+#include "Engine.h"
 
 extern Engine::ECSSystem* ecsSystem;
 namespace Engine
@@ -20,11 +21,19 @@ namespace Engine
     {
         for (Entity entity: entities)
         {
-            Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-            Engine::PlayerController& controller = ecsSystem->GetComponent<Engine::PlayerController>(entity);
+            Transform& transform = ecsSystem->GetComponent<Transform>(entity);
+            PlayerController& controller = ecsSystem->GetComponent<PlayerController>(entity);
+            BoxCollider& boxCollider = ecsSystem->GetComponent<BoxCollider>(entity);
 
-            if(controller.movementInput != glm::vec2(0,0))
-                transform.AddTranslation(glm::normalize(glm::vec3(controller.movementInput, 0)) * deltaTime *
+            for(auto pair : boxCollider.collisions)
+            {
+                Transform& otherTransform = ecsSystem->GetComponent<Transform>(pair.first.other);
+                glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
+                transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
+            }
+
+            if(controller.movementInput != glm::vec3(0))
+                transform.AddTranslation(glm::normalize(glm::vec3(controller.movementInput)) * deltaTime *
                 controller.speed);
         }
     }

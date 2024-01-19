@@ -11,8 +11,6 @@ Dungeon::Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
     entity = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Transform>(entity, Engine::Transform());
     ecsSystem->AddComponent<Engine::Name>(entity, "Dungeon");
-    ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians
-    (dungeonRotation), 0, 0)));
 
     int width, height, channels;
     std::string path = pathToImage.string();

@@ -19,8 +19,15 @@ void Engine::OnStartGame()
     //LoadDemo();
     inputSystem = new Engine::InputSystem(window);
 
+    Engine::Entity player = Engine::ImportGLTF((Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb"))[0];
+    ecsSystem->GetComponent<Engine::Transform>(player).SetScale(glm::vec3(0.5f));
+    Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
+    controller.speed = 2;
+    controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
+    ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
+
     Engine::Entity wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS /
-            "Graphics\\Models\\Wall\\Wall.glb", false)[0];
+            "Graphics\\Models\\Wall\\Wall.glb")[0];
     Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wallPrefab);
     wallCollider.size = glm::vec3(1);
     wallCollider.position = glm::vec3 (0);
@@ -28,8 +35,8 @@ void Engine::OnStartGame()
 
     Dungeon* dungeon = new Dungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab);
     ecsSystem->GetComponent<Engine::Transform>(dungeon->entity).AddTranslation(glm::vec3(0, 0, 0));
-
     ecsSystem->DeleteEntity(wallPrefab);
+
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
     renderSystem->camera.SetScale(glm::vec3(1));
 }
@@ -39,16 +46,7 @@ void Engine::OnEndGame()
 
 }
 
-
-float myTime = 0;
 glm::vec3 movement;
-void UpdateTest(float time)
-{
-    myTime += time;
-    auto dir = glm::normalize(glm::vec3(-cosf(myTime * 1.1f), cosf(myTime * 1.2f), -sinf(myTime)));
-    auto rot = glm::quatLookAt(dir, glm::vec3(0, 1, 0));
-    ecsSystem->GetComponent<Engine::Transform>(krawatterich).AddTranslation(movement * time);
-}
 
 void MovementXY(void*, glm::vec2 input)
 {

@@ -117,6 +117,7 @@ void InitializeECS()
     Engine::Signature  playerControllerSignature;
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::PlayerController>());
+    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
 }
 

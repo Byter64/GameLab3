@@ -39,6 +39,7 @@ namespace Engine
         }
         else if (areColliding && collider1.collisions.find(collision1) == collider1.collisions.end())
         {
+            std::cout << "Started Collision\n";
             //Start collision
             collider1.collisions[collision1] = Collision::State::ENTER;
             collider2.collisions[collision2] = Collision::State::ENTER;
@@ -57,8 +58,9 @@ namespace Engine
         {
             if(ecsSystem->GetComponent<BoxCollider>(*entity1).isStatic) continue;
 
-            for(auto entity2 = std::next(entity1); entity2 != entities.end(); entity2++)
+            for(auto entity2 = entities.begin(); entity2 != entities.end(); entity2++)
             {
+                if(entity1 == entity2) continue;
                 CheckCollision(*entity1, *entity2);
             }
         }
@@ -72,7 +74,7 @@ namespace Engine
         {
             if(iter->second == Collision::State::EXIT)
             {
-                collider.collisions.erase(iter);
+                iter = collider.collisions.erase(iter);
             }
             else
             {
