@@ -48,12 +48,6 @@ Dungeon::Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
             name += ")";
 
             Engine::Entity wall = Engine::CopyEntity(wallPrefab);
-            if(rand() % 2 == 0)
-            {
-                Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(wall);
-                controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
-                controller.speed = ((rand() % 1000) + 1) / 100.0f;
-            }
 
             ecsSystem->GetComponent<Engine::Name>(wall) = name;
             ecsSystem->GetComponent<Engine::Transform>(wall).SetTranslation(glm::vec3(x - width / 2, y - height / 2,0));
