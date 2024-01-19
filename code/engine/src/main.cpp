@@ -4,7 +4,6 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Engine.h"
-#include "GameObject.h"
 #include "Dungeon.h"
 #include "GlobalGameEvents.h"
 
@@ -13,7 +12,8 @@
 
 Engine::InputSystem* inputSystem;
 
-Engine::ECSSystem ecsSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on this symbol being declared
+// somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
@@ -43,7 +43,7 @@ int main()
 
         renderSystem->Render();
         glfwSwapBuffers(window);
-        ecsSystem.DeletePurgatory();
+        ecsSystem->DeletePurgatory();
 
         auto time2 = std::chrono::high_resolution_clock::now();
         while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
@@ -88,34 +88,36 @@ int SetupWindow()
 
 void InitializeECS()
 {
-    ecsSystem.Init();
-    ecsSystem.RegisterComponent<Engine::Name>();
-    ecsSystem.RegisterComponent<Engine::Transform>();
-    ecsSystem.RegisterComponent<Engine::MeshRenderer>();
-    ecsSystem.RegisterComponent<Engine::BoxCollider>();
-    ecsSystem.RegisterComponent<Engine::PlayerController>();
+    ecsSystem = new Engine::ECSSystem();
+    ecsSystem->Init();
+    ecsSystem->RegisterComponent<Engine::Name>();
+    ecsSystem->RegisterComponent<Engine::Transform>();
+    ecsSystem->RegisterComponent<Engine::MeshRenderer>();
+    ecsSystem->RegisterComponent<Engine::BoxCollider>();
+    ecsSystem->RegisterComponent<Engine::PlayerController>();
+    //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
-    ecsSystem.RegisterSystem<Engine::TransformParentSystem>();
+    ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
     Engine::Signature transformSignature;
-    transformSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
+    transformSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
 
-    renderSystem = ecsSystem.RegisterSystem<Engine::RenderSystem>();
+    renderSystem = ecsSystem->RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
-    renderSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
-    renderSignature.set(ecsSystem.GetComponentType<Engine::MeshRenderer>());
-    ecsSystem.SetSystemSignature<Engine::RenderSystem>(renderSignature);
+    renderSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    renderSignature.set(ecsSystem->GetComponentType<Engine::MeshRenderer>());
+    ecsSystem->SetSystemSignature<Engine::RenderSystem>(renderSignature);
 
-    collisionSystem = ecsSystem.RegisterSystem<Engine::CollisionSystem>();
+    collisionSystem = ecsSystem->RegisterSystem<Engine::CollisionSystem>();
     Engine::Signature collisionSignature;
-    collisionSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
-    collisionSignature.set(ecsSystem.GetComponentType<Engine::BoxCollider>());
-    ecsSystem.SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
+    collisionSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    collisionSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    ecsSystem->SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
 
-    playerControllerSystem = ecsSystem.RegisterSystem<Engine::PlayerControllerSystem>();
+    playerControllerSystem = ecsSystem->RegisterSystem<Engine::PlayerControllerSystem>();
     Engine::Signature  playerControllerSignature;
-    playerControllerSignature.set(ecsSystem.GetComponentType<Engine::Transform>());
-    playerControllerSignature.set(ecsSystem.GetComponentType<Engine::PlayerController>());
-    ecsSystem.SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
+    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::PlayerController>());
+    ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
 }
 
 

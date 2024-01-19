@@ -3,15 +3,15 @@
 #include "ECS/Helpers/Collision.h"
 #include <cstdlib>
 
-extern Engine::ECSSystem ecsSystem;
+extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     void CollisionSystem::CheckCollision(Entity entity1, Entity entity2)
     {
-        BoxCollider& collider1 = ecsSystem.GetComponent<BoxCollider>(entity1);
-        BoxCollider& collider2 = ecsSystem.GetComponent<BoxCollider>(entity2);
-        Transform& transform1 = ecsSystem.GetComponent<Transform>(entity1);
-        Transform& transform2 = ecsSystem.GetComponent<Transform>(entity2);
+        BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(entity1);
+        BoxCollider& collider2 = ecsSystem->GetComponent<BoxCollider>(entity2);
+        Transform& transform1 = ecsSystem->GetComponent<Transform>(entity1);
+        Transform& transform2 = ecsSystem->GetComponent<Transform>(entity2);
 
         transform1.AddTranslation(collider1.position);
         transform2.AddTranslation(collider2.position);
@@ -55,7 +55,7 @@ namespace Engine
 
         for(auto entity1 = entities.begin(); entity1 != entities.end(); entity1++)
         {
-            if(ecsSystem.GetComponent<BoxCollider>(*entity1).isStatic) continue;
+            if(ecsSystem->GetComponent<BoxCollider>(*entity1).isStatic) continue;
 
             for(auto entity2 = std::next(entity1); entity2 != entities.end(); entity2++)
             {
@@ -66,7 +66,7 @@ namespace Engine
 
     void CollisionSystem::CleanExitCollision(Entity entity)
     {
-        BoxCollider& collider = ecsSystem.GetComponent<BoxCollider>(entity);
+        BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
 
         for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
         {
@@ -83,7 +83,7 @@ namespace Engine
 
     void CollisionSystem::CleanEnterCollision(Entity entity)
     {
-        BoxCollider& collider = ecsSystem.GetComponent<BoxCollider>(entity);
+        BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
 
         for(auto pair : collider.collisions)
         {

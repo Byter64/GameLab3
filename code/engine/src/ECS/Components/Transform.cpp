@@ -2,7 +2,6 @@
 #include "glm/gtx/quaternion.hpp"
 #include <iostream>
 #include "Engine.h"
-extern Engine::ECSSystem ecsSystem;
 namespace Engine
 {
     Transform::Transform(glm::vec3 position, glm::vec3 scale, glm::quat rotation) : translation(position), scale(scale), rotation(rotation)

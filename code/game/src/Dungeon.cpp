@@ -3,12 +3,15 @@
 #define STBI_FAILURE_USERMSG
 #include <stdexcept>
 #include <string>
-#include "ECS/Components/PlayerController.h"
 #include "Engine.h"
+#include "EntityUtility.h"
 
 Dungeon::Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
 {
-    ecsSystem->GetComponent<Engine::Transform>(gameObject).SetRotation(glm::quat(glm::vec3(glm::radians
+    entity = ecsSystem->CreateEntity();
+    ecsSystem->AddComponent<Engine::Transform>(entity, Engine::Transform());
+    ecsSystem->AddComponent<Engine::Name>(entity, "Dungeon");
+    ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians
     (dungeonRotation), 0, 0)));
 
     int width, height, channels;
@@ -44,20 +47,17 @@ Dungeon::Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
             name += std::to_string(y);
             name += ")";
 
-            Engine::Entity wall = new GameObject(*wallPrefab);
-
+            Engine::Entity wall = Engine::CopyEntity(wallPrefab);
             if(rand() % 2 == 0)
             {
-                Engine::PlayerController& controller = wall->AddComponent<Engine::PlayerController>();
+                Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(wall);
                 controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
                 controller.speed = ((rand() % 1000) + 1) / 100.0f;
             }
 
-            wall->GetComponent<Engine::Name>() = name;
-            wall->GetComponent<Engine::Transform>().SetTranslation(glm::vec3(x - width / 2, y - height / 2, 0));
-            wall->SetParent(gameObject);
+            ecsSystem->GetComponent<Engine::Name>(wall) = name;
+            ecsSystem->GetComponent<Engine::Transform>(wall).SetTranslation(glm::vec3(x - width / 2, y - height / 2,0));
+            ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));
         }
     }
-
-
 }

@@ -7,5 +7,5 @@ namespace Engine
 {
     Entity FindChild(Entity root, Name name);
     Entity CopyEntity(Entity entity);
-    std::vector<Entity> ImportGLTF(std::filesystem::path gltf);
+    std::vector<Entity> ImportGLTF(std::filesystem::path gltf, bool addParent = false);
 } // Engine

@@ -1,8 +1,4 @@
-#include "../../include/EntityUtility.h"
-#include "ECS/Components/Name.h"
-#include "ECS/Components/Transform.h"
-#include "../../include/ECSSystem.h"
-#include "ECS/Systems/RenderSystem.h"
+#include "Engine.h"
 //For whatever reason, these defines are not allowed to be written before glad is included (glad is also included in Engine.h)
 #define STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -11,7 +7,6 @@
 #include <iostream>
 #include <queue>
 
-extern Engine::ECSSystem ecsSystem;
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
@@ -26,22 +21,22 @@ namespace Engine
      */
     Entity FindChild(Entity root, Name name)
     {
-        if(!ecsSystem.HasComponent<Name>(root))
+        if(!ecsSystem->HasComponent<Name>(root))
         {
             std::cout << "ERROR: FindChild(Entity root, Name name) was called with a root that does not have a Name component. \n"
                       << "EntityID of root is: " << root << "\n";
             return Entity::INVALID_ENTITY_ID;
         }
 
-        if(!ecsSystem.HasComponent<Transform>(root))
+        if(!ecsSystem->HasComponent<Transform>(root))
         {
             std::cout << "ERROR: FindChild(Entity root, Name name) was called with a root that does not have a Transform component. \n"
                       << "EntityID of root is: " << root << "\n"
-                      << "Entity name of root is: " << ecsSystem.GetComponent<Name>(root).c_str() << "\n";
+                      << "Entity name of root is: " << ecsSystem->GetComponent<Name>(root).c_str() << "\n";
             return Entity::INVALID_ENTITY_ID;
         }
 
-        if(ecsSystem.GetComponent<Name>(root) == name)
+        if(ecsSystem->GetComponent<Name>(root) == name)
         {
             return root;
         }
@@ -54,31 +49,33 @@ namespace Engine
             Entity subject = entityQueue.front();
             entityQueue.pop();
 
-            if(ecsSystem.GetComponent<Name>(subject) == name)
+            if(ecsSystem->GetComponent<Name>(subject) == name)
             {
                 return subject;
             }
 
-            for(Transform* childTransform : ecsSystem.GetComponent<Transform>(subject).GetChildren())
+            for(Transform* childTransform : ecsSystem->GetComponent<Transform>(subject).GetChildren())
             {
-                entityQueue.push(ecsSystem.GetEntity(*childTransform));
+                entityQueue.push(ecsSystem->GetEntity(*childTransform));
             }
         }
 
         std::cout << "WARNING: No child with name \"" << name << "\" in " << root << " found. \n"
-                  << "Root name is: \"" << ecsSystem.GetComponent<Name>(root) << "\".\n";
+                  << "Root name is: \"" << ecsSystem->GetComponent<Name>(root) << "\".\n";
         return Entity::INVALID_ENTITY_ID;
     }
 
     /**
-     * Loads a .gltf or .glb from the given path and returns an entity that is the root of all upper nodes in the first scene.
+     * Loads a .gltf or .glb from the given path and returns entities for all upper nodes in the first scene.
      * Name, Transform and MeshRenderer components are automatically assigned to the entities in correspondence to the gltf.
      * Only the first scene is loaded, all others are ignored.
      * If the file format is .gltf, all resources need to be embedded into this file.
-     * @param gltf
+     * @param filePath
+     * @param addParent if true, the returned vector only contains one entity, to which all top entities are parented
+     * to.
      * @return
      */
-    std::vector<Entity> ImportGLTF(std::filesystem::path filePath)
+    std::vector<Entity> ImportGLTF(std::filesystem::path filePath, bool addParent)
     {
         std::vector<Entity> entities;
         bool hasWorked;
@@ -106,9 +103,27 @@ namespace Engine
         {
             const tinygltf::Node& node = model->nodes[nodeIndex];
             Entity entity = GenerateEntities(node, nullptr, model);
-            Transform &transform = ecsSystem.GetComponent<Transform>(entity);
+            Transform &transform = ecsSystem->GetComponent<Transform>(entity);
             transform.SetParent(nullptr);
             entities.push_back(entity);
+        }
+
+        if(addParent)
+        {
+            Entity parent = ecsSystem->CreateEntity();
+            ecsSystem->AddComponent<Name>(parent, filePath.stem().string());
+            Transform &transform = ecsSystem->AddComponent<Transform>(parent);
+            transform.SetParent(nullptr);
+            transform.SetRotation(glm::identity<glm::quat>());
+            transform.SetTranslation(glm::vec3(0));
+            transform.SetScale(glm::vec3(1));
+
+            for(int i = 0; i < entities.size(); i++)
+            {
+                ecsSystem->GetComponent<Transform>(entities[i]).SetParent(&transform);
+            }
+            entities.clear();
+            entities.push_back(parent);
         }
 
         return entities;
@@ -118,20 +133,26 @@ namespace Engine
     {
         Entity newEntity = ecsSystem->CreateEntity();
 
-        for(Engine::ComponentType type = 0; type < ecsSystem->GetHighestComponentType(); type++)
-        {
-            //Wie kann ich durch alle registrierten typen durchiterieren bzw.
-            //Wie kann ich alle Komponenten erhalten, die eine Entity hat?
-            if(ecsSystem->HasComponent<type>(entity))
-        }
+        if(ecsSystem->HasComponent<Engine::Name>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + "Cloned");
+        if(ecsSystem->HasComponent<Engine::Transform>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Transform>(entity));
+        if(ecsSystem->HasComponent<Engine::MeshRenderer>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::MeshRenderer>(entity));
+        if(ecsSystem->HasComponent<Engine::BoxCollider>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::BoxCollider>(entity));
+        if(ecsSystem->HasComponent<Engine::PlayerController>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::PlayerController>(entity));
+
+        return newEntity;
     }
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
     {
-        Engine::Entity entity = ecsSystem.CreateEntity();
+        Engine::Entity entity = ecsSystem->CreateEntity();
 
         Engine::Name name = root.name;
-        ecsSystem.AddComponent(entity, name);
+        ecsSystem->AddComponent(entity, name);
 
         Engine::Transform transform;
         glm::vec3 translation{0};
@@ -147,19 +168,19 @@ namespace Engine
         transform.SetTranslation(translation);
         transform.SetScale(scale);
         transform.SetRotation(rotation);
-        ecsSystem.AddComponent(entity, transform);
-        ecsSystem.GetComponent<Engine::Transform>(entity).SetParent(parent);
+        ecsSystem->AddComponent(entity, transform);
+        ecsSystem->GetComponent<Engine::Transform>(entity).SetParent(parent);
 
         if (root.mesh != -1)
         {
             Engine::MeshRenderer meshRenderer = renderSystem->CreateMeshRenderer(model->meshes[root.mesh], model);
-            ecsSystem.AddComponent(entity, meshRenderer);
+            ecsSystem->AddComponent(entity, meshRenderer);
         }
 
         for (int childIndex: root.children)
         {
             const tinygltf::Node &child = model->nodes[childIndex];
-            GenerateEntities(child, &ecsSystem.GetComponent<Engine::Transform>(entity), model);
+            GenerateEntities(child, &ecsSystem->GetComponent<Engine::Transform>(entity), model);
         }
 
         return entity;

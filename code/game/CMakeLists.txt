@@ -42,8 +42,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Components/BoxCollider.h
         ../engine/include/GlobalGameEvents.h
         src/GlobalGameEvents.cpp
-        src/Player.cpp
-        include/Player.h
         ../engine/include/ECS/Systems/TransformParentSystem.h
         ../engine/src/ECS/Systems/TransformParentSystem.cpp
         ../engine/include/ECS/Helpers/Collision.h
@@ -53,7 +51,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/PlayerControllerSystem.cpp
         ../engine/include/ECS/Systems/PlayerControllerSystem.h
         ../engine/src/ECS/Entity.cpp
-        ../engine/src/ECS/ComponentManager.cpp
 )
 
 set(EXE_FILE Game)

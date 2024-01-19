@@ -11,7 +11,7 @@
 #include "FileSystem.h"
 #include "ECS/Components/Name.h"
 
-extern Engine::ECSSystem ecsSystem;
+extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     void RenderSystem::Render()
@@ -21,16 +21,15 @@ namespace Engine
 
         for(Entity entity : entities)
         {
-            Transform& transform = ecsSystem.GetComponent<Transform>(entity);
-
+            Transform& transform = ecsSystem->GetComponent<Transform>(entity);
             Render(entity);
         }
     }
 
     void RenderSystem::Render(Entity entity)
     {
-        Transform& transform = ecsSystem.GetComponent<Transform>(entity);
-        MeshRenderer& meshRenderer = ecsSystem.GetComponent<MeshRenderer>(entity);
+        Transform& transform = ecsSystem->GetComponent<Transform>(entity);
+        MeshRenderer& meshRenderer = ecsSystem->GetComponent<MeshRenderer>(entity);
 
         for(int i = 0; i < meshRenderer.mesh->primitives.size(); i++)
         {

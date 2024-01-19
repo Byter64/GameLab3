@@ -13,7 +13,8 @@ namespace Engine
     class ComponentManager
     {
         std::unordered_map<const char*, ComponentType> componentTypes;
-        std::unordered_map<const char*, std::shared_ptr<IComponentArray>> componentArrays;
+        std::unordered_map<const char*, std::shared_ptr<IComponentArray>> typeToComponentArrays;
+        std::unordered_map<ComponentType, std::shared_ptr<IComponentArray>> componentTypeToComponentArrays;
 
         ComponentType nextFreeComponentType;
 
@@ -30,7 +31,7 @@ namespace Engine
                 throw std::runtime_error(message);
             }
 
-            return std::static_pointer_cast<ComponentArray<T>>(componentArrays[typeName]);
+            return std::static_pointer_cast<ComponentArray<T>>(typeToComponentArrays[typeName]);
         }
 
     public:
@@ -47,8 +48,9 @@ namespace Engine
                 throw std::runtime_error(message);
             }
 
-            componentArrays.insert({typeName, std::make_shared<ComponentArray<T>>()});
-
+            std::shared_ptr<IComponentArray> array = std::make_shared<ComponentArray<T>>();
+            typeToComponentArrays.insert({typeName, array});
+            componentTypeToComponentArrays.insert({nextFreeComponentType, array});
             componentTypes.insert({typeName, nextFreeComponentType});
             nextFreeComponentType++;
         }
@@ -108,14 +110,12 @@ namespace Engine
 
         void EntityDestroyed(Entity entity)
         {
-            for(auto const& pair: componentArrays)
+            for(auto const& pair: typeToComponentArrays)
             {
                 auto const& component = pair.second;
                 component->EntityDestroyed(entity);
             }
         }
-
-        ComponentType GetHighestComponentType() const;
     };
 
 } // Engine

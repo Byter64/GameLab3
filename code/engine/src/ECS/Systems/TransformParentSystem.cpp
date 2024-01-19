@@ -1,7 +1,7 @@
 #include "ECS/Systems/TransformParentSystem.h"
 #include "ECSSystem.h"
 #include <list>
-extern Engine::ECSSystem ecsSystem;
+extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     void TransformParentSystem::EntityAdded(Entity entity)
@@ -11,8 +11,7 @@ namespace Engine
 
     void TransformParentSystem::EntityRemoved(Entity entity)
     {
-        //Does not provide a call operator?!?!?!?!
-        Transform& transform = ecsSystem.GetComponent<Transform>(entity);
+        Transform& transform = ecsSystem->GetComponent<Transform>(entity);
 
         if(transform.GetParent() != nullptr)
         {
@@ -20,9 +19,10 @@ namespace Engine
             transformList.remove(&transform);
         }
 
-        for(Transform* child : transform.GetChildren())
+        std::list<Transform*> children = transform.GetChildren();
+        while(!transform.GetChildren().empty())
         {
-            child->SetParent(nullptr);
+            children.front()->SetParent(nullptr);
         }
     }
 } // Engine
