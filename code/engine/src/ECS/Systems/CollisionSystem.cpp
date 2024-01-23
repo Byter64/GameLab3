@@ -20,8 +20,8 @@ namespace Engine
         transform1.AddTranslation(-collider1.position);
         transform2.AddTranslation(-collider2.position);
 
-        glm::vec3 size1 = collider1.size * transform1.GetGlobalScale() * 0.5f; //Size is now half of the actual size
-        glm::vec3 size2 = collider2.size * transform1.GetGlobalScale() * 0.5f;
+        glm::vec3 size1 = collider1.size * transform1.GetGlobalScale(); //Size is now half of the actual size
+        glm::vec3 size2 = collider2.size * transform1.GetGlobalScale();
 
         bool areColliding = true;
         if ( std::abs(position1[0] - position2[0]) > (size1[0] + size2[0]) ) areColliding = false;
