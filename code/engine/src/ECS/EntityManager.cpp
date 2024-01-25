@@ -41,6 +41,7 @@ namespace Engine
 
         Entity id = pooledEntities.front();
         pooledEntities.pop();
+
         return id;
     }
 
@@ -78,5 +79,6 @@ namespace Engine
         {
             ecsSystem->DestroyEntity(entity);
         }
+        purgatory.clear();
     }
 } // Engine

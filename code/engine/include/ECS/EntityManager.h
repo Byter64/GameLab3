@@ -9,7 +9,7 @@ namespace Engine
 
     class EntityManager
     {
-        std::queue<Entity> pooledEntities;
+        std::queue<Entity> pooledEntities; //Unused entities that are available for usage
         std::array<Signature, Entity::MAX_ENTITIES> signatures;
         std::uint32_t activeEntitiesCount; //Currently used entities (these are always inside the pool)
         std::uint32_t pooledEntitiesCount; //Currently used AND unused entities

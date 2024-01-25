@@ -52,7 +52,7 @@ namespace Engine
         Entity entity = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.2f));
         ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation());
-        
+
         Engine::Bullet& bullet = ecsSystem->AddComponent<Engine::Bullet>(entity);
         bullet.velocity = controller.lookDirection * controller.speed * 2.0f;
         bullet.spawner = player;
