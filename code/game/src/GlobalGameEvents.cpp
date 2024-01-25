@@ -24,7 +24,9 @@ void Engine::OnStartGame()
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
     controller.speed = 2;
     controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
+    controller.SetFireInput(GLFW_KEY_SPACE);
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.8f);
 
     Engine::Entity wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS /
             "Graphics\\Models\\Wall\\Wall.glb")[0];
@@ -35,7 +37,7 @@ void Engine::OnStartGame()
 
     Dungeon* dungeon = new Dungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab);
     ecsSystem->GetComponent<Engine::Transform>(dungeon->entity).AddTranslation(glm::vec3(0, 0, 0));
-    ecsSystem->DeleteEntity(wallPrefab);
+    ecsSystem->DestroyEntity(wallPrefab);
 
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
     renderSystem->camera.SetScale(glm::vec3(1));

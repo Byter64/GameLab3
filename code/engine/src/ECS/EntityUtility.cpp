@@ -143,6 +143,8 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::BoxCollider>(entity));
         if(ecsSystem->HasComponent<Engine::PlayerController>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::PlayerController>(entity));
+        if(ecsSystem->HasComponent<Engine::Bullet>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Bullet>(entity));
 
         return newEntity;
     }

@@ -21,13 +21,13 @@ namespace Engine
          */
         bool AddNewEntitiesToPool(unsigned int amount);
 
-        void DestroyEntity(Entity entity);
     public:
         EntityManager();
         Entity CreateEntity();
         void SetSignature(Entity entity, Signature signature);
         Signature GetSignature(Entity entity);
-        void DeleteEntity(Entity entity);
+        void RemoveEntity(Entity entity);
+        void DestroyEntity(Entity entity);
         void DeletePurgatory();
     };
 

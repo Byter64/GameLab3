@@ -39,7 +39,6 @@ namespace Engine
         }
         else if (areColliding && collider1.collisions.find(collision1) == collider1.collisions.end())
         {
-            std::cout << "Started Collision\n";
             //Start collision
             collider1.collisions[collision1] = Collision::State::ENTER;
             collider2.collisions[collision2] = Collision::State::ENTER;
@@ -103,6 +102,14 @@ namespace Engine
 
     void CollisionSystem::EntityRemoved(Entity entity)
     {
-
+        BoxCollider &collider = ecsSystem->GetComponent<BoxCollider>(entity);
+        for (auto collision: collider.collisions)
+        {
+            Entity other = collision.first.other;
+            Collision col = {other, entity};
+            BoxCollider &otherCollider = ecsSystem->GetComponent<Engine::BoxCollider>(other);
+            otherCollider.collisions.erase(col);
+        }
     }
+
 } // Engine

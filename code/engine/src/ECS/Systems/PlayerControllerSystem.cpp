@@ -3,6 +3,7 @@
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/PlayerController.h"
 #include "Engine.h"
+#include <iostream>
 
 extern Engine::ECSSystem* ecsSystem;
 namespace Engine
@@ -33,8 +34,32 @@ namespace Engine
             }
 
             if(controller.movementInput != glm::vec3(0))
-                transform.AddTranslation(glm::normalize(glm::vec3(controller.movementInput)) * deltaTime *
-                controller.speed);
+            {
+                transform.AddTranslation(glm::normalize(glm::vec3(controller.movementInput)) * deltaTime * controller.speed);
+                controller.lookDirection = glm::normalize(glm::vec3(controller.movementInput));
+            }
+            if(controller.wasFirePushed)
+            {
+                controller.wasFirePushed = false;
+                SpawnBullet(entity);
+            }
         }
+    }
+
+    void PlayerControllerSystem::SpawnBullet(Entity player)
+    {
+        Engine::PlayerController& controller =ecsSystem->GetComponent<Engine::PlayerController>(player);
+        Entity entity = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.2f));
+        ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation());
+        
+        Engine::Bullet& bullet = ecsSystem->AddComponent<Engine::Bullet>(entity);
+        bullet.velocity = controller.lookDirection * controller.speed * 2.0f;
+        bullet.spawner = player;
+
+        BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(entity);
+        collider.size = glm::vec3(0.4f, 0.6f, 0.4f);
+        collider.isStatic = false;
+        collider.collisions.clear();
     }
 } // Engine

@@ -19,7 +19,8 @@ namespace Engine
         void Init();
 
         Entity CreateEntity();
-        void DeleteEntity(Entity entity);
+        void DestroyEntity(Entity entity);
+        void RemoveEntity(Entity entity);
         void DeletePurgatory();
 
         template<typename T>

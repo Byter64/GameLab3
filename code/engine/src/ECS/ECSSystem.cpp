@@ -14,10 +14,14 @@ namespace Engine
         return entityManager->CreateEntity();
     }
 
-    void ECSSystem::DeleteEntity(Entity entity)
+    /*
+     * You usually dont want to use this, as it immediately destroys the entity.
+     * You should rather use RemoveEntity, which removes the entity at the end of the frame
+     */
+    void ECSSystem::DestroyEntity(Entity entity)
     {
         systemManager->EntityDestroyed(entity);
-        entityManager->DeleteEntity(entity);
+        entityManager->DestroyEntity(entity);
         componentManager->EntityDestroyed(entity);
     }
 
@@ -29,5 +33,13 @@ namespace Engine
     void ECSSystem::DeletePurgatory()
     {
         entityManager->DeletePurgatory();
+    }
+
+    /*
+     * Removes the entity at the end of the frame
+     */
+    void ECSSystem::RemoveEntity(Entity entity)
+    {
+        entityManager->RemoveEntity(entity);
     }
 } // Engine

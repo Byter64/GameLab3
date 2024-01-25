@@ -51,6 +51,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/PlayerControllerSystem.cpp
         ../engine/include/ECS/Systems/PlayerControllerSystem.h
         ../engine/src/ECS/Entity.cpp
+        ../engine/include/ECS/Components/Bullet.h
+        ../engine/src/ECS/Systems/BulletSystem.cpp
+        ../engine/include/ECS/Systems/BulletSystem.h
 )
 
 set(EXE_FILE Game)

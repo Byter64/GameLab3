@@ -1,5 +1,7 @@
 #include "ECS/EntityManager.h"
+#include "ECSSystem.h"
 
+extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     EntityManager::EntityManager()
@@ -42,7 +44,7 @@ namespace Engine
         return id;
     }
 
-    void EntityManager::DeleteEntity(Entity entity)
+    void EntityManager::RemoveEntity(Entity entity)
     {
         purgatory.insert(entity);
     }
@@ -74,7 +76,7 @@ namespace Engine
     {
         for(Entity entity : purgatory)
         {
-            DestroyEntity(entity);
+            ecsSystem->DestroyEntity(entity);
         }
     }
 } // Engine
