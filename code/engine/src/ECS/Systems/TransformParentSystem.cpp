@@ -23,6 +23,7 @@ namespace Engine
         while(!transform.GetChildren().empty())
         {
             children.front()->SetParent(nullptr);
+            children.pop_front();
         }
     }
 } // Engine
