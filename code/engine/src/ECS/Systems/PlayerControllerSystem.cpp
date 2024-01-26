@@ -46,7 +46,6 @@ namespace Engine
                 SpawnBullet(entity);
             }
 
-            std::cout << transform.ToString() << std::endl;
         }
     }
 

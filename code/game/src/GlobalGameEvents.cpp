@@ -29,7 +29,9 @@ void Engine::OnStartGame()
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.8f);
 
     Engine::Entity enemy = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
+    ecsSystem->GetComponent<Engine::Transform>(enemy).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
     ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).movementSpeed = 2;
 
@@ -49,6 +51,7 @@ void Engine::OnStartGame()
 
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
     renderSystem->camera.SetScale(glm::vec3(1));
+    renderSystem->camera.SetRotation(glm::vec3(glm::radians(-22.5f),0,0));
 }
 
 void Engine::OnEndGame()
