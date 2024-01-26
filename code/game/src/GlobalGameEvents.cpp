@@ -8,18 +8,18 @@ extern Engine::InputSystem* inputSystem;
 
 extern std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern GLFWwindow *window;
 
 Engine::Entity krawatterich;
 Engine::Entity root;
-void LoadDemo();
 
 void Engine::OnStartGame()
 {
-    //LoadDemo();
     inputSystem = new Engine::InputSystem(window);
 
-    Engine::Entity player = Engine::ImportGLTF((Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb"))[0];
+
+    Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(player).SetScale(glm::vec3(0.5f));
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
     controller.speed = 2;
@@ -27,6 +27,12 @@ void Engine::OnStartGame()
     controller.SetFireInput(GLFW_KEY_SPACE);
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.8f);
+
+    Engine::Entity enemy = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
+    ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
+    ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
+    ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).movementSpeed = 2;
+
 
     Engine::Entity wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS /
             "Graphics\\Models\\Wall\\Wall.glb")[0];
@@ -38,6 +44,8 @@ void Engine::OnStartGame()
     Dungeon* dungeon = new Dungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab);
     ecsSystem->GetComponent<Engine::Transform>(dungeon->entity).AddTranslation(glm::vec3(0, 0, 0));
     ecsSystem->DestroyEntity(wallPrefab);
+
+    enemyBehaviourSystem->dungeonMap = dungeon->wallMap;
 
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
     renderSystem->camera.SetScale(glm::vec3(1));

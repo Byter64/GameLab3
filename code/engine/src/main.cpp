@@ -18,6 +18,7 @@ std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -41,6 +42,7 @@ int main()
         glfwPollEvents();
         playerControllerSystem->Update(passedTimeInSeconds);
         bulletSystem->Update(passedTimeInSeconds);
+        enemyBehaviourSystem->Update(passedTimeInSeconds);
 
         collisionSystem->CheckCollisions();
 
@@ -99,6 +101,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::BoxCollider>();
     ecsSystem->RegisterComponent<Engine::PlayerController>();
     ecsSystem->RegisterComponent<Engine::Bullet>();
+    ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
@@ -130,6 +133,13 @@ void InitializeECS()
     bulletSignature.set(ecsSystem->GetComponentType<Engine::Bullet>());
     bulletSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     ecsSystem->SetSystemSignature<Engine::BulletSystem>(bulletSignature);
+
+    enemyBehaviourSystem = ecsSystem->RegisterSystem<Engine::EnemyBehaviourSystem>();
+    Engine::Signature enemyBehaviourSignature;
+    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
+    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
 }
 
 

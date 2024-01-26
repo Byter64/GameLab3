@@ -30,6 +30,8 @@ namespace Engine
             {
                 Transform& otherTransform = ecsSystem->GetComponent<Transform>(pair.first.other);
                 glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
+                if(distance == glm::vec3(0))
+                    distance.x += 1;
                 transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
             }
 
@@ -43,6 +45,8 @@ namespace Engine
                 controller.wasFirePushed = false;
                 SpawnBullet(entity);
             }
+
+            std::cout << transform.ToString() << std::endl;
         }
     }
 
