@@ -5,6 +5,7 @@
 #include <list>
 #include <cstdlib>
 #include <iterator>
+#include <random>
 
 namespace Engine
 {
@@ -15,7 +16,16 @@ namespace Engine
 
     void EnemyBehaviourSystem::EntityAdded(Entity entity)
     {
+        EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+        Transform& transform = ecsSystem->GetComponent<Transform>(entity);
 
+        int index = rand() % graph.size();
+        auto iter = graph.begin();
+        std::advance(iter, index);
+
+        behaviour.targetNode = iter->first;
+        behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second);
+        transform.SetTranslation(glm::vec3(behaviour.targetPos, 0));
     }
 
     void EnemyBehaviourSystem::EntityRemoved(Entity entity)
@@ -47,179 +57,46 @@ namespace Engine
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
         Transform &transform = ecsSystem->GetComponent<Transform>(entity);
 
-        behaviour.time -= deltaTime;
-
-        switch (behaviour.state)
+        if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime)
         {
-            case EnemyBehaviour::Spawning:
-            {
-                if (behaviour.time > 0) return;
-
-                behaviour.state = EnemyBehaviour::Moving;
-                behaviour.time = ((rand() / (float) RAND_MAX) * 4 + 1);
-
-                int x = (int) transform.GetGlobalTranslation().x;
-                int y = (int) transform.GetGlobalTranslation().y;
-                std::pair<int, int> freeAdjacentField = GetShuffeldAdjacentFields(x, y).front();
-
-                behaviour.movement.x = freeAdjacentField.first - x;
-                behaviour.movement.y = freeAdjacentField.second - y;
-                break;
-            }
-            case EnemyBehaviour::Idling:
-            {
-                if (behaviour.time > 0.0f) return;
-
-                unsigned int random = rand() % 10;
-                if (random == 0)
-                {
-                    behaviour.state = EnemyBehaviour::Shooting;
-                    behaviour.time = random == 0;
-                } else
-                {
-                    behaviour.state = EnemyBehaviour::Moving;
-                    behaviour.time = ((rand() / (float) RAND_MAX) * 4 + 1);
-
-                    int x = (int) transform.GetGlobalTranslation().x;
-                    int y = (int) transform.GetGlobalTranslation().y;
-                    std::pair<int, int> freeAdjacentField = GetShuffeldAdjacentFields(x, y).front();
-
-                    behaviour.movement.x = freeAdjacentField.first - x;
-                    behaviour.movement.y = freeAdjacentField.second - y;
-                }
-                break;
-            }
-            case EnemyBehaviour::Moving:
-            {
-                if (behaviour.time < 0)
-                {
-                    int number = rand() % 10;
-
-                    if (number < 5)
-                    {
-                        behaviour.state = EnemyBehaviour::Shooting;
-                    } else if (number < 8)
-                    {
-                        behaviour.state = EnemyBehaviour::Moving;
-                        behaviour.time = ((rand() / (float) RAND_MAX) * 4 + 1);
-
-                        int x = (int) transform.GetGlobalTranslation().x;
-                        int y = (int) transform.GetGlobalTranslation().y;
-                        std::pair<int, int> freeAdjacentField = GetShuffeldAdjacentFields(x, y).front();
-
-                        behaviour.movement.x = freeAdjacentField.first - x;
-                        behaviour.movement.y = freeAdjacentField.second - y;
-                    } else
-                    {
-                        behaviour.state = EnemyBehaviour::Idling;
-                        behaviour.time = ((rand() / (float) RAND_MAX) * 3 + 1);
-                    }
-
-                    return;
-                }
-
-                transform.AddTranslation(
-                        glm::vec3(glm::normalize(behaviour.movement), 0) * deltaTime * behaviour.movementSpeed);
-                int xPos = (int) (transform.GetGlobalTranslation().x + behaviour.movement.x);
-                int yPos = (int) (transform.GetGlobalTranslation().y + behaviour.movement.y);
-
-                if (!DoesPositionExistAndIsFree(xPos, yPos))
-                {
-                    int number = rand() % 10;
-
-                    if (number < 9)
-                    {
-                        behaviour.state = EnemyBehaviour::Moving;
-                        behaviour.time = ((rand() / (float) RAND_MAX) * 4 + 1);
-
-                        int x = (int) transform.GetGlobalTranslation().x;
-                        int y = (int) transform.GetGlobalTranslation().y;
-                        std::pair<int, int> freeAdjacentField = GetShuffeldAdjacentFields(x, y).front();
-
-                        behaviour.movement.x = freeAdjacentField.first - x;
-                        behaviour.movement.y = freeAdjacentField.second - y;
-                    } else
-                    {
-                        behaviour.state = EnemyBehaviour::Idling;
-                        behaviour.time = ((rand() / (float) RAND_MAX) * 3 + 1);
-                    }
-                }
-                break;
-            }
-            case EnemyBehaviour::Shooting:
-            {
-                std::cout << "I shoot" << std::endl;
-                unsigned int random = rand() % 10;
-                if (random == 0)
-                {
-                    behaviour.state = EnemyBehaviour::Shooting;
-                    behaviour.time = random == 0;
-                } else
-                {
-                    behaviour.state = EnemyBehaviour::Moving;
-                    behaviour.time = ((rand() / (float) RAND_MAX) * 4 + 1);
-
-                    int x = (int) transform.GetGlobalTranslation().x;
-                    int y = (int) transform.GetGlobalTranslation().y;
-                    std::pair<int, int> freeAdjacentField = GetShuffeldAdjacentFields(x, y).front();
-
-                    behaviour.movement.x = freeAdjacentField.first - x;
-                    behaviour.movement.y = freeAdjacentField.second - y;
-                }
-                break;
-            }
-        }
-    }
-
-    bool EnemyBehaviourSystem::DoesPositionExistAndIsFree(int x, int y)
-    {
-        x += wallMap.size() / 2;
-        y += wallMap[0].size() / 2;
-
-        if (x < 0 || x >= wallMap.size() || y < 0 || y >= wallMap[0].size())
-        {
-            return false;
-        }
-
-        return !wallMap[x][y];
-    }
-
-    std::queue<std::pair<int, int>> EnemyBehaviourSystem::GetShuffeldAdjacentFields(int x, int y)
-    {
-        std::queue<std::pair<int, int>> adjacentFields;
-        std::list<int> numbers{1, 2, 3, 4};
-
-        while (!numbers.empty())
-        {
-            int index = rand() % numbers.size();
-            auto iter = numbers.begin();
+            std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
+            int index = rand() % list.size();
+            auto iter = list.begin();
             std::advance(iter, index);
-            switch (*iter)
-            {
-                case 1:
-                    if (DoesPositionExistAndIsFree(x + 1, y))
-                        adjacentFields.push({x + 1, y});
-                    break;
-                case 2:
-                    if (DoesPositionExistAndIsFree(x, y + 1))
-                        adjacentFields.push({x, y + 1});
-                    break;
-                case 3:
-                    if (DoesPositionExistAndIsFree(x - 1, y))
-                        adjacentFields.push({x - 1, y});
-                    break;
-                case 4:
-                    if (DoesPositionExistAndIsFree(x, y - 1))
-                        adjacentFields.push({x, y - 1});
-                    break;
-            }
 
-            iter = numbers.begin();
-            std::advance(iter, index);
-            numbers.remove(*iter);
+            auto oldTarget = behaviour.targetNode;
+            behaviour.targetNode = *iter;
+            behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second);
+            behaviour.movement =  glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(oldTarget.first, oldTarget.second));
         }
 
-        return adjacentFields;
+        std::random_device rd;
+        std::mt19937 gen(rd());
+
+        if(behaviour.shootTimer <= 0)
+        {
+            std::cout << "I made a shot" << std::endl;
+            std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
+            behaviour.shootTimer = distr(gen);
+        }
+
+        if(behaviour.idlerTimer <= 0)
+        {
+            std::uniform_real_distribution<> distr;
+            if(behaviour.isMoving)
+                distr = std::uniform_real_distribution<>(idleDurationRange.first, idleDurationRange.second);
+            else
+                distr = std::uniform_real_distribution<>(idleTimeRange.first, idleTimeRange.second);
+
+            behaviour.isMoving = !behaviour.isMoving;
+            behaviour.idlerTimer = distr(gen);
+        }
+
+        behaviour.idlerTimer -= deltaTime;
+        behaviour.shootTimer -= deltaTime;
+
+        if(behaviour.isMoving)
+            transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
     }
 
     std::pair<int, int> EnemyBehaviourSystem::FindNode(int startx, int starty, int dirx, int diry)
@@ -257,7 +134,7 @@ namespace Engine
         }
 
         //Create connections between nodes
-        for (auto pair : graph)
+        for (auto& pair : graph)
         {
             std::pair<int, int> pos = pair.first;
             std::pair<int, int> top = FindNode(pos.first, pos.second, 0, 1);
