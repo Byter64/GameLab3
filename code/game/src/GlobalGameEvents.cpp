@@ -18,7 +18,6 @@ void Engine::OnStartGame()
 {
     inputSystem = new Engine::InputSystem(window);
 
-
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(player).SetScale(glm::vec3(0.5f));
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
@@ -47,7 +46,7 @@ void Engine::OnStartGame()
     ecsSystem->GetComponent<Engine::Transform>(dungeon->entity).AddTranslation(glm::vec3(0, 0, 0));
     ecsSystem->DestroyEntity(wallPrefab);
 
-    enemyBehaviourSystem->dungeonMap = dungeon->wallMap;
+    enemyBehaviourSystem->Initialize(dungeon->wallMap);
 
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
     renderSystem->camera.SetScale(glm::vec3(1));
