@@ -45,14 +45,13 @@ namespace Engine
                 controller.wasFirePushed = false;
                 SpawnBullet(entity);
             }
-
         }
     }
 
     void PlayerControllerSystem::SpawnBullet(Entity player)
     {
         Engine::PlayerController& controller =ecsSystem->GetComponent<Engine::PlayerController>(player);
-        Entity entity = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
+        Entity entity = CopyEntity(bulletPrefab);
         ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.2f));
         ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation());
 
@@ -61,8 +60,14 @@ namespace Engine
         bullet.spawner = player;
 
         BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(entity);
-        collider.size = glm::vec3(0.4f, 0.6f, 0.4f);
+        collider.size = glm::vec3(1, 1, 1);
         collider.isStatic = false;
         collider.collisions.clear();
+    }
+
+    PlayerControllerSystem::PlayerControllerSystem()
+    {
+        bulletPrefab = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
     }
 } // Engine
