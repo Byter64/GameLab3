@@ -10,8 +10,10 @@ namespace Engine
 {
     class EnemyBehaviourSystem : public System
     {
+        std::vector<std::vector<bool>> wallMap;
         std::map<std::pair<int, int>, std::list<std::pair<int, int>>> graph;
         std::pair<int, int> dungeonSize;
+        glm::vec2 originOffset;
 
         void EntityAdded(Entity entity);
         void EntityRemoved(Entity entity);

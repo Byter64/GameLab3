@@ -44,7 +44,6 @@ void Engine::OnStartGame()
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
-    ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).movementSpeed = 2;
 
 
 

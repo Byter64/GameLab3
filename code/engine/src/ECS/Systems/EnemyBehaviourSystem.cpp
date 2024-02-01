@@ -24,7 +24,8 @@ namespace Engine
         std::advance(iter, index);
 
         behaviour.targetNode = iter->first;
-        behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second);
+        behaviour.oldTargetNode = iter->first;
+        behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
         transform.SetTranslation(glm::vec3(behaviour.targetPos, 0));
     }
 
@@ -57,17 +58,28 @@ namespace Engine
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
         Transform &transform = ecsSystem->GetComponent<Transform>(entity);
 
-        if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime)
+        if(behaviour.isMoving)
+            transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
+
+        if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
         {
             std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
-            int index = rand() % list.size();
-            auto iter = list.begin();
-            std::advance(iter, index);
+            auto iter = list.end();
+            int i = 0;
+            do
+            {
+                int index = rand() % list.size();
+                iter = list.begin();
+                std::advance(iter, index);
+                i++;
+            } while(i < 5 && *iter == behaviour.oldTargetNode);
 
-            auto oldTarget = behaviour.targetNode;
+            behaviour.oldTargetNode = behaviour.targetNode;
             behaviour.targetNode = *iter;
-            behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second);
-            behaviour.movement =  glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(oldTarget.first, oldTarget.second));
+            behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
+            behaviour.movement = glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second));
+
+            transform.SetRotation(glm::quat(glm::atan(behaviour.movement.y, behaviour.movement.x),0.0f,0.0f,1.0f));
         }
 
         std::random_device rd;
@@ -94,17 +106,21 @@ namespace Engine
 
         behaviour.idlerTimer -= deltaTime;
         behaviour.shootTimer -= deltaTime;
-
-        if(behaviour.isMoving)
-            transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
     }
 
+    /// Finds a node by raytracing into a given direction from a given point
+    /// \param startx
+    /// \param starty
+    /// \param dirx
+    /// \param diry
+    /// \return
     std::pair<int, int> EnemyBehaviourSystem::FindNode(int startx, int starty, int dirx, int diry)
     {
         startx += dirx;
         starty += diry;
         while(startx < dungeonSize.first && startx >= 0 && starty < dungeonSize.second && starty >= 0)
         {
+            if(wallMap[startx][starty]) break;
             if(graph.count(std::make_pair(startx, starty)))
             {
                 return std::make_pair(startx, starty);
@@ -116,11 +132,36 @@ namespace Engine
         return std::make_pair(-1, -1);
     }
 
+    /// Will crash, if the wallMap does not have a wall on its outer border
+    bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y)
+    {
+        //position is a wall
+        if(wallMap[x][y]) return false;
+
+        int connections = 0;
+        if(!wallMap[x + 1][y]) connections++;
+        if(!wallMap[x - 1][y]) connections++;
+        if(!wallMap[x][y + 1]) connections++;
+        if(!wallMap[x][y - 1]) connections++;
+
+        //position is not a straight path
+        if(connections != 2) return true;
+
+        //position is a straight path
+        if((!wallMap[x + 1][y] && !wallMap[x - 1][y]) || (!wallMap[x][y + 1] && !wallMap[x][y - 1])) return false;
+
+        //position is a corner
+        return true;
+    }
+
     /// This needs to be called before the first call to Update
     /// \param wallMap a bool map of the dungeon, where true marks a wall, a false marks free space
     void EnemyBehaviourSystem::Initialize(std::vector<std::vector<bool>>& wallMap)
     {
+        this->wallMap = wallMap;
         dungeonSize = std::make_pair(wallMap.size(), wallMap[0].size());
+        originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f + 0.5f;
+
         //Generate all nodes
         for (int y = 0; y < wallMap[0].size(); y++)
         {
@@ -151,27 +192,5 @@ namespace Engine
             if(right.first != -1)
                 pair.second.push_back(right);
         }
-    }
-
-    /// Will crash, if the wallMap does not have a wall on its outer border
-    bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y)
-    {
-        //position is a wall
-        if(wallMap[x][y]) return false;
-
-        int connections = 0;
-        if(!wallMap[x + 1][y]) connections++;
-        if(!wallMap[x - 1][y]) connections++;
-        if(!wallMap[x][y + 1]) connections++;
-        if(!wallMap[x][y - 1]) connections++;
-
-        //position is not a straight path
-        if(connections != 2) return true;
-
-        //position is a straight path
-        if((!wallMap[x + 1][y] && !wallMap[x - 1][y]) || (!wallMap[x][y + 1] && !wallMap[x][y - 1])) return false;
-
-        //position is a corner
-        return true;
     }
 }

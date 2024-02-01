@@ -20,8 +20,9 @@ namespace Engine
 
         bool isMoving = false;
         std::pair<int, int> targetNode;
+        std::pair<int, int> oldTargetNode;
         glm::vec2 targetPos;
         glm::vec2 movement;
-        float movementSpeed;
+        float movementSpeed = 1.0f;
     };
 }
