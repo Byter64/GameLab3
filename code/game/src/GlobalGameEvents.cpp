@@ -21,7 +21,7 @@ void Engine::OnStartGame()
     Engine::Entity wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS /
             "Graphics\\Models\\Wall\\Wall.glb")[0];
     Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wallPrefab);
-    wallCollider.size = glm::vec3(1);
+    wallCollider.size = glm::vec3(1,1, 1000);
     wallCollider.position = glm::vec3 (0);
     wallCollider.isStatic = true;
 
@@ -37,16 +37,13 @@ void Engine::OnStartGame()
     controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
     controller.SetFireInput(GLFW_KEY_SPACE);
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.8f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(1);
 
     Engine::Entity enemy = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
-
-
-
 
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
     renderSystem->camera.SetScale(glm::vec3(1));
