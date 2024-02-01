@@ -36,7 +36,7 @@ void Engine::OnStartGame()
     controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
     controller.SetFireInput(GLFW_KEY_SPACE);
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(1);
+    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
 
     Engine::Entity enemy = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
