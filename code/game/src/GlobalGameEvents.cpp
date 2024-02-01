@@ -31,7 +31,6 @@ void Engine::OnStartGame()
     enemyBehaviourSystem->Initialize(dungeon->wallMap);
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
-    ecsSystem->GetComponent<Engine::Transform>(player).SetScale(glm::vec3(0.5f));
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
     controller.speed = 2;
     controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
