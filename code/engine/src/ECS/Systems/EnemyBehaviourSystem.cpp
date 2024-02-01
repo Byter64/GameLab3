@@ -78,8 +78,8 @@ namespace Engine
             behaviour.targetNode = *iter;
             behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
             behaviour.movement = glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second));
-
-            transform.SetRotation(glm::quat(glm::atan(behaviour.movement.y, behaviour.movement.x),0.0f,0.0f,1.0f));
+            
+            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
         }
 
         std::random_device rd;
