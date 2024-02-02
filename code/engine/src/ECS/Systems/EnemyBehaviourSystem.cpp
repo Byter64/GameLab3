@@ -61,6 +61,8 @@ namespace Engine
         if(behaviour.isMoving)
             transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
 
+        std::cout << "Expected: " << behaviour.movementSpeed * deltaTime * 2 << " Actual: " << glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation()));
+        std::cout << " Position: " << transform.GlobalTranslationToString() << std::endl;
         if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
         {
             std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
@@ -79,6 +81,7 @@ namespace Engine
             behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
             behaviour.movement = glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second));
 
+            transform.SetTranslation(glm::vec3(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second, transform.GetTranslation().z) + glm::vec3(originOffset, 0));
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
         }
 

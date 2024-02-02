@@ -302,4 +302,10 @@ namespace Engine
 
         return message;
     }
+
+    std::string Transform::GlobalTranslationToString()
+    {
+        glm::vec3 pos = GetGlobalTranslation();
+        return "(" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")";
+    }
 } // Engine

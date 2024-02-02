@@ -60,6 +60,7 @@ namespace Engine
         std::list<Transform*>& GetChildren();
         std::string ToString();
         std::string MatrixToString();
+        std::string GlobalTranslationToString();
     };
 
 } // Engine
