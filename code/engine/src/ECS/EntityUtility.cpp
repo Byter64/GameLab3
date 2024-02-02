@@ -4,12 +4,16 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #define TINYGLTF_IMPLEMENTATION
 #include "../../extern/tinygltf/tiny_gltf.h"
+#include "EntityUtility.h"
+
 #include <iostream>
 #include <queue>
 
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
+    Entity bulletPrefab = Entity::INVALID_ENTITY_ID;
+
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
     /**
@@ -147,6 +151,31 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Bullet>(entity));
 
         return newEntity;
+    }
+
+    Entity SpawnBullet(Entity spawner, glm::vec3 position, glm::vec3 direction, float speed)
+    {
+        if(bulletPrefab == Entity::INVALID_ENTITY_ID)
+        {
+            bulletPrefab = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
+            ecsSystem->GetComponent<Engine::Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
+        }
+
+        Entity entity = CopyEntity(bulletPrefab);
+        ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.2f));
+        ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(position);
+        ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
+
+        Engine::Bullet& bullet = ecsSystem->AddComponent<Engine::Bullet>(entity);
+        bullet.velocity = glm::normalize(direction) * speed;
+        bullet.spawner = spawner;
+
+        BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(entity);
+        collider.size = glm::vec3(1, 1, 1);
+        collider.isStatic = false;
+        collider.collisions.clear();
+
+        return entity;
     }
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)

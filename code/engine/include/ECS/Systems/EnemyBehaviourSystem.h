@@ -22,9 +22,9 @@ namespace Engine
         bool IsNode(std::vector<std::vector<bool>>& wallMap, int x, int y);
 
         //Stuff for Hubertus
-        std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 3.0f);
+        std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 4.0f);
         std::pair<float, float> idleTimeRange = std::make_pair(10.0f, 30.0f);
-        std::pair<float, float> shootTimeRange = std::make_pair(5.0f, 20.0f);
+        std::pair<float, float> shootTimeRange = std::make_pair(2.0f, 8.0f);
         void Update1(Entity entity, float deltaTime);
     public:
         /*

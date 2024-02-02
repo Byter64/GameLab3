@@ -61,8 +61,6 @@ namespace Engine
         if(behaviour.isMoving)
             transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
 
-        std::cout << "Expected: " << behaviour.movementSpeed * deltaTime * 2 << " Actual: " << glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation()));
-        std::cout << " Position: " << transform.GlobalTranslationToString() << std::endl;
         if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
         {
             std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
@@ -90,7 +88,7 @@ namespace Engine
 
         if(behaviour.shootTimer <= 0)
         {
-            std::cout << "I made a shot" << std::endl;
+            SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0));
             std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
             behaviour.shootTimer = distr(gen);
         }
