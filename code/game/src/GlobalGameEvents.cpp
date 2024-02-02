@@ -43,10 +43,12 @@ void Engine::OnStartGame()
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
+    ecsSystem->AddComponent<Engine::Health>(enemy, Engine::Health());
+    ecsSystem->GetComponent<Engine::Health>(enemy).health = 3;
 
-    renderSystem->camera.SetTranslation(glm::vec3(0,0,-15));
+    renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
     renderSystem->camera.SetScale(glm::vec3(1));
-    renderSystem->camera.SetRotation(glm::vec3(glm::radians(-22.5f),0,0));
+    renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
 }
 
 void Engine::OnEndGame()

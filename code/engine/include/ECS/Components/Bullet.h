@@ -6,8 +6,8 @@ namespace Engine
 
     struct Bullet
     {
+        int damage = 1;
         glm::vec2 velocity;
-        int damage;
         Entity spawner;
     };
 

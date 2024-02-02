@@ -102,6 +102,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::PlayerController>();
     ecsSystem->RegisterComponent<Engine::Bullet>();
     ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
+    ecsSystem->RegisterComponent<Engine::Health>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
@@ -139,6 +140,7 @@ void InitializeECS()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Health>());
     ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
 }
 

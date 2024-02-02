@@ -149,6 +149,8 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::PlayerController>(entity));
         if(ecsSystem->HasComponent<Engine::Bullet>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Bullet>(entity));
+        if(ecsSystem->HasComponent<Engine::Health>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Health>(entity));
 
         return newEntity;
     }

@@ -27,6 +27,15 @@ namespace Engine
         behaviour.oldTargetNode = iter->first;
         behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
         transform.SetTranslation(glm::vec3(behaviour.targetPos, 0));
+
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
+        behaviour.shootTimer = distr(gen);
+
+        distr = std::uniform_real_distribution<>(idleTimeRange.first, idleTimeRange.second);
+        behaviour.idlerTimer = distr(gen);
+        behaviour.isMoving = true;
     }
 
     void EnemyBehaviourSystem::EntityRemoved(Entity entity)
@@ -37,8 +46,6 @@ namespace Engine
 
     void EnemyBehaviourSystem::Update(float deltaTime)
     {
-        //Each entity must have an "EnemyBehaviour", "Health" and "Collider"
-        //Wie weiß der Gegner, wo er ist??
         for (Entity entity: entities)
         {
             EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
@@ -50,6 +57,21 @@ namespace Engine
                     Update1(entity, deltaTime);
                     break;
             }
+            BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
+
+            for(auto collision : collider.collisions)
+            {
+                Entity other = collision.first.other;
+                if(ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != entity)
+                {
+                    //Bullet is already destroying itself, so no need to do it here
+                    Health& health = ecsSystem->GetComponent<Health>(entity);
+                    health.health--;
+                    if(health.health <= 0)
+                        ecsSystem->RemoveEntity(entity);
+                }
+            }
+
         }
     }
 

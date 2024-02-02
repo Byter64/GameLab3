@@ -11,6 +11,7 @@
 #include "ECS/Components/PlayerController.h"
 #include "ECS/Components/Bullet.h"
 #include "ECS/Components/EnemyBehaviour.h"
+#include "ECS/Components/Health.h"
 #include "ECS/Systems/TransformParentSystem.h"
 #include "ECS/Systems/RenderSystem.h"
 #include "ECS/Systems/CollisionSystem.h"

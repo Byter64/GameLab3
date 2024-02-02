@@ -57,6 +57,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Components/EnemyBehaviour.h
         ../engine/src/ECS/Systems/EnemyBehaviourSystem.cpp
         ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
+        ../engine/include/ECS/Components/Health.h
 )
 
 set(EXE_FILE Game)
