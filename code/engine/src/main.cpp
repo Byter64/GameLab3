@@ -135,6 +135,7 @@ void InitializeECS()
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::PlayerController>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Health>());
     ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
 
     bulletSystem = ecsSystem->RegisterSystem<Engine::BulletSystem>();
