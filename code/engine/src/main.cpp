@@ -23,9 +23,13 @@ std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never chan
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
 
+std::chrono::time_point<std::chrono::steady_clock> time1;
+
 int SetupWindow();
 void InitializeECS();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void window_pos_callback(GLFWwindow *window, int x, int y);
+
 
 int main()
 {
@@ -37,7 +41,7 @@ int main()
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
     while (!glfwWindowShouldClose(window)) {
-        auto time1 = std::chrono::high_resolution_clock::now();
+        time1 = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
         playerControllerSystem->Update(passedTimeInSeconds);
@@ -56,6 +60,10 @@ int main()
 
         auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
         passedTimeInSeconds = ((float)delta.count()) / 1000000;
+        if(passedTimeInSeconds > FRAMETIME144FPS * 2)
+        {
+            passedTimeInSeconds = FRAMETIME144FPS * 2;
+        }
     }
 
     Engine::OnEndGame();
@@ -80,6 +88,7 @@ int SetupWindow()
     }
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    glfwSetWindowPosCallback(window, window_pos_callback);
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress))
@@ -147,5 +156,11 @@ void InitializeECS()
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
+    time1 = std::chrono::high_resolution_clock::now();
     glViewport(0, 0, width, height);
+}
+
+void window_pos_callback(GLFWwindow *window, int x, int y)
+{
+    time1 = std::chrono::high_resolution_clock::now();
 }

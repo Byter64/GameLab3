@@ -68,7 +68,7 @@ namespace Engine
                     Health& health = ecsSystem->GetComponent<Health>(entity);
                     health.health--;
                     if(health.health <= 0)
-                        ecsSystem->RemoveEntity(entity);
+                        RemoveEntityWithChildren(entity);
                 }
             }
 

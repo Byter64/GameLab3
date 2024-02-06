@@ -180,6 +180,22 @@ namespace Engine
         return entity;
     }
 
+    /// Removes the given entity plus all children within the transform hierarchy. In case entity does not have a Transform or no children, RemoveEntityWithChildren will behave identical with ECSSystem.RemoveEntity
+    /// \param entity
+    void RemoveEntityWithChildren(Entity entity)
+    {
+        if(ecsSystem->HasComponent<Transform>(entity))
+        {
+            Transform& transform = ecsSystem->GetComponent<Transform>(entity);
+            for(auto& childTransform : transform.GetChildren())
+            {
+                Entity child = ecsSystem->GetEntity<Transform>(*childTransform);
+                RemoveEntityWithChildren(child);
+            }
+        }
+        ecsSystem->RemoveEntity(entity);
+    }
+
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
     {
         Engine::Entity entity = ecsSystem->CreateEntity();

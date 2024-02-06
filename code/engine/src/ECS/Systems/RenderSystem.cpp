@@ -19,7 +19,6 @@ namespace Engine
         glClearColor(0.172f, 0.243f, 0.313f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        std::cout << entities.size() << std::endl;
         for(Entity entity : entities)
         {
             Transform& transform = ecsSystem->GetComponent<Transform>(entity);
