@@ -26,7 +26,6 @@ namespace Engine
             Transform& transform = ecsSystem->GetComponent<Transform>(entity);
             PlayerController& controller = ecsSystem->GetComponent<PlayerController>(entity);
             BoxCollider& boxCollider = ecsSystem->GetComponent<BoxCollider>(entity);
-            Health& health = ecsSystem->GetComponent<Health>(entity);
 
             for(auto pair : boxCollider.collisions)
             {

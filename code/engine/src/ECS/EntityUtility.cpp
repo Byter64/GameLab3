@@ -13,6 +13,7 @@ extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
     Entity bulletPrefab = Entity::INVALID_ENTITY_ID;
+    Entity hubertusPrefab = Entity::INVALID_ENTITY_ID;
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
@@ -151,6 +152,8 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Bullet>(entity));
         if(ecsSystem->HasComponent<Engine::Health>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Health>(entity));
+        if(ecsSystem->HasComponent<Engine::Dungeon>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Dungeon>(entity));
 
         return newEntity;
     }
@@ -159,25 +162,45 @@ namespace Engine
     {
         if(bulletPrefab == Entity::INVALID_ENTITY_ID)
         {
-            bulletPrefab = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
-            ecsSystem->GetComponent<Engine::Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
+            bulletPrefab = ImportGLTF(Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
+            ecsSystem->GetComponent<Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
         }
 
         Entity entity = CopyEntity(bulletPrefab);
-        ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.2f));
-        ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(position);
-        ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
+        ecsSystem->GetComponent<Transform>(entity).SetScale(glm::vec3(0.2f));
+        ecsSystem->GetComponent<Transform>(entity).SetTranslation(position);
+        ecsSystem->GetComponent<Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
 
-        Engine::Bullet& bullet = ecsSystem->AddComponent<Engine::Bullet>(entity);
+        Engine::Bullet& bullet = ecsSystem->AddComponent<Bullet>(entity);
         bullet.velocity = glm::normalize(direction) * speed;
         bullet.spawner = spawner;
 
-        BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(entity);
+        BoxCollider& collider = ecsSystem->AddComponent<BoxCollider>(entity);
         collider.size = glm::vec3(1, 1, 1);
         collider.isStatic = false;
         collider.collisions.clear();
 
         return entity;
+    }
+
+    Entity SpawnEnemy(glm::vec3 position, EnemyBehaviour::Behaviour behaviour)
+    {
+        if(hubertusPrefab == Entity::INVALID_ENTITY_ID)
+        {
+            hubertusPrefab = ImportGLTF(Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
+            ecsSystem->GetComponent<Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
+            ecsSystem->GetComponent<Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
+        }
+
+        Engine::Entity enemy = CopyEntity(hubertusPrefab);
+        ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
+        ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
+        ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
+        ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = behaviour;
+        ecsSystem->AddComponent<Health>(enemy, Health());
+        ecsSystem->GetComponent<Health>(enemy).health = 3;
+
+        return enemy;
     }
 
     /// Removes the given entity plus all children within the transform hierarchy. In case entity does not have a Transform or no children, RemoveEntityWithChildren will behave identical with ECSSystem.RemoveEntity

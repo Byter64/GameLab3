@@ -1,4 +1,4 @@
-#include "Dungeon.h"
+#include "OldDungeon.h"
 #include "../tinygltf/stb_image.h"
 #define STBI_FAILURE_USERMSG
 #include <stdexcept>
@@ -6,14 +6,14 @@
 #include "Engine.h"
 #include "EntityUtility.h"
 
-Dungeon::Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
+OldDungeon::OldDungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab)
 {
     entity = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Transform>(entity, Engine::Transform());
     ecsSystem->AddComponent<Engine::Name>(entity, "Dungeon");
 
     int width, height, channels;
-    std::string path = pathToImage.string();
+    std::string path = (pathToImage).string() + ".png";
     unsigned char* image = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
     if(image == nullptr)
     {

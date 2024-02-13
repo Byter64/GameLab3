@@ -36,7 +36,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Helpers/Shader.cpp
         ../engine/include/ECS/Helpers/Shader.h
         src/Dungeon.cpp
-        include/Dungeon.h
+        include/OldDungeon.h
         ../engine/src/ECS/Systems/CollisionSystem.cpp
         ../engine/include/ECS/Systems/CollisionSystem.h
         ../engine/include/ECS/Components/BoxCollider.h
@@ -58,6 +58,11 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/EnemyBehaviourSystem.cpp
         ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
         ../engine/include/ECS/Components/Health.h
+        ../engine/include/ECS/Components/Dungeon.h
+        ../engine/src/ECS/Systems/DungeonSystem.cpp
+        ../engine/include/ECS/Systems/DungeonSystem.h
+        ../engine/src/ECS/Systems/DungeonEnemySystem.cpp
+        ../engine/include/ECS/Systems/DungeonEnemySystem.h
 )
 
 set(EXE_FILE Game)

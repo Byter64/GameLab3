@@ -4,7 +4,7 @@
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Engine.h"
-#include "Dungeon.h"
+#include "OldDungeon.h"
 #include "GlobalGameEvents.h"
 
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
@@ -19,6 +19,8 @@ std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this na
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -47,7 +49,7 @@ int main()
         playerControllerSystem->Update(passedTimeInSeconds);
         bulletSystem->Update(passedTimeInSeconds);
         enemyBehaviourSystem->Update(passedTimeInSeconds);
-
+        dungeonSystem->Update();
         collisionSystem->CheckCollisions();
 
         renderSystem->Render();
@@ -112,6 +114,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::Bullet>();
     ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
     ecsSystem->RegisterComponent<Engine::Health>();
+    ecsSystem->RegisterComponent<Engine::Dungeon>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
@@ -152,6 +155,16 @@ void InitializeECS()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Health>());
     ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
+
+    dungeonEnemySystem = ecsSystem->RegisterSystem<Engine::DungeonEnemySystem>();
+    Engine::Signature dungeonEnemySignature;
+    dungeonEnemySignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
+    ecsSystem->SetSystemSignature<Engine::DungeonEnemySystem>(dungeonEnemySignature);
+
+    dungeonSystem = ecsSystem->RegisterSystem<Engine::DungeonSystem>();
+    Engine::Signature dungeonSignature;
+    dungeonSignature.set(ecsSystem->GetComponentType<Engine::Dungeon>());
+    ecsSystem->SetSystemSignature<Engine::DungeonSystem>(dungeonSignature);
 }
 
 

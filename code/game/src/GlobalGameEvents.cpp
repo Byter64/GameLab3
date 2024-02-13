@@ -1,6 +1,6 @@
 #include "GlobalGameEvents.h"
 #include "Engine.h"
-#include "Dungeon.h"
+#include "OldDungeon.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
@@ -25,7 +25,7 @@ void Engine::OnStartGame()
     wallCollider.position = glm::vec3 (0);
     wallCollider.isStatic = true;
 
-    Dungeon* dungeon = new Dungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeon4_3.png"), wallPrefab);
+    OldDungeon* dungeon = new OldDungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeons" / "Dungeon_0"), wallPrefab);
     ecsSystem->GetComponent<Engine::Transform>(dungeon->entity).AddTranslation(glm::vec3(0, 0, 0));
     ecsSystem->DestroyEntity(wallPrefab);
     enemyBehaviourSystem->Initialize(dungeon->wallMap);

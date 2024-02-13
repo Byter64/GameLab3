@@ -3,7 +3,7 @@
 #include <vector>
 #include <filesystem>
 
-class Dungeon
+class OldDungeon
 {
 public:
     inline static const float dungeonRotation = -20;
@@ -11,5 +11,5 @@ public:
     Engine::Entity entity;
     std::vector<std::vector<bool>> wallMap;
 
-    Dungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab);
+    OldDungeon(std::filesystem::path pathToImage, Engine::Entity wallPrefab);
 };

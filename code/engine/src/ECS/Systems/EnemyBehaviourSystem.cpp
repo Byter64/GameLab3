@@ -23,6 +23,7 @@ namespace Engine
         auto iter = graph.begin();
         std::advance(iter, index);
 
+        std::cout << "Enemies are randomly spawned instead of at their spawn pos" << std::endl;
         behaviour.targetNode = iter->first;
         behaviour.oldTargetNode = iter->first;
         behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
