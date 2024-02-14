@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "../tinygltf/stb_image.h"
 #define STBI_FAILURE_USERMSG
+
 namespace Engine
 {
     void DungeonSystem::EntityAdded(Entity entity)
@@ -39,10 +40,10 @@ namespace Engine
                         dungeon.activeDungeon++;
                         ReadInDungeonMap(entity);
                         ReadInEnemies(entity);
-                    } else if (dungeon.enemies.count(pair.first))
+                    }
+                    else if (dungeon.enemies.count(pair.first))
                     {
-                        Entity hubertus = SpawnEnemy(glm::vec3(pair.first.first, pair.first.second, 0),
-                                                     dungeon.enemies[pair.first].front());
+                        Entity hubertus = SpawnEnemy(glm::vec3(pair.first.first, pair.first.second, 0),dungeon.enemies[pair.first].front());
                         dungeon.enemies[pair.first].pop_front();
                         dungeon.activeEnemies[pair.first] = hubertus;
                     }
@@ -52,12 +53,9 @@ namespace Engine
             for (auto iter = dungeon.enemies.begin(); iter != dungeon.enemies.end();)
             {
                 if (iter->second.empty())
-                {
                     iter = dungeon.enemies.erase(iter);
-                } else
-                {
+                else
                     ++iter;
-                }
             }
         }
     }

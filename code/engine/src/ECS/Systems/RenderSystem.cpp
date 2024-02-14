@@ -21,7 +21,6 @@ namespace Engine
 
         for(Entity entity : entities)
         {
-            Transform& transform = ecsSystem->GetComponent<Transform>(entity);
             Render(entity);
         }
     }
