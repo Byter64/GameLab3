@@ -9,6 +9,7 @@ extern Engine::InputSystem* inputSystem;
 extern std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+extern std::shared_ptr<Engine::DungeonSystem> dungeonSystem;
 extern GLFWwindow *window;
 
 Engine::Entity krawatterich;
@@ -18,17 +19,12 @@ void Engine::OnStartGame()
 {
     inputSystem = new Engine::InputSystem(window);
 
-    Engine::Entity wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS /
-            "Graphics\\Models\\Wall\\Wall.glb")[0];
-    Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wallPrefab);
-    wallCollider.size = glm::vec3(1,1, 1000);
-    wallCollider.position = glm::vec3 (0);
-    wallCollider.isStatic = true;
+    Engine::Entity dungeon = ecsSystem->CreateEntity();
+    ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
+    ecsSystem->AddComponent(dungeon, Engine::Transform());
+    ecsSystem->AddComponent<Engine::Dungeon>(dungeon, Engine::Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
 
-    OldDungeon* dungeon = new OldDungeon(std::filesystem::path(Engine::Files::ASSETS / "Dungeons" / "Dungeon_0"), wallPrefab);
-    ecsSystem->GetComponent<Engine::Transform>(dungeon->entity).AddTranslation(glm::vec3(0, 0, 0));
-    ecsSystem->DestroyEntity(wallPrefab);
-    enemyBehaviourSystem->Initialize(dungeon->wallMap);
+    enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);

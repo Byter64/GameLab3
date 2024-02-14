@@ -14,6 +14,7 @@ namespace Engine
 {
     Entity bulletPrefab = Entity::INVALID_ENTITY_ID;
     Entity hubertusPrefab = Entity::INVALID_ENTITY_ID;
+    Entity wallPrefab = Entity::INVALID_ENTITY_ID;
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
@@ -171,7 +172,7 @@ namespace Engine
         ecsSystem->GetComponent<Transform>(entity).SetTranslation(position);
         ecsSystem->GetComponent<Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
 
-        Engine::Bullet& bullet = ecsSystem->AddComponent<Bullet>(entity);
+        Bullet& bullet = ecsSystem->AddComponent<Bullet>(entity);
         bullet.velocity = glm::normalize(direction) * speed;
         bullet.spawner = spawner;
 
@@ -189,10 +190,10 @@ namespace Engine
         {
             hubertusPrefab = ImportGLTF(Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
-            ecsSystem->GetComponent<Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
+            ecsSystem->GetComponent<Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
         }
 
-        Engine::Entity enemy = CopyEntity(hubertusPrefab);
+        Entity enemy = CopyEntity(hubertusPrefab);
         ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
         ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
@@ -203,9 +204,31 @@ namespace Engine
         return enemy;
     }
 
+    Entity SpawnWall(glm::vec3 position)
+    {
+        if(wallPrefab == Entity::INVALID_ENTITY_ID)
+        {
+            wallPrefab = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb")[0];
+            ecsSystem->GetComponent<Transform>(wallPrefab).SetScale(glm::vec3(0.0f));
+        }
+
+        Entity wall = CopyEntity(wallPrefab);
+
+        ecsSystem->GetComponent<Transform>(wall).SetTranslation(position);
+        ecsSystem->GetComponent<Transform>(wall).SetScale(glm::vec3(1.0f));
+
+        Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wall);
+        wallCollider.size = glm::vec3(1,1, 1000);
+        wallCollider.position = glm::vec3 (0);
+        wallCollider.isStatic = true;
+
+        return wall;
+    }
+
+
     /// Removes the given entity plus all children within the transform hierarchy. In case entity does not have a Transform or no children, RemoveEntityWithChildren will behave identical with ECSSystem.RemoveEntity
     /// \param entity
-    void RemoveEntityWithChildren(Entity entity)
+    void RemoveEntityWithChildren(Entity entity, bool removeParent)
     {
         if(ecsSystem->HasComponent<Transform>(entity))
         {
@@ -216,7 +239,8 @@ namespace Engine
                 RemoveEntityWithChildren(child);
             }
         }
-        ecsSystem->RemoveEntity(entity);
+        if(removeParent)
+            ecsSystem->RemoveEntity(entity);
     }
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)

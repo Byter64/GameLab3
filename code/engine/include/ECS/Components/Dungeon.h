@@ -14,8 +14,11 @@ namespace Engine
         std::filesystem::path pathToDungeons;
         std::string fileName;
         std::map<std::pair<int, int>, std::list<EnemyBehaviour::Behaviour>> enemies;
-        int activeDungeon;
         std::map<std::pair<int, int>, Entity> activeEnemies;
+        int activeDungeon = 0;
+
+        Dungeon() = default;
+        Dungeon(std::filesystem::path pathToDungeons, std::string fileName);
     };
 
 } // Engine
