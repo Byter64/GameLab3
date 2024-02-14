@@ -19,13 +19,20 @@ namespace Engine
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
         Transform& transform = ecsSystem->GetComponent<Transform>(entity);
 
-        int index = rand() % graph.size();
-        auto iter = graph.begin();
-        std::advance(iter, index);
+        std::vector<std::pair<int,int>> targetNodes;
+        auto target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 1, 0);
+        if(target.first != -1) targetNodes.push_back(target);
+        target = FindNode(behaviour.startPos.first, behaviour.startPos.second, -1, 0);
+        if(target.first != -1) targetNodes.push_back(target);
+        target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 0, 1);
+        if(target.first != -1) targetNodes.push_back(target);
+        target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 0, -1);
+        if(target.first != -1) targetNodes.push_back(target);
 
-        std::cout << "Enemies are randomly spawned instead of at their spawn pos" << std::endl;
-        behaviour.targetNode = iter->first;
-        behaviour.oldTargetNode = iter->first;
+        target = targetNodes[rand() % targetNodes.size()];
+
+        behaviour.oldTargetNode = behaviour.startPos;
+        behaviour.targetNode = target;
         behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
         transform.SetTranslation(glm::vec3(behaviour.targetPos, 0));
 

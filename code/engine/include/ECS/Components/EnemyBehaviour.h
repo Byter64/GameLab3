@@ -32,7 +32,7 @@ namespace Engine
         float idlerTimer = 0;
         float shootTimer = 0;
 
-        std::pair<int, int> startPos;
+        std::pair<int, int> startPos = {1, 1};
         std::pair<int, int> targetNode;
         std::pair<int, int> oldTargetNode;
         glm::vec2 targetPos;
