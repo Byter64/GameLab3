@@ -35,8 +35,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/EntityUtility.h
         ../engine/src/ECS/Helpers/Shader.cpp
         ../engine/include/ECS/Helpers/Shader.h
-        src/OldDungeon.cpp
-        include/OldDungeon.h
         ../engine/src/ECS/Systems/CollisionSystem.cpp
         ../engine/include/ECS/Systems/CollisionSystem.h
         ../engine/include/ECS/Components/BoxCollider.h
