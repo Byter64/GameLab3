@@ -8,6 +8,7 @@ namespace Engine
         void EntityAdded(Entity entity) override;
         void EntityRemoved(Entity entity) override;
 
+        void ReadInNewDungeon(Entity entity);
     public:
         void Update();
     };

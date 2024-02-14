@@ -30,13 +30,13 @@ namespace Engine
                 {
                     if(dungeon.enemies.empty())
                     {
-                        //Go to next dungeon
                         std::cout << "All enemies are defeated, you win" << std::endl;
+                        ReadInNewDungeon(entity);
                     }
                     else if(dungeon.enemies.count(pair.first))
                     {
                         Entity hubertus = SpawnEnemy(glm::vec3(pair.first.first, pair.first.second, 0),
-                                                     EnemyBehaviour::stringToBehaviour.at(dungeon.enemies[pair.first].front()));
+                                                     dungeon.enemies[pair.first].front());
                         dungeon.enemies[pair.first].pop_front();
                         if(dungeon.enemies[pair.first].empty())
                             dungeon.enemies.erase(pair.first);
@@ -44,6 +44,39 @@ namespace Engine
                     }
                 }
             }
+        }
+
+
+    }
+
+    void DungeonSystem::ReadInNewDungeon(Entity entity)
+    {
+        Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+
+        dungeon.activeDungeon++;
+
+        std::vector<std::string> file;
+        bool noDungeon = false;
+        try
+        {
+            file = Engine::Files::ParseFile(dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon)));
+        }
+        catch (std::runtime_error& bla)
+        {
+            noDungeon = true;
+        }
+        if(noDungeon)
+        {
+            std::cout << "Game is over" << std::endl;
+            exit(-1);
+        }
+
+        for(int i = 0; i < file.size(); i += 3)
+        {
+            EnemyBehaviour::Behaviour behaviour = EnemyBehaviour::stringToBehaviour.at(file[i]);
+            std::pair<int, int> pos = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+
+            dungeon.enemies[pos].push_back(behaviour);
         }
     }
 } // Engine
