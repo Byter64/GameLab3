@@ -34,7 +34,9 @@ namespace Engine
         behaviour.oldTargetNode = behaviour.startPos;
         behaviour.targetNode = target;
         behaviour.targetPos = ToGlobal(behaviour.targetNode);
-        transform.SetTranslation(glm::vec3(behaviour.targetPos, 0));
+        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
+        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos), 0));
+        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
 
         std::random_device rd;
         std::mt19937 gen(rd());
@@ -107,7 +109,7 @@ namespace Engine
             behaviour.oldTargetNode = behaviour.targetNode;
             behaviour.targetNode = *iter;
             behaviour.targetPos = ToGlobal(behaviour.targetNode);
-            behaviour.movement = glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second));
+            behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
 
             transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
