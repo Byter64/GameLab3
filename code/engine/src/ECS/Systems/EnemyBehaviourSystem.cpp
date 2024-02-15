@@ -33,7 +33,7 @@ namespace Engine
 
         behaviour.oldTargetNode = behaviour.startPos;
         behaviour.targetNode = target;
-        behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
+        behaviour.targetPos = ToGlobal(behaviour.targetNode);
         transform.SetTranslation(glm::vec3(behaviour.targetPos, 0));
 
         std::random_device rd;
@@ -106,10 +106,10 @@ namespace Engine
 
             behaviour.oldTargetNode = behaviour.targetNode;
             behaviour.targetNode = *iter;
-            behaviour.targetPos = glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) + originOffset;
+            behaviour.targetPos = ToGlobal(behaviour.targetNode);
             behaviour.movement = glm::normalize(glm::vec2(behaviour.targetNode.first, behaviour.targetNode.second) -  glm::vec2(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second));
 
-            transform.SetTranslation(glm::vec3(behaviour.oldTargetNode.first, behaviour.oldTargetNode.second, transform.GetTranslation().z) + glm::vec3(originOffset, 0));
+            transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
         }
 
@@ -192,6 +192,7 @@ namespace Engine
         this->wallMap = wallMap;
         dungeonSize = std::make_pair(wallMap.size(), wallMap[0].size());
         originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f + 0.5f;
+        originOffset.y *= -1.0f;
 
         //Generate all nodes
         for (int y = 0; y < wallMap[0].size(); y++)
@@ -223,5 +224,18 @@ namespace Engine
             if(right.first != -1)
                 pair.second.push_back(right);
         }
+    }
+
+    /// Transforms the given point, which is in dungeon coordinates, into global coordinates
+    /// \param dungeonPos
+    /// \return
+    glm::vec2 EnemyBehaviourSystem::ToGlobal(glm::vec2 dungeonPos)
+    {
+        return glm::vec2(originOffset.x + dungeonPos.x, originOffset.y - dungeonPos.y);
+    }
+
+    glm::vec2 EnemyBehaviourSystem::ToGlobal(std::pair<int, int> dungeonPos)
+    {
+        return glm::vec2(originOffset.x + dungeonPos.first, originOffset.y - dungeonPos.second);
     }
 }

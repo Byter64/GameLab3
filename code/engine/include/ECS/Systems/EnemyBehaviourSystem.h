@@ -20,6 +20,8 @@ namespace Engine
 
         std::pair<int, int> FindNode(int startx, int starty, int dirx, int diry);
         bool IsNode(std::vector<std::vector<bool>>& wallMap, int x, int y);
+        glm::vec2 ToGlobal(glm::vec2 dungeonPos);
+        glm::vec2 ToGlobal(std::pair<int, int> dungeonPos);
 
         //Stuff for Hubertus
         std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 4.0f);

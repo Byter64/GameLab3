@@ -200,7 +200,7 @@ namespace Engine
         return entity;
     }
 
-    Entity SpawnEnemy(glm::vec3 position, EnemyBehaviour::Behaviour behaviour)
+    Entity SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour)
     {
         if(hubertusPrefab == Entity::INVALID_ENTITY_ID)
         {
@@ -215,6 +215,7 @@ namespace Engine
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
         ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
         ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = behaviour;
+        ecsSystem->GetComponent<EnemyBehaviour>(enemy).startPos = startPos;
         ecsSystem->AddComponent<Health>(enemy, Health());
         ecsSystem->GetComponent<Health>(enemy).health = 3;
 

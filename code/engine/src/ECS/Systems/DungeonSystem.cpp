@@ -43,7 +43,7 @@ namespace Engine
                     }
                     else if (dungeon.enemies.count(pair.first))
                     {
-                        Entity hubertus = SpawnEnemy(glm::vec3(pair.first.first, pair.first.second, 0),dungeon.enemies[pair.first].front());
+                        Entity hubertus = SpawnEnemy(pair.first, dungeon.enemies[pair.first].front());
                         dungeon.enemies[pair.first].pop_front();
                         dungeon.activeEnemies[pair.first] = hubertus;
                     }
