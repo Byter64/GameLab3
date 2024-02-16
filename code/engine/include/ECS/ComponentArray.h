@@ -34,6 +34,7 @@ namespace Engine
             size_t index = size;
             entityToIndex[entity.id] = index;
             indexToEntity[index] = entity.id;
+            components[index] = T();
             size++;
 
             return components[index];
