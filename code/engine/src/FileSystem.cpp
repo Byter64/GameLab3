@@ -44,6 +44,11 @@ namespace Engine::Files
             }
         }
 
+        if(text.size() - 1 - start > 0)
+        {
+            result.push_back(text.substr(start, text.size() - start));
+        }
+
         return result;
     }
 }
