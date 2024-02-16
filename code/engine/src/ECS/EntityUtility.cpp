@@ -140,7 +140,7 @@ namespace Engine
         Entity newEntity = ecsSystem->CreateEntity();
 
         if(ecsSystem->HasComponent<Engine::Name>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + "Cloned");
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + " Cloned");
         if(ecsSystem->HasComponent<Engine::MeshRenderer>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::MeshRenderer>(entity));
         if(ecsSystem->HasComponent<Engine::BoxCollider>(entity))
@@ -172,6 +172,7 @@ namespace Engine
                 }
             }
         }
+
         return newEntity;
     }
 
@@ -208,8 +209,7 @@ namespace Engine
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
         }
-
-        Entity enemy = CopyEntity(hubertusPrefab);
+        Entity enemy = CopyEntity(hubertusPrefab, true);
         ecsSystem->GetComponent<Transform>(enemy).SetScale(glm::vec3(1.0f));
         ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
@@ -254,9 +254,10 @@ namespace Engine
             for(auto& childTransform : transform.GetChildren())
             {
                 Entity child = ecsSystem->GetEntity<Transform>(*childTransform);
-                RemoveEntityWithChildren(child);
+                RemoveEntityWithChildren(child, true);
             }
         }
+
         if(removeParent)
             ecsSystem->RemoveEntity(entity);
     }

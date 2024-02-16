@@ -10,9 +10,9 @@ namespace Engine
 
     void DungeonEnemySystem::EntityRemoved(Entity entity)
     {
-        for(Entity entity : dungeonSystem->entities)
+        for(Entity dungeonEntity : dungeonSystem->entities)
         {
-            Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+            Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(dungeonEntity);
 
             std::pair<int, int> pos;
             bool isActive = false;
@@ -22,6 +22,7 @@ namespace Engine
                 {
                     isActive = true;
                     pos = pair.first;
+                    break;
                 }
             }
 
