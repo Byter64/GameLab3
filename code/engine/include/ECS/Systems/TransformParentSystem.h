@@ -11,6 +11,8 @@ namespace Engine
     public:
         void EntityAdded(Entity entity) override;
         void EntityRemoved(Entity entity) override;
+
+        void Print();
     };
 
 } // Engine

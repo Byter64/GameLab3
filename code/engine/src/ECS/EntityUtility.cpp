@@ -135,12 +135,12 @@ namespace Engine
         return entities;
     }
 
-    Entity CopyEntity(Entity entity, bool copyChildren = true)
+    Entity CopyEntity(Entity entity, bool copyChildren = true, int count = 0)
     {
         Entity newEntity = ecsSystem->CreateEntity();
 
         if(ecsSystem->HasComponent<Engine::Name>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + " Cloned");
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + " Cloned " + std::to_string(count));
         if(ecsSystem->HasComponent<Engine::MeshRenderer>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::MeshRenderer>(entity));
         if(ecsSystem->HasComponent<Engine::BoxCollider>(entity))
@@ -166,7 +166,7 @@ namespace Engine
                 for(Transform* childTransform : transform.GetChildren())
                 {
                     Entity child = ecsSystem->GetEntity(*childTransform);
-                    Entity newChild = CopyEntity(child, copyChildren);
+                    Entity newChild = CopyEntity(child, copyChildren, count);
                     Transform& newChildTransform = ecsSystem->GetComponent<Transform>(newChild);
                     newChildTransform.SetParent(&newTransform);
                 }
@@ -203,13 +203,15 @@ namespace Engine
 
     Entity SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour)
     {
+        static int count = 0;
+        count++;
         if(hubertusPrefab == Entity::INVALID_ENTITY_ID)
         {
             hubertusPrefab = ImportGLTF(Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
         }
-        Entity enemy = CopyEntity(hubertusPrefab, true);
+        Entity enemy = CopyEntity(hubertusPrefab, true, count);
         ecsSystem->GetComponent<Transform>(enemy).SetScale(glm::vec3(1.0f));
         ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
