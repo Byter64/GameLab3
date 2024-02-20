@@ -72,7 +72,7 @@ namespace Engine
             }
             size_t entityIndex = entityToIndex[entity.id];
             size_t lastIndex = size - 1;
-            components[entityIndex] = components[lastIndex];
+            components[entityIndex] = std::move(components[lastIndex]);
 
             Entity lastEntity = indexToEntity[lastIndex];
             entityToIndex[lastEntity.id] = entityIndex;
@@ -110,7 +110,7 @@ namespace Engine
             T* firstElement = &components[0];
             T* thisElement = &component;
             int index = thisElement - firstElement;
-            return indexToEntity[index];
+            return indexToEntity.at(index);
         }
 
         void EntityDestroyed(Entity entity) override

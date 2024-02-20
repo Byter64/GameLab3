@@ -308,4 +308,36 @@ namespace Engine
         glm::vec3 pos = GetGlobalTranslation();
         return "(" + std::to_string(pos.x) + ", " + std::to_string(pos.y) + ", " + std::to_string(pos.z) + ")";
     }
+
+    Transform &Transform::operator=(Transform &&other)
+    {
+        if(this == &other) return *this;
+
+        hasTransformChanged = other.hasTransformChanged;
+        matrix = other.matrix;
+        translation = other.translation;
+        scale = other.scale;
+        rotation = other.rotation;
+
+        isGlobalTranslationOutdated = other.isGlobalTranslationOutdated;
+        isGlobalScaleOutdated = other.isGlobalScaleOutdated;
+        isGlobalRotationOutdated = other.isGlobalRotationOutdated;
+        isGlobalMatrixOutdated = other.isGlobalMatrixOutdated;
+        globalMatrix = other.globalMatrix;
+        globalTranslation = other.globalTranslation;
+        globalScale = other.globalScale;
+        globalRotation = other.globalRotation;
+
+        parent = other.parent;
+        children.clear();
+        std::copy(other.children.begin(), other.children.end(), std::back_inserter(children));
+        other.children.clear();
+
+        if(parent != nullptr)
+        {
+            parent->children.remove(&other);
+            parent->GetChildren().push_back(this);
+        }
+        return *this;
+    }
 } // Engine

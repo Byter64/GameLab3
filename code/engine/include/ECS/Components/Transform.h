@@ -35,6 +35,10 @@ namespace Engine
     public:
         Transform() = default;
         Transform(glm::vec3 position, glm::vec3 scale, glm::quat rotation);
+        Transform(Transform& other) = default;
+
+        Transform& operator= (Transform& other) = default;
+        Transform& operator= (Transform&& other);
 
         glm::vec3 GetTranslation();
         glm::vec3 GetGlobalTranslation();
