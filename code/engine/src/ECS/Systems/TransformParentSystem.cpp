@@ -19,14 +19,7 @@ namespace Engine
         }
 
         std::list<Transform*>& children = transform.GetChildren();
-        std::cout << ecsSystem->GetComponent<Name>(entity);
-        for(Transform* bla : children)
-        {
-            std::cout << bla << std::endl;
-        }
-        std::cout << std::endl;
-
-        while(!transform.GetChildren().empty())
+        while(!children.empty())
         {
             children.front()->SetParent(nullptr);
         }
