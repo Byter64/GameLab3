@@ -20,7 +20,7 @@ namespace Engine
 
         if(amount == 0) return false;
 
-        for(int i = pooledEntitiesCount; i < pooledEntitiesCount + amount; i++)
+        for(int i = 0; i < amount; i++)
         {
             pooledEntities.push(pooledEntitiesCount + i);
         }
@@ -41,7 +41,7 @@ namespace Engine
 
         Entity id = pooledEntities.front();
         pooledEntities.pop();
-
+        
         return id;
     }
 
