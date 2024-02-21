@@ -41,7 +41,7 @@ namespace Engine
 
         Entity id = pooledEntities.front();
         pooledEntities.pop();
-        
+
         return id;
     }
 

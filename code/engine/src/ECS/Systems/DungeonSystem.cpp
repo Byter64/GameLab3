@@ -29,19 +29,27 @@ namespace Engine
         {
             Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
+            if(dungeon.enemies.empty() && dungeon.activeEnemies.empty())
+            {
+                std::cout << "All enemies are defeated, you win" << std::endl;
+                dungeon.activeDungeon++;
+                try
+                {
+                    ReadInDungeonMap(entity);
+                    ReadInEnemies(entity);
+                }
+                catch (std::runtime_error& e)
+                {
+                    throw std::runtime_error("finished game");
+                }
+            }
+
             //Spawn enemies
             for (auto &pair: dungeon.enemies)
             {
                 if (dungeon.activeEnemies.count(pair.first) == 0)
                 {
-                    if (dungeon.enemies.empty())
-                    {
-                        std::cout << "All enemies are defeated, you win" << std::endl;
-                        dungeon.activeDungeon++;
-                        ReadInDungeonMap(entity);
-                        ReadInEnemies(entity);
-                    }
-                    else if (dungeon.enemies.count(pair.first))
+                    if (dungeon.enemies.count(pair.first))
                     {
                         Entity hubertus = SpawnEnemy(pair.first, dungeon.enemies[pair.first].front());
                         dungeon.enemies[pair.first].pop_front();
