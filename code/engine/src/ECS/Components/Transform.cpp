@@ -328,11 +328,15 @@ namespace Engine
         globalScale = other.globalScale;
         globalRotation = other.globalRotation;
 
-        parent = other.parent;
         children.clear();
         std::copy(other.children.begin(), other.children.end(), std::back_inserter(children));
         other.children.clear();
+        for(Transform* child : children)
+        {
+            child->parent = this;
+        }
 
+        parent = other.parent;
         if(parent != nullptr)
         {
             parent->children.remove(&other);
