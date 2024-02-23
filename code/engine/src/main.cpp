@@ -107,7 +107,6 @@ void InitializeECS()
     ecsSystem->Init();
     ecsSystem->RegisterComponent<Engine::Name>();
     ecsSystem->RegisterComponent<Engine::Transform>();
-    ecsSystem->RegisterComponent<Engine::UITransform>();
     ecsSystem->RegisterComponent<Engine::MeshRenderer>();
     ecsSystem->RegisterComponent<Engine::BoxCollider>();
     ecsSystem->RegisterComponent<Engine::PlayerController>();
