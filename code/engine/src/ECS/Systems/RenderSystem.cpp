@@ -21,7 +21,16 @@ namespace Engine
 
         for(Entity entity : entities)
         {
-            Render(entity);
+            MeshRenderer& meshRenderer = ecsSystem->GetComponent<MeshRenderer>(entity);
+            if(meshRenderer.renderLayer == WORLD)
+                Render(entity);
+        }
+
+        for(Entity entity : entities)
+        {
+            MeshRenderer& meshRenderer = ecsSystem->GetComponent<MeshRenderer>(entity);
+            if(meshRenderer.renderLayer == UI)
+                Render(entity);
         }
     }
 
