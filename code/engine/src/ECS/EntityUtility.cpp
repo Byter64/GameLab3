@@ -10,7 +10,6 @@
 #include <queue>
 
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
-extern std::shared_ptr<Engine::TransformParentSystem> transformParentSystem;
 namespace Engine
 {
     Entity bulletPrefab = Entity::INVALID_ENTITY_ID;
@@ -136,28 +135,28 @@ namespace Engine
         return entities;
     }
 
-    Entity CopyEntity(Entity entity, bool copyChildren = true, int count = 0)
+    Entity CopyEntity(Entity entity, bool copyChildren = true)
     {
         Entity newEntity = ecsSystem->CreateEntity();
 
-        if(ecsSystem->HasComponent<Name>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Name>(entity) + " Cloned " + std::to_string(count));
-        if(ecsSystem->HasComponent<MeshRenderer>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<MeshRenderer>(entity));
-        if(ecsSystem->HasComponent<BoxCollider>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<BoxCollider>(entity));
-        if(ecsSystem->HasComponent<PlayerController>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
-        if(ecsSystem->HasComponent<Bullet>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Bullet>(entity));
-        if(ecsSystem->HasComponent<Health>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
-        if(ecsSystem->HasComponent<Dungeon>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
+        if(ecsSystem->HasComponent<Engine::Name>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + " Cloned");
+        if(ecsSystem->HasComponent<Engine::MeshRenderer>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::MeshRenderer>(entity));
+        if(ecsSystem->HasComponent<Engine::BoxCollider>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::BoxCollider>(entity));
+        if(ecsSystem->HasComponent<Engine::PlayerController>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::PlayerController>(entity));
+        if(ecsSystem->HasComponent<Engine::Bullet>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Bullet>(entity));
+        if(ecsSystem->HasComponent<Engine::Health>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Health>(entity));
+        if(ecsSystem->HasComponent<Engine::Dungeon>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Dungeon>(entity));
 
-        if(ecsSystem->HasComponent<Transform>(entity))
+        if(ecsSystem->HasComponent<Engine::Transform>(entity))
         {
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Transform>(entity));
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Transform>(entity));
             Transform& newTransform = ecsSystem->GetComponent<Transform>(newEntity);
             newTransform.GetChildren().clear();
 
@@ -167,7 +166,7 @@ namespace Engine
                 for(Transform* childTransform : transform.GetChildren())
                 {
                     Entity child = ecsSystem->GetEntity(*childTransform);
-                    Entity newChild = CopyEntity(child, copyChildren, count);
+                    Entity newChild = CopyEntity(child, copyChildren);
                     Transform& newChildTransform = ecsSystem->GetComponent<Transform>(newChild);
                     newChildTransform.SetParent(&newTransform);
                 }
@@ -204,15 +203,13 @@ namespace Engine
 
     Entity SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour)
     {
-        static int count = 0;
-        count++;
         if(hubertusPrefab == Entity::INVALID_ENTITY_ID)
         {
             hubertusPrefab = ImportGLTF(Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
             ecsSystem->GetComponent<Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
         }
-        Entity enemy = CopyEntity(hubertusPrefab, true, count);
+        Entity enemy = CopyEntity(hubertusPrefab, true);
         ecsSystem->GetComponent<Transform>(enemy).SetScale(glm::vec3(1.0f));
         ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);

@@ -46,7 +46,7 @@ namespace Engine
                     if(health.health <= 0)
                     {
                         std::cout << "Player dead" << std::endl;
-                        //glfwSetWindowShouldClose(window, true);
+                        glfwSetWindowShouldClose(window, true);
                     }
                 }
             }

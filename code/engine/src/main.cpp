@@ -20,7 +20,6 @@ std::shared_ptr<Engine::BulletSystem> bulletSystem; //Never change this name, as
 std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::TransformParentSystem> transformParentSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -56,7 +55,6 @@ int main()
         glfwSwapBuffers(window);
         ecsSystem->DeletePurgatory();
 
-        //transformParentSystem->Print();
         auto time2 = std::chrono::high_resolution_clock::now();
         while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
             time2 = std::chrono::high_resolution_clock::now();
@@ -118,7 +116,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::Dungeon>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
-    transformParentSystem = ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
+    ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
     Engine::Signature transformSignature;
     transformSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
 

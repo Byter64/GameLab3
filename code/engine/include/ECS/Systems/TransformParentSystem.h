@@ -11,8 +11,6 @@ namespace Engine
     public:
         void EntityAdded(Entity entity) override;
         void EntityRemoved(Entity entity) override;
-
-        static void Print(std::string title);
     };
 
 } // Engine

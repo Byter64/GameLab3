@@ -90,7 +90,7 @@ namespace Engine
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
         Transform &transform = ecsSystem->GetComponent<Transform>(entity);
 
-        if(behaviour.isMoving && false)
+        if(behaviour.isMoving)
             transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
 
         if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
@@ -120,7 +120,7 @@ namespace Engine
 
         if(behaviour.shootTimer <= 0)
         {
-            //SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0));
+            SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0));
             std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
             behaviour.shootTimer = distr(gen);
         }
