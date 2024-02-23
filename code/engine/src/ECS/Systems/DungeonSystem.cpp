@@ -40,7 +40,7 @@ namespace Engine
                 }
                 catch (std::runtime_error& e)
                 {
-                    throw std::runtime_error("finished game");
+                    exit(-1);
                 }
             }
 
