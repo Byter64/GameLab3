@@ -139,24 +139,24 @@ namespace Engine
     {
         Entity newEntity = ecsSystem->CreateEntity();
 
-        if(ecsSystem->HasComponent<Engine::Name>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Name>(entity) + " Cloned");
-        if(ecsSystem->HasComponent<Engine::MeshRenderer>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::MeshRenderer>(entity));
-        if(ecsSystem->HasComponent<Engine::BoxCollider>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::BoxCollider>(entity));
-        if(ecsSystem->HasComponent<Engine::PlayerController>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::PlayerController>(entity));
-        if(ecsSystem->HasComponent<Engine::Bullet>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Bullet>(entity));
-        if(ecsSystem->HasComponent<Engine::Health>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Health>(entity));
-        if(ecsSystem->HasComponent<Engine::Dungeon>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Dungeon>(entity));
+        if(ecsSystem->HasComponent<Name>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Name>(entity) + " Cloned");
+        if(ecsSystem->HasComponent<MeshRenderer>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<MeshRenderer>(entity));
+        if(ecsSystem->HasComponent<BoxCollider>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<BoxCollider>(entity));
+        if(ecsSystem->HasComponent<PlayerController>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
+        if(ecsSystem->HasComponent<Bullet>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Bullet>(entity));
+        if(ecsSystem->HasComponent<Health>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
+        if(ecsSystem->HasComponent<Dungeon>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
 
-        if(ecsSystem->HasComponent<Engine::Transform>(entity))
+        if(ecsSystem->HasComponent<Transform>(entity))
         {
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Transform>(entity));
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Transform>(entity));
             Transform& newTransform = ecsSystem->GetComponent<Transform>(newEntity);
             newTransform.GetChildren().clear();
 
@@ -168,6 +168,25 @@ namespace Engine
                     Entity child = ecsSystem->GetEntity(*childTransform);
                     Entity newChild = CopyEntity(child, copyChildren);
                     Transform& newChildTransform = ecsSystem->GetComponent<Transform>(newChild);
+                    newChildTransform.SetParent(&newTransform);
+                }
+            }
+        }
+
+        if(ecsSystem->HasComponent<UITransform>(entity))
+        {
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<UITransform>(entity));
+            UITransform& newTransform = ecsSystem->GetComponent<UITransform>(newEntity);
+            newTransform.GetChildren().clear();
+
+            if(copyChildren)
+            {
+                UITransform& transform = ecsSystem->GetComponent<UITransform>(entity);
+                for(UITransform* childTransform : transform.GetChildren())
+                {
+                    Entity child = ecsSystem->GetEntity(*childTransform);
+                    Entity newChild = CopyEntity(child, copyChildren);
+                    UITransform& newChildTransform = ecsSystem->GetComponent<UITransform>(newChild);
                     newChildTransform.SetParent(&newTransform);
                 }
             }

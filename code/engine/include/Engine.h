@@ -6,6 +6,7 @@
 #include "ECS/Entity.h"
 #include "ECS/Components/Name.h"
 #include "ECS/Components/Transform.h"
+#include "ECS/Components/UITransform.h"
 #include "ECS/Components/MeshRenderer.h"
 #include "ECS/Components/BoxCollider.h"
 #include "ECS/Components/PlayerController.h"
