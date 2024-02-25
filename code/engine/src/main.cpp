@@ -31,7 +31,6 @@ void InitializeECS();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void window_pos_callback(GLFWwindow *window, int x, int y);
 
-
 int main()
 {
 

@@ -21,7 +21,7 @@ out vec2 texCoord;
 
 void main() 
 {
-    gl_Position = projectionView * model * vec4(position, 1.0);
+    gl_Position = orthographic * model * vec4(position, 1.0);
     vertexColor = color_0;
     texCoord = texCoord_0;
 }
