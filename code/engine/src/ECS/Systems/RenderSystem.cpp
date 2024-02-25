@@ -26,6 +26,7 @@ namespace Engine
                 Render(entity);
         }
 
+        glClear(GL_DEPTH_BUFFER_BIT);
         for(Entity entity : entities)
         {
             MeshRenderer& meshRenderer = ecsSystem->GetComponent<MeshRenderer>(entity);
@@ -53,7 +54,7 @@ namespace Engine
             }
             else if(data.shader.hasChanged)
             {
-                const auto& bla = loadedShaders.find(data.shader);
+                const auto& bla = std::find(loadedShaders.begin(), loadedShaders.end(), data.shader);
                 if(bla != loadedShaders.end())
                 {
                     data.shader.id = bla->id;
@@ -75,6 +76,8 @@ namespace Engine
             glm::mat4x4 projectionViewMatrix = projectionMatrix * camera.GetMatrix();
             glUniformMatrix4fv(projectionViewMatrixLocation, 1, false, &projectionViewMatrix[0][0]);
 
+            GLint orthographicMatrixLocation = glGetUniformLocation(newShader, "orthographic");
+            glUniformMatrix4fv(orthographicMatrixLocation, 1, false, &this->orthographicMatrix[0][0]);
 
             GLint modelMatrixLocation = glGetUniformLocation(activeShader, "model");
             glUniformMatrix4fv(modelMatrixLocation, 1, false, &transform.GetGlobalMatrix()[0][0]);
@@ -527,6 +530,14 @@ namespace Engine
 
     void RenderSystem::CreateShaderProgram(Shader &shader)
     {
+        auto existingShader = std::find(loadedShaders.begin(), loadedShaders.end(), shader);
+        if(existingShader != loadedShaders.end())
+        {
+            shader.id = existingShader->id;
+            shader.hasChanged = false;
+            return;
+        }
+
         GLuint shaderProgram = glCreateProgram();
         if(shader.vertexID != 0)
             glAttachShader(shaderProgram, shader.vertexID);
@@ -553,8 +564,9 @@ namespace Engine
         }
 
         shader.id = shaderProgram;
+        shader.hasChanged = false;
 
-        loadedShaders.insert(shader);
+        loadedShaders.push_back(shader);
     }
 
     void RenderSystem::EntityAdded(Entity entity)

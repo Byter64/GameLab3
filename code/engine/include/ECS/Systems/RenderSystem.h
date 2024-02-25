@@ -30,7 +30,7 @@ namespace Engine
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedIndexBuffers;
         std::unordered_map<const tinygltf::Primitive*, GLuint> loadedVaos;
         std::set<std::shared_ptr<tinygltf::Model>> usedModels;
-        std::set<Shader> loadedShaders;
+        std::list<Shader> loadedShaders;
 
 
         void EntityAdded(Entity entity) override;
@@ -49,6 +49,7 @@ namespace Engine
         static std::unique_ptr<std::string> ResolveIncludesForGLSL(const std::filesystem::path &filePath, std::unique_ptr<std::string> file);
     public:
         glm::mat4x4 projectionMatrix = glm::perspective(glm::radians(90.0f), 16.0f / 9, 1.0f, 1000.0f);
+        glm::mat4x4 orthographicMatrix = glm::ortho(-1, 1, -1, 1);
         Transform camera;
 
 
