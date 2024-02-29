@@ -39,13 +39,6 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
     renderSystem->camera.SetScale(glm::vec3(1));
     renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
-
-    Entity textTest = ecsSystem->CreateEntity();
-    Text& text = ecsSystem->AddComponent<Text>(textTest);
-    std::string bla = "dies ist ein test";
-    text.SetText(bla);
-    text.scale = 10;
-    
 }
 
 void Engine::OnEndGame()
