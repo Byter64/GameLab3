@@ -4,7 +4,7 @@
 namespace Engine
 {
 
-    void OnStartGame();
+    void OnStartGame(int screenWidth, int screenHeight);
     void OnEndGame();
 
 } // Engine

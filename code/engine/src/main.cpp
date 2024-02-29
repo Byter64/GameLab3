@@ -20,6 +20,7 @@ std::shared_ptr<Engine::BulletSystem> bulletSystem; //Never change this name, as
 std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -39,12 +40,7 @@ int main()
 
     if(SetupWindow() == -1) return -1;
     InitializeECS();
-    Engine::OnStartGame();
-
-    gltInit();
-    gltViewport(screenWidth, screenHeight);
-    GLTtext* text = gltCreateText();
-    gltSetText(text, "Hallo Welt!");
+    Engine::OnStartGame(screenWidth, screenHeight);
 
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
@@ -59,10 +55,7 @@ int main()
         collisionSystem->CheckCollisions();
 
         renderSystem->Render();
-        gltBeginDraw();
-        gltColor(1.0f, 1.0f,1.0f ,1.0f);
-        gltDrawText2D(text, 0, 0, 10);
-        gltEndDraw();
+        textRenderSystem->Render();
         glfwSwapBuffers(window);
         ecsSystem->DeletePurgatory();
 
@@ -176,6 +169,11 @@ void InitializeECS()
     Engine::Signature dungeonSignature;
     dungeonSignature.set(ecsSystem->GetComponentType<Engine::Dungeon>());
     ecsSystem->SetSystemSignature<Engine::DungeonSystem>(dungeonSignature);
+
+    textRenderSystem = ecsSystem->RegisterSystem<Engine::TextRenderSystem>();
+    Engine::Signature textRenderSignature;
+    textRenderSignature.set(ecsSystem->GetComponentType<Engine::Text>());
+    ecsSystem->SetSystemSignature<Engine::TextRenderSystem>(textRenderSignature);
 }
 
 
@@ -183,7 +181,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     time1 = std::chrono::high_resolution_clock::now();
     glViewport(0, 0, width, height);
-    gltViewport(width, height);
+    textRenderSystem->SetViewport(width, height);
 }
 
 void window_pos_callback(GLFWwindow *window, int x, int y)

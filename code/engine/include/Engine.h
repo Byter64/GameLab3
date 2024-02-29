@@ -22,6 +22,7 @@
 #include "ECS/Systems/EnemyBehaviourSystem.h"
 #include "ECS/Systems/DungeonSystem.h"
 #include "ECS/Systems/DungeonEnemySystem.h"
+#include "ECS/Systems/TextRenderSystem.h"
 #include "InputSystem/InputSystem.h"
 #include "InputSystem/InputActionVec2.h"
 #include "InputSystem/InputActionButton.h"

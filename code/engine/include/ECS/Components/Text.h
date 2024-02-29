@@ -1,6 +1,7 @@
 #pragma once
 #define GLT_IMPLEMENTATION
 #define GLT_MANUAL_VIEWPORT
+#include "glad/glad.h"
 #include "../glText/gltext.h"
 #include "glm/glm.hpp"
 #include <memory>
@@ -8,9 +9,10 @@
 
 namespace Engine
 {
-
+    class TextRenderSystem;
     struct Text
     {
+        friend class TextRenderSystem;
         float scale;
         glm::vec2 position{};
 

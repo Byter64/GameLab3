@@ -9,14 +9,16 @@ extern std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this n
 extern std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::DungeonSystem> dungeonSystem;
+extern std::shared_ptr<Engine::TextRenderSystem> textRenderSystem;
 extern GLFWwindow *window;
 
 Engine::Entity krawatterich;
 Engine::Entity root;
 
-void Engine::OnStartGame()
+void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
     inputSystem = new Engine::InputSystem(window);
+    textRenderSystem->Initialize(screenWidth, screenHeight);
 
     Engine::Entity dungeon = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
@@ -37,6 +39,13 @@ void Engine::OnStartGame()
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
     renderSystem->camera.SetScale(glm::vec3(1));
     renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
+
+    Entity textTest = ecsSystem->CreateEntity();
+    Text& text = ecsSystem->AddComponent<Text>(textTest);
+    std::string bla = "dies ist ein test";
+    text.SetText(bla);
+    text.scale = 10;
+    
 }
 
 void Engine::OnEndGame()

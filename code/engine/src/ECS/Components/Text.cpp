@@ -7,7 +7,8 @@ namespace Engine
         text.reset(gltCreateText());
         scale = 1;
         position = {0,0};
-        SetText("");
+        std::string empty = "";
+        SetText(empty);
     }
 
     Text::Text(std::string string)
