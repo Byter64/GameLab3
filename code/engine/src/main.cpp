@@ -9,6 +9,10 @@
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
+
+#define GLT_IMPLEMENTATION
+#define GLT_MANUAL_VIEWPORT
+#include "../../extern/glText/gltext.h"
 Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on this symbol being declared
@@ -26,6 +30,9 @@ GLFWwindow *window;
 
 std::chrono::time_point<std::chrono::steady_clock> time1;
 
+static int screenWidth = 1920;
+static int screenHeight = 1080;
+
 int SetupWindow();
 void InitializeECS();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -37,6 +44,11 @@ int main()
     if(SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::OnStartGame();
+
+    gltInit();
+    gltViewport(screenWidth, screenHeight);
+    GLTtext* text = gltCreateText();
+    gltSetText(text, "Hallo Welt!");
 
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
@@ -51,6 +63,10 @@ int main()
         collisionSystem->CheckCollisions();
 
         renderSystem->Render();
+        gltBeginDraw();
+        gltColor(1.0f, 1.0f,1.0f ,1.0f);
+        gltDrawText2D(text, 0, 0, 10);
+        gltEndDraw();
         glfwSwapBuffers(window);
         ecsSystem->DeletePurgatory();
 
@@ -79,7 +95,7 @@ int SetupWindow()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-    window = glfwCreateWindow(1920, 1080, "GameLabIII", nullptr, nullptr);
+    window = glfwCreateWindow(screenWidth, screenHeight, "GameLabIII", nullptr, nullptr);
     if (window == nullptr)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -170,6 +186,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     time1 = std::chrono::high_resolution_clock::now();
     glViewport(0, 0, width, height);
+    gltViewport(width, height);
 }
 
 void window_pos_callback(GLFWwindow *window, int x, int y)
