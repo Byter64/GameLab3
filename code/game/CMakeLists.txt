@@ -63,6 +63,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Systems/DungeonEnemySystem.h
         ../engine/src/ECS/Components/Dungeon.cpp
         ../engine/include/ECS/Helpers/RenderLayer.h
+        ../extern/glText/gltext.h
 )
 
 set(EXE_FILE Game)
