@@ -9,10 +9,6 @@
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
-
-#define GLT_IMPLEMENTATION
-#define GLT_MANUAL_VIEWPORT
-#include "../../extern/glText/gltext.h"
 Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on this symbol being declared
@@ -129,6 +125,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
     ecsSystem->RegisterComponent<Engine::Health>();
     ecsSystem->RegisterComponent<Engine::Dungeon>();
+    ecsSystem->RegisterComponent<Engine::Text>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();

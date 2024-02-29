@@ -153,6 +153,8 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Health>(entity));
         if(ecsSystem->HasComponent<Engine::Dungeon>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Dungeon>(entity));
+        if(ecsSystem->HasComponent<Engine::Text>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Engine::Text>(entity));
 
         if(ecsSystem->HasComponent<Engine::Transform>(entity))
         {

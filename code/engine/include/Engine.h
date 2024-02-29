@@ -13,6 +13,7 @@
 #include "ECS/Components/EnemyBehaviour.h"
 #include "ECS/Components/Health.h"
 #include "ECS/Components/Dungeon.h"
+#include "ECS/Components/Text.h"
 #include "ECS/Systems/TransformParentSystem.h"
 #include "ECS/Systems/RenderSystem.h"
 #include "ECS/Systems/CollisionSystem.h"
