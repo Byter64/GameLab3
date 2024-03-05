@@ -1,18 +1,14 @@
-`Please edit this README to fit your project and keep it up-to-date with your concept.`
-
-`All final deliverables (code, executable game, report, trailer and poster) have to be committed, tagged as final and pushed to your GitLab repository.`
-
 # GameLab Project Repository
 
 |  General Info  | |
 | ---|---|
-| Working Title | `Edit me!` |
-| Final Title | `Edit me!` |
-| Student | `Name`, `edit-me`@stud-mail.uni-wuerzburg.de, `s######` |
+| Working Title | My very cool Game Lab 3 project |
+| Final Title | Edit me! |
+| Student | Yannik Stamm, yannik.stamm@stud-mail.uni-wuerzburg.de, s431656 |
 | Target Platform(s) | `Edit me!` |
-| Start Date | 21.10.2019 |
+| Start Date | 16.9.2023 |
 | Study Program | Games Engineering B.Sc.|
-| Engine Version | Unity 2021.3.11f1 or Unreal 5.0.3 |
+| Engine Version | None (OpenGL?) |
 
 ### Abstract
 
@@ -42,26 +38,6 @@ RepositoryRoot/
     └── trailer/            // .mp4 (final trailer, no raw material)
 ```
 
-### Project and Source Control
-
-Read more about Git in the [Atlassian Git Tutorials](https://de.atlassian.com/git).
-
-#### Avoiding Clutter with .gitignore
-Gitignore files allow to exclude certain patterns from being versioned.
-This is necessary to avoid unnecessary (and possibly harmful) cluttering of your repository.
-Especially the automatically generated project and cache files of VisualStudio, Unity, or Unreal projects should be ignored.
-
-You can find [a selection of *.gitignore* files publicly available on GitHub](https://github.com/github/gitignore).
-
-##### Quick Check if .gitignore is working
-
-Your *.gitignore* is not correctly set up, if
-* your repository contains Folders such as `Library`, `DerivedDataCache` or `Saved`
-* `cache` files, `visual studio` project files etc. are `shown as modified` before commiting with your git client
-
-In this case, check your setup.
-Be aware that *.gitignore* is the actual, required filename!
-
 #### Versioning Binary Assets with Git LFS and .gitattributes
 Gitattribute files define file types to be handled through the Git Large File Storage (Git LFS) System.
 This system does not handle binary files, such as assets, images, meshes, etc. well.
@@ -78,9 +54,3 @@ This command creates the following entry in the *.gitattributes* file:
 
 Git LFS is installed on all Workstations in E37 and the GameLabs.
 For your private computer, you can [download Git LFS here](https://git-lfs.github.com/).
-
-#### Further Reading: 
-* [Epic on Git for Unreal](https://wiki.unrealengine.com/Git_source_control_(Tutorial)#Workarounds_for_dealing_with_binary_files_on_your_Git_repository)
-* [GitLFS](https://www.git-lfs.com)
-* [Git](https://www.git-scm.com)
-
