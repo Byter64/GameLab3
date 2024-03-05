@@ -20,9 +20,9 @@ namespace Engine
         SetText(string);
     }
 
-    void Text::SetText(std::string& string)
+    void Text::SetText(std::string string)
     {
-        this->string = string;
+        this->string = std::move(string);
         gltSetText(text.get(), this->string.c_str());
     }
 

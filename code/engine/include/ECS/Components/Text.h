@@ -27,7 +27,7 @@ namespace Engine
         Text& operator=(Text& other);
         Text& operator=(Text&& other) = default;
 
-        void SetText(std::string& string);
+        void SetText(std::string string);
         std::string& GetText();
     };
 
