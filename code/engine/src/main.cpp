@@ -54,6 +54,8 @@ int main()
         dungeonSystem->Update();
         collisionSystem->CheckCollisions();
 
+        Engine::Update(passedTimeInSeconds);
+
         renderSystem->Render();
         textRenderSystem->Render();
         glfwSwapBuffers(window);
