@@ -64,7 +64,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Components/Dungeon.cpp
         ../engine/include/ECS/Helpers/RenderLayer.h
         ../extern/glText/gltext.h
-        ../engine/include/ECS/Systems/TextRenderSystem.cpp
+        ../engine/src/ECS/Systems/TextRenderSystem.cpp
         ../engine/include/ECS/Systems/TextRenderSystem.h
         ../engine/include/ECS/Components/Text.h
         ../engine/src/ECS/Components/Text.cpp
