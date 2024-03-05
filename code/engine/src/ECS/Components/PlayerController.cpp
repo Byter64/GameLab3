@@ -73,4 +73,10 @@ namespace Engine
         PlayerController* player = static_cast<PlayerController*>(object);
         player->wasFirePushed = false;
     }
+
+    void PlayerController::AddScore(int points)
+    {
+        score += points;
+        hasScoreChanged = true;
+    }
 } // Engine

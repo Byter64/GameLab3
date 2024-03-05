@@ -27,9 +27,14 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 
     enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 
+    Engine::Entity playerUI = ecsSystem->CreateEntity();
+    auto& textUI = ecsSystem->AddComponent<Engine::Text>(playerUI);
+    textUI.scale = 2;
+
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
     controller.speed = 2;
+    controller.uiTextScore = playerUI;
     controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
     controller.SetFireInput(GLFW_KEY_SPACE);
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
@@ -42,6 +47,11 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 }
 
 void Engine::OnEndGame()
+{
+
+}
+
+void Engine::Update(float deltaTime)
 {
 
 }
