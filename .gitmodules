@@ -7,6 +7,3 @@
 [submodule "code/extern/tinygltf"]
 	path = code/extern/tinygltf
 	url = https://github.com/syoyo/tinygltf.git
-[submodule "code/extern/glText"]
-	path = code/extern/glText
-	url = https://github.com/vallentin/glText.git
