@@ -24,9 +24,21 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 
     enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 
+    Engine::Entity player1Text = ecsSystem->CreateEntity();
+    auto& player1UI = ecsSystem->AddComponent<Engine::Text>(player1Text);
+    player1UI.scale = 2;
+    player1UI.SetText("Player 1");
+
+    Engine::Entity scoreText = ecsSystem->CreateEntity();
+    auto& scoreTextUI = ecsSystem->AddComponent<Engine::Text>(scoreText);
+    scoreTextUI.scale = 2;
+    scoreTextUI.position = {0, 35};
+    scoreTextUI.SetText("Score:");
+
     Engine::Entity playerUI = ecsSystem->CreateEntity();
     auto& textUI = ecsSystem->AddComponent<Engine::Text>(playerUI);
     textUI.scale = 2;
+    textUI.position = {110, 35};
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
