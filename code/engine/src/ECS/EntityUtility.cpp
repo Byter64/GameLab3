@@ -15,6 +15,7 @@ namespace Engine
     Entity bulletPrefab = Entity::INVALID_ENTITY_ID;
     Entity hubertusPrefab = Entity::INVALID_ENTITY_ID;
     Entity wallPrefab = Entity::INVALID_ENTITY_ID;
+    Entity lootPrefab = Entity::INVALID_ENTITY_ID;
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
@@ -155,6 +156,8 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
         if(ecsSystem->HasComponent<Text>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Text>(entity));
+        if(ecsSystem->HasComponent<Loot>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Loot>(entity));
 
         if(ecsSystem->HasComponent<Transform>(entity))
         {
@@ -245,6 +248,28 @@ namespace Engine
         return wall;
     }
 
+    Entity SpawnLoot(glm::vec3 position, int points)
+    {
+        if(lootPrefab == Entity::INVALID_ENTITY_ID)
+        {
+            lootPrefab = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel\\Jewel.glb")[0];
+            ecsSystem->GetComponent<Transform>(lootPrefab).SetScale(glm::vec3(0));
+            ecsSystem->AddComponent<Loot>(lootPrefab, {0});
+        }
+
+        Entity loot = CopyEntity(lootPrefab);
+
+        ecsSystem->GetComponent<Transform>(loot).SetScale(glm::vec3(1));
+        ecsSystem->GetComponent<Transform>(loot).SetTranslation(position);
+        ecsSystem->GetComponent<Loot>(loot).score = points;
+
+        BoxCollider& collider = ecsSystem->AddComponent<BoxCollider>(loot);
+        collider.size = glm::vec3(1,1, 1000);
+        collider.position = glm::vec3 (0);
+        collider.isStatic = true;
+
+        return loot;
+    }
 
     /// Removes the given entity plus all children within the transform hierarchy. In case entity does not have a Transform or no children, RemoveEntityWithChildren will behave identical with ECSSystem.RemoveEntity
     /// \param entity

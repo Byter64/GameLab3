@@ -3,6 +3,7 @@
 #include <utility>
 #include <map>
 #include <string>
+#include <vector>
 
 namespace Engine
 {
@@ -25,6 +26,15 @@ namespace Engine
                 {
                         {Default, "Hubertus"},
                         {KindredSpirit, "KindredSpirit"}
+                };
+
+        //Use the enum Behaviour to access the appropriate scores
+        inline static const std::vector<int> scores =
+                {
+                    100,
+                    200,
+                    300,
+                    200
                 };
 
         bool isMoving = false;

@@ -14,6 +14,7 @@
 #include "ECS/Components/Health.h"
 #include "ECS/Components/Dungeon.h"
 #include "ECS/Components/Text.h"
+#include "ECS/Components/Loot.h"
 #include "ECS/Systems/TransformParentSystem.h"
 #include "ECS/Systems/RenderSystem.h"
 #include "ECS/Systems/CollisionSystem.h"

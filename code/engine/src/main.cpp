@@ -121,6 +121,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::Health>();
     ecsSystem->RegisterComponent<Engine::Dungeon>();
     ecsSystem->RegisterComponent<Engine::Text>();
+    ecsSystem->RegisterComponent<Engine::Loot>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();

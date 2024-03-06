@@ -34,24 +34,33 @@ namespace Engine
 
         for(auto pair : boxCollider.collisions)
         {
-            //If wall was hit
-            Transform& otherTransform = ecsSystem->GetComponent<Transform>(pair.first.other);
-            glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
-            if(distance == glm::vec3(0))
-                distance.x += 1;
-            transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
-
-            //If bullet was hit
             Entity other = pair.first.other;
-            if(ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
+            if(ecsSystem->HasComponent<Loot>(other))
             {
-                //Bullet is already destroying itself, so no need to do it here
-                Health& health = ecsSystem->GetComponent<Health>(playerEntity);
-                health.health--;
-                if(health.health <= 0)
+                controller.AddScore(ecsSystem->GetComponent<Loot>(other).score);
+                RemoveEntityWithChildren(other);
+            }
+            else
+            {
+                //If wall was hit
+                Transform &otherTransform = ecsSystem->GetComponent<Transform>(other);
+                glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
+                if (distance == glm::vec3(0))
+                    distance.x += 1;
+                transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
+
+                //If bullet was hit
+                if (ecsSystem->HasComponent<Bullet>(other) &&
+                    ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
                 {
-                    std::cout << "Player dead" << std::endl;
-                    glfwSetWindowShouldClose(window, true);
+                    //Bullet is already destroying itself, so no need to do it here
+                    Health &health = ecsSystem->GetComponent<Health>(playerEntity);
+                    health.health--;
+                    if (health.health <= 0)
+                    {
+                        std::cout << "Player dead" << std::endl;
+                        glfwSetWindowShouldClose(window, true);
+                    }
                 }
             }
         }
