@@ -25,10 +25,13 @@ namespace Engine
         inputAction->AddOnValueChange(this, GetMovement);
         inputSystem->Add(inputAction);
 
-        inputActionZ = std::make_shared<Engine::InputActionVec2>("MovementZ");
-        inputActionZ->AddKeyboardBinding(backKey, frontKey, 0, 0);
-        inputActionZ->AddOnValueChange(this, GetMovementZ);
-        inputSystem->Add(inputActionZ);
+        if(backKey != -1 && frontKey != -1)
+        {
+            inputActionZ = std::make_shared<Engine::InputActionVec2>("MovementZ");
+            inputActionZ->AddKeyboardBinding(backKey, frontKey, 0, 0);
+            inputActionZ->AddOnValueChange(this, GetMovementZ);
+            inputSystem->Add(inputActionZ);
+        }
     }
 
     PlayerController::~PlayerController()

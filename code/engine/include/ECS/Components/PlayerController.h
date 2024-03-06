@@ -24,7 +24,7 @@ namespace Engine
 
         PlayerController() = default;
         ~PlayerController();
-        void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey, int frontKey);
+        void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey = -1, int frontKey = -1);
         void SetFireInput(int key);
         void AddScore(int points);
 

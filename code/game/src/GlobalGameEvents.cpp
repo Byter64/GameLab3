@@ -50,6 +50,38 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->AddComponent<Engine::Health>(player, Engine::Health{1});
 
+#define PLAYER2
+#ifdef PLAYER2
+    Engine::Entity player2Text = ecsSystem->CreateEntity();
+    auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
+    player2UI.scale = 2;
+    player2UI.position = {0, 200};
+    player2UI.SetText("Player 2");
+
+    Engine::Entity scoreText2 = ecsSystem->CreateEntity();
+    auto& scoreTextUI2 = ecsSystem->AddComponent<Engine::Text>(scoreText2);
+    scoreTextUI2.scale = 2;
+    scoreTextUI2.position = {0, 235};
+    scoreTextUI2.SetText("Score:");
+
+    Engine::Entity playerUI2 = ecsSystem->CreateEntity();
+    auto& textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
+    textUI2.scale = 2;
+    textUI2.position = {110, 235};
+
+    Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
+    ecsSystem->GetComponent<Engine::Transform>(player2).SetTranslation({1, 0, 0});
+    ecsSystem->GetComponent<Engine::Transform>(player).SetTranslation({-1, 0, 0});
+    Engine::PlayerController& controller2 = ecsSystem->AddComponent<Engine::PlayerController>(player2);
+    controller2.speed = 2;
+    controller2.uiTextScore = playerUI2;
+    controller2.SetMovementInput(GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN);
+    controller2.SetFireInput(GLFW_KEY_KP_0);
+    ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
+    ecsSystem->AddComponent<Engine::Health>(player2, Engine::Health{1});
+#endif
+
     renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
     renderSystem->camera.SetScale(glm::vec3(1));
     renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
