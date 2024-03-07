@@ -69,6 +69,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Components/Text.h
         ../engine/src/ECS/Components/Text.cpp
         ../engine/include/ECS/Components/Loot.h
+        include/CollisionLayer.h
 )
 
 set(EXE_FILE Game)

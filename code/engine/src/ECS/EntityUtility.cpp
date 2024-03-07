@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <queue>
+#include "CollisionLayer.h"
 
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
@@ -201,6 +202,7 @@ namespace Engine
         BoxCollider& collider = ecsSystem->AddComponent<BoxCollider>(entity);
         collider.size = glm::vec3(1, 1, 1);
         collider.isStatic = false;
+        collider.layer = CollisionLayer::Bullet;
         collider.collisions.clear();
 
         return entity;
@@ -218,6 +220,7 @@ namespace Engine
         ecsSystem->GetComponent<Transform>(enemy).SetScale(glm::vec3(1.0f));
         ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
+        ecsSystem->GetComponent<BoxCollider>(enemy).layer = CollisionLayer::Enemy;
         ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
         ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = behaviour;
         ecsSystem->GetComponent<EnemyBehaviour>(enemy).startPos = startPos;
@@ -244,6 +247,7 @@ namespace Engine
         wallCollider.size = glm::vec3(1,1, 1000);
         wallCollider.position = glm::vec3 (0);
         wallCollider.isStatic = true;
+        wallCollider.layer = CollisionLayer::Dungeon;
 
         return wall;
     }
@@ -267,6 +271,7 @@ namespace Engine
         collider.size = glm::vec3(1,1, 1000);
         collider.position = glm::vec3 (0);
         collider.isStatic = true;
+        collider.layer = CollisionLayer::Collectible;
 
         return loot;
     }

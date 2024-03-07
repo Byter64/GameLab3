@@ -55,11 +55,15 @@ namespace Engine
 
         for(auto entity1 = entities.begin(); entity1 != entities.end(); entity1++)
         {
+            BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(*entity1);
             if(ecsSystem->GetComponent<BoxCollider>(*entity1).isStatic) continue;
 
             for(auto entity2 = entities.begin(); entity2 != entities.end(); entity2++)
             {
+                BoxCollider& collider2 = ecsSystem->GetComponent<BoxCollider>(*entity2);
+                if(ignoredLayers[collider1.layer].count(collider2.layer)) continue;
                 if(entity1 == entity2) continue;
+
                 CheckCollision(*entity1, *entity2);
             }
         }
@@ -109,6 +113,20 @@ namespace Engine
             Collision col = {other, entity};
             BoxCollider &otherCollider = ecsSystem->GetComponent<Engine::BoxCollider>(other);
             otherCollider.collisions.erase(col);
+        }
+    }
+
+    void CollisionSystem::SetCollisionBetweenLayers(unsigned char layer1, unsigned char layer2, bool canCollide)
+    {
+        if(canCollide)
+        {
+            ignoredLayers[layer1].erase(layer2);
+            ignoredLayers[layer2].erase(layer1);
+        }
+        else
+        {
+            ignoredLayers[layer1].insert(layer2);
+            ignoredLayers[layer2].insert(layer1);
         }
     }
 

@@ -1,7 +1,7 @@
 #include "GlobalGameEvents.h"
 #include "Engine.h"
 #include "glm/glm.hpp"
-#include "glm/gtc/type_ptr.hpp"
+#include "CollisionLayer.h"
 
 extern Engine::InputSystem* inputSystem;
 
@@ -16,6 +16,15 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
     inputSystem = new Engine::InputSystem(window);
     textRenderSystem->Initialize(screenWidth, screenHeight);
+
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Enemy, CollisionLayer::Collectible, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Bullet, CollisionLayer::Collectible, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Dungeon, CollisionLayer::Collectible, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Dungeon, CollisionLayer::Enemy, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Dungeon, CollisionLayer::Dungeon, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Collectible, CollisionLayer::Collectible, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Bullet, CollisionLayer::Bullet, false);
+    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Enemy, CollisionLayer::Enemy, false);
 
     Engine::Entity dungeon = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
@@ -48,6 +57,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller.SetFireInput(GLFW_KEY_SPACE);
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = CollisionLayer::Player;
     ecsSystem->AddComponent<Engine::Health>(player, Engine::Health{1});
 
 #define PLAYER2
@@ -79,6 +89,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller2.SetFireInput(GLFW_KEY_KP_0);
     ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = CollisionLayer::Player;
     ecsSystem->AddComponent<Engine::Health>(player2, Engine::Health{1});
 #endif
 
