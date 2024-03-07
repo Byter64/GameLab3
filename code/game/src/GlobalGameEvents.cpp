@@ -49,18 +49,18 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     textUI.scale = 2;
     textUI.position = {110, 35};
 
-    Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
-    Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
-    controller.speed = 2;
-    controller.uiTextScore = playerUI;
-    controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
-    controller.SetFireInput(GLFW_KEY_SPACE);
-    ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
-    ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = CollisionLayer::Player;
-    ecsSystem->AddComponent<Engine::Health>(player, Engine::Health{1});
+//    Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
+//    Engine::PlayerController& controller = ecsSystem->AddComponent<Engine::PlayerController>(player);
+//    controller.speed = 2;
+//    controller.uiTextScore = playerUI;
+//    controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
+//    controller.SetFireInput(GLFW_KEY_SPACE);
+//    ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
+//    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
+//    ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = CollisionLayer::Player;
+//    ecsSystem->AddComponent<Engine::Health>(player, Engine::Health{1});
 
-#define PLAYER2
+//#define PLAYER2
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);

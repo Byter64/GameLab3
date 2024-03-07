@@ -72,7 +72,8 @@ namespace Engine
             for(auto collision : collider.collisions)
             {
                 Entity other = collision.first.other;
-                if(ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != entity)
+                //If is a bullet and was not shot from an enemy
+                if(ecsSystem->HasComponent<Bullet>(other) && !ecsSystem->HasComponent<EnemyBehaviour>(ecsSystem->GetComponent<Bullet>(other).spawner))
                 {
                     //Bullet is already destroying itself, so no need to do it here
                     Health& health = ecsSystem->GetComponent<Health>(entity);
