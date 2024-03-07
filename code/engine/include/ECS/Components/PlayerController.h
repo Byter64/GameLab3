@@ -20,6 +20,7 @@ namespace Engine
         float speed;
 
         bool hasScoreChanged = true;
+        float stunnedTimer = 0;
         Entity uiTextScore = Entity::INVALID_ENTITY_ID;
 
         PlayerController() = default;

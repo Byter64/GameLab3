@@ -40,18 +40,15 @@ namespace Engine
                 controller.AddScore(ecsSystem->GetComponent<Loot>(other).score);
                 RemoveEntityWithChildren(other);
             }
-            else
+            //If bullet was hit
+            else if (ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
             {
-                //If wall was hit
-                Transform &otherTransform = ecsSystem->GetComponent<Transform>(other);
-                glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
-                if (distance == glm::vec3(0))
-                    distance.x += 1;
-                transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
-
-                //If bullet was hit
-                if (ecsSystem->HasComponent<Bullet>(other) &&
-                    ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
+                //If bullet is shot from player
+                if (ecsSystem->HasComponent<PlayerController>(ecsSystem->GetComponent<Bullet>(other).spawner))
+                {
+                    controller.stunnedTimer = stunnedTime;
+                }
+                else
                 {
                     //Bullet is already destroying itself, so no need to do it here
                     Health &health = ecsSystem->GetComponent<Health>(playerEntity);
@@ -63,6 +60,14 @@ namespace Engine
                     }
                 }
             }
+            else
+            {
+                Transform &otherTransform = ecsSystem->GetComponent<Transform>(other);
+                glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
+                if (distance == glm::vec3(0))
+                    distance.x += 1;
+                transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
+            }
         }
     }
 
@@ -70,6 +75,12 @@ namespace Engine
     {
         Transform& transform = ecsSystem->GetComponent<Transform>(playerEntity);
         PlayerController& controller = ecsSystem->GetComponent<PlayerController>(playerEntity);
+
+        if(controller.stunnedTimer > 0)
+        {
+            controller.stunnedTimer -= deltaTime;
+            return;
+        }
 
         if(controller.movementInput != glm::vec3(0))
         {

@@ -6,6 +6,8 @@ namespace Engine
 
     class PlayerControllerSystem : public System
     {
+        const float stunnedTime = 5.0f;
+
         void ResolveCollisions(Entity playerEntity, float deltaTime);
         void HandleInput(Entity playerEntity, float deltaTime);
         void UpdateUI(Entity playerEntity);
