@@ -3,6 +3,7 @@
 #include "Engine.h"
 #include "../tinygltf/stb_image.h"
 #define STBI_FAILURE_USERMSG
+#include "ECSExtension.h"
 
 namespace Engine
 {
@@ -51,7 +52,7 @@ namespace Engine
                 {
                     if (dungeon.enemies.count(pair.first))
                     {
-                        Entity hubertus = SpawnEnemy(pair.first, dungeon.enemies[pair.first].front());
+                        Entity hubertus = ECSHelper::SpawnEnemy(pair.first, dungeon.enemies[pair.first].front());
                         dungeon.enemies[pair.first].pop_front();
                         dungeon.activeEnemies[pair.first] = hubertus;
                     }

@@ -11,13 +11,14 @@ extern std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this
 
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
+Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
 
 void ECSHelper::Initialize()
 {
     ecsSystem->RegisterComponent<Engine::PlayerController>();
     ecsSystem->RegisterComponent<Bullet>();
     ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
-    ecsSystem->RegisterComponent<Engine::Health>();
+    ecsSystem->RegisterComponent<Health>();
     ecsSystem->RegisterComponent<Engine::Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
@@ -27,7 +28,7 @@ void ECSHelper::Initialize()
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::PlayerController>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Health>());
+    playerControllerSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
 
     bulletSystem = ecsSystem->RegisterSystem<BulletSystem>();
@@ -42,7 +43,7 @@ void ECSHelper::Initialize()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Health>());
+    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
 
     dungeonEnemySystem = ecsSystem->RegisterSystem<Engine::DungeonEnemySystem>();
@@ -64,6 +65,8 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Bullet>(entity));
     if(ecsSystem->HasComponent<Loot>(entity))
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Loot>(entity));
+    if(ecsSystem->HasComponent<Health>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
 
     return newEntity;
 }
@@ -116,4 +119,26 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
     collider.layer = static_cast<unsigned char>(CollisionLayer::Collectible);
 
     return loot;
+}
+
+Engine::Entity ECSHelper::SpawnEnemy(std::pair<int, int> startPos, Engine::EnemyBehaviour::Behaviour behaviour)
+{
+    if(hubertusPrefab == Engine::Entity::INVALID_ENTITY_ID)
+    {
+        hubertusPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
+        ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
+    }
+    Engine::Entity enemy = CopyEntity(hubertusPrefab, true);
+    ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
+    ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
+    ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
+    ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).behaviour = behaviour;
+    ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).startPos = startPos;
+    ecsSystem->AddComponent<Health>(enemy, Health());
+    ecsSystem->GetComponent<Health>(enemy).health = 3;
+
+    return enemy;
 }

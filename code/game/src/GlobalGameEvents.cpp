@@ -61,7 +61,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
-    ecsSystem->AddComponent<Engine::Health>(player, Engine::Health{1});
+    ecsSystem->AddComponent<Health>(player, Health{1});
 
 //#define PLAYER2
 #ifdef PLAYER2

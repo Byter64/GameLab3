@@ -13,7 +13,6 @@
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
-    Entity hubertusPrefab = Entity::INVALID_ENTITY_ID;
     Entity wallPrefab = Entity::INVALID_ENTITY_ID;
 
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
@@ -147,8 +146,6 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<BoxCollider>(entity));
         if(ecsSystem->HasComponent<PlayerController>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
-        if(ecsSystem->HasComponent<Health>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
         if(ecsSystem->HasComponent<Dungeon>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
         if(ecsSystem->HasComponent<Text>(entity))
@@ -174,29 +171,6 @@ namespace Engine
         }
 
         return newEntity;
-    }
-
-
-    Entity SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour)
-    {
-        if(hubertusPrefab == Entity::INVALID_ENTITY_ID)
-        {
-            hubertusPrefab = ImportGLTF(Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
-            ecsSystem->GetComponent<Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
-            ecsSystem->GetComponent<Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
-        }
-        Entity enemy = CopyEntity(hubertusPrefab, true);
-        ecsSystem->GetComponent<Transform>(enemy).SetScale(glm::vec3(1.0f));
-        ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
-        ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
-        ecsSystem->GetComponent<BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
-        ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
-        ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = behaviour;
-        ecsSystem->GetComponent<EnemyBehaviour>(enemy).startPos = startPos;
-        ecsSystem->AddComponent<Health>(enemy, Health());
-        ecsSystem->GetComponent<Health>(enemy).health = 3;
-
-        return enemy;
     }
 
     Entity SpawnWall(glm::vec3 position)
