@@ -81,11 +81,10 @@ namespace Engine
                     if(health.health <= 0)
                     {
                         RemoveEntityWithChildren(entity);
-                        SpawnLoot(ecsSystem->GetComponent<Transform>(entity).GetGlobalTranslation(), EnemyBehaviour::scores[behaviour.behaviour]);
+                        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Transform>(entity).GetGlobalTranslation(), EnemyBehaviour::scores[behaviour.behaviour]);
                     }
                 }
             }
-
         }
     }
 

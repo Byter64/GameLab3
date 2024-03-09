@@ -68,7 +68,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Systems/TextRenderSystem.h
         ../engine/include/ECS/Components/Text.h
         ../engine/src/ECS/Components/Text.cpp
-        ../engine/include/ECS/Components/Loot.h
+        include/Components/Loot.h
         include/CollisionLayer.h
         src/ECSHelper.cpp
         include/ECSHelper.h

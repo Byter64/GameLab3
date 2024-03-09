@@ -14,7 +14,6 @@ namespace Engine
     Entity CopyEntity(Entity entity, bool copyChildren);
     std::vector<Entity> ImportGLTF(std::filesystem::path gltf, bool addParent = false);
     Entity SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour);
-    Entity SpawnLoot(glm::vec3 position, int points);
     Entity SpawnWall(glm::vec3 position);
     void RemoveEntityWithChildren(Entity entity, bool removeParent = true);
 
