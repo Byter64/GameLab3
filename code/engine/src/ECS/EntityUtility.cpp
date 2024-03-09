@@ -13,7 +13,6 @@
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
-    Entity bulletPrefab = Entity::INVALID_ENTITY_ID;
     Entity hubertusPrefab = Entity::INVALID_ENTITY_ID;
     Entity wallPrefab = Entity::INVALID_ENTITY_ID;
     Entity lootPrefab = Entity::INVALID_ENTITY_ID;
@@ -149,8 +148,6 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<BoxCollider>(entity));
         if(ecsSystem->HasComponent<PlayerController>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
-        if(ecsSystem->HasComponent<Bullet>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Bullet>(entity));
         if(ecsSystem->HasComponent<Health>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
         if(ecsSystem->HasComponent<Dungeon>(entity))
@@ -182,31 +179,6 @@ namespace Engine
         return newEntity;
     }
 
-    Entity SpawnBullet(Entity spawner, glm::vec3 position, glm::vec3 direction, float speed)
-    {
-        if(bulletPrefab == Entity::INVALID_ENTITY_ID)
-        {
-            bulletPrefab = ImportGLTF(Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
-            ecsSystem->GetComponent<Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
-        }
-
-        Entity entity = CopyEntity(bulletPrefab);
-        ecsSystem->GetComponent<Transform>(entity).SetScale(glm::vec3(0.2f));
-        ecsSystem->GetComponent<Transform>(entity).SetTranslation(position);
-        ecsSystem->GetComponent<Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
-
-        Bullet& bullet = ecsSystem->AddComponent<Bullet>(entity);
-        bullet.velocity = glm::normalize(direction) * speed;
-        bullet.spawner = spawner;
-
-        BoxCollider& collider = ecsSystem->AddComponent<BoxCollider>(entity);
-        collider.size = glm::vec3(1, 1, 1);
-        collider.isStatic = false;
-        collider.layer = CollisionLayer::Bullet;
-        collider.collisions.clear();
-
-        return entity;
-    }
 
     Entity SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour)
     {
@@ -220,7 +192,7 @@ namespace Engine
         ecsSystem->GetComponent<Transform>(enemy).SetScale(glm::vec3(1.0f));
         ecsSystem->AddComponent<BoxCollider>(enemy, BoxCollider());
         ecsSystem->GetComponent<BoxCollider>(enemy).size = glm::vec3(0.5f);
-        ecsSystem->GetComponent<BoxCollider>(enemy).layer = CollisionLayer::Enemy;
+        ecsSystem->GetComponent<BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
         ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
         ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = behaviour;
         ecsSystem->GetComponent<EnemyBehaviour>(enemy).startPos = startPos;
@@ -247,7 +219,7 @@ namespace Engine
         wallCollider.size = glm::vec3(1,1, 1000);
         wallCollider.position = glm::vec3 (0);
         wallCollider.isStatic = true;
-        wallCollider.layer = CollisionLayer::Dungeon;
+        wallCollider.layer = static_cast<unsigned char>(CollisionLayer::Dungeon);
 
         return wall;
     }
@@ -271,7 +243,7 @@ namespace Engine
         collider.size = glm::vec3(1,1, 1000);
         collider.position = glm::vec3 (0);
         collider.isStatic = true;
-        collider.layer = CollisionLayer::Collectible;
+        collider.layer = static_cast<unsigned char>(CollisionLayer::Collectible);
 
         return loot;
     }

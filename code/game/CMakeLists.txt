@@ -49,9 +49,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/PlayerControllerSystem.cpp
         ../engine/include/ECS/Systems/PlayerControllerSystem.h
         ../engine/src/ECS/Entity.cpp
-        ../engine/include/ECS/Components/Bullet.h
-        ../engine/src/ECS/Systems/BulletSystem.cpp
-        ../engine/include/ECS/Systems/BulletSystem.h
+        include/Components/Bullet.h
+        src/Systems/BulletSystem.cpp
+        include/Systems/BulletSystem.h
         ../engine/include/ECS/Components/EnemyBehaviour.h
         ../engine/src/ECS/Systems/EnemyBehaviourSystem.cpp
         ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
@@ -70,6 +70,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Components/Text.cpp
         ../engine/include/ECS/Components/Loot.h
         include/CollisionLayer.h
+        src/ECSHelper.cpp
+        include/ECSHelper.h
+        include/ECSExtension.h
 )
 
 set(EXE_FILE Game)

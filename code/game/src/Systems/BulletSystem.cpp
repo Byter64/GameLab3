@@ -1,36 +1,34 @@
-#include "ECS/Systems/BulletSystem.h"
+#include "Systems/BulletSystem.h"
 #include "Engine.h"
-namespace Engine
+#include "ECSExtension.h"
+void BulletSystem::EntityAdded(Engine::Entity entity)
 {
-    void BulletSystem::EntityAdded(Entity entity)
+
+}
+
+void BulletSystem::EntityRemoved(Engine::Entity entity)
+{
+
+}
+
+void BulletSystem::Update(float deltaTime)
+{
+    for (Engine::Entity entity : entities)
     {
+        Bullet& bullet = ecsSystem->GetComponent<Bullet>(entity);
+        Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+        Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
 
-    }
-
-    void BulletSystem::EntityRemoved(Entity entity)
-    {
-
-    }
-
-    void BulletSystem::Update(float deltaTime)
-    {
-        for (Entity entity : entities)
+        for(auto pair : collider.collisions)
         {
-            Bullet& bullet = ecsSystem->GetComponent<Bullet>(entity);
-            Transform& transform = ecsSystem->GetComponent<Transform>(entity);
-            BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
-
-            for(auto pair : collider.collisions)
+            const Engine::Collision& collision = pair.first;
+            if(collision.other != bullet.spawner)
             {
-                const Collision& collision = pair.first;
-                if(collision.other != bullet.spawner)
-                {
-                    ecsSystem->RemoveEntity(entity);
-                    break;
-                }
+                ecsSystem->RemoveEntity(entity);
+                break;
             }
-
-            transform.AddTranslation(glm::vec3(bullet.velocity, 0) * deltaTime);
         }
+
+        transform.AddTranslation(glm::vec3(bullet.velocity, 0) * deltaTime);
     }
-} // Engine
+}

@@ -1,7 +1,7 @@
 #include "ECS/Systems/PlayerControllerSystem.h"
 #include "Engine.h"
 #include <iostream>
-
+#include "ECSExtension.h"
 extern Engine::ECSSystem* ecsSystem;
 extern GLFWwindow* window;
 namespace Engine
@@ -90,7 +90,7 @@ namespace Engine
         if(controller.wasFirePushed)
         {
             controller.wasFirePushed = false;
-            SpawnBullet(playerEntity, transform.GetGlobalTranslation(), controller.lookDirection);
+            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(), controller.lookDirection);
         }
     }
 

@@ -15,12 +15,11 @@ Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on thi
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -49,7 +48,7 @@ int main()
 
         glfwPollEvents();
         playerControllerSystem->Update(passedTimeInSeconds);
-        bulletSystem->Update(passedTimeInSeconds);
+        //bulletSystem->Update(passedTimeInSeconds);
         enemyBehaviourSystem->Update(passedTimeInSeconds);
         dungeonSystem->Update();
         collisionSystem->CheckCollisions();
@@ -115,14 +114,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::Transform>();
     ecsSystem->RegisterComponent<Engine::MeshRenderer>();
     ecsSystem->RegisterComponent<Engine::BoxCollider>();
-    ecsSystem->RegisterComponent<Engine::PlayerController>();
-    ecsSystem->RegisterComponent<Engine::Bullet>();
-    ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
-    ecsSystem->RegisterComponent<Engine::Health>();
-    ecsSystem->RegisterComponent<Engine::Dungeon>();
     ecsSystem->RegisterComponent<Engine::Text>();
-    ecsSystem->RegisterComponent<Engine::Loot>();
-    //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
     Engine::Signature transformSignature;
@@ -139,39 +131,6 @@ void InitializeECS()
     collisionSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     collisionSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     ecsSystem->SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
-
-    playerControllerSystem = ecsSystem->RegisterSystem<Engine::PlayerControllerSystem>();
-    Engine::Signature  playerControllerSignature;
-    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
-    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::PlayerController>());
-    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Health>());
-    ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
-
-    bulletSystem = ecsSystem->RegisterSystem<Engine::BulletSystem>();
-    Engine::Signature bulletSignature;
-    bulletSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
-    bulletSignature.set(ecsSystem->GetComponentType<Engine::Bullet>());
-    bulletSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    ecsSystem->SetSystemSignature<Engine::BulletSystem>(bulletSignature);
-
-    enemyBehaviourSystem = ecsSystem->RegisterSystem<Engine::EnemyBehaviourSystem>();
-    Engine::Signature enemyBehaviourSignature;
-    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
-    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
-    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Health>());
-    ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
-
-    dungeonEnemySystem = ecsSystem->RegisterSystem<Engine::DungeonEnemySystem>();
-    Engine::Signature dungeonEnemySignature;
-    dungeonEnemySignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
-    ecsSystem->SetSystemSignature<Engine::DungeonEnemySystem>(dungeonEnemySignature);
-
-    dungeonSystem = ecsSystem->RegisterSystem<Engine::DungeonSystem>();
-    Engine::Signature dungeonSignature;
-    dungeonSignature.set(ecsSystem->GetComponentType<Engine::Dungeon>());
-    ecsSystem->SetSystemSignature<Engine::DungeonSystem>(dungeonSignature);
 
     textRenderSystem = ecsSystem->RegisterSystem<Engine::TextRenderSystem>();
     Engine::Signature textRenderSignature;

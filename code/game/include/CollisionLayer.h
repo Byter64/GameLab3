@@ -1,7 +1,7 @@
 #pragma once
 
 
-enum CollisionLayer : unsigned char
+enum class CollisionLayer : unsigned char
 {
     Player,
     Enemy,

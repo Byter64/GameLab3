@@ -1,15 +1,10 @@
 #pragma once
 #include "ECS/System.h"
-namespace Engine
+class BulletSystem : public Engine::System
 {
+    void EntityAdded(Engine::Entity entity) override;
+    void EntityRemoved(Engine::Entity entity) override;
 
-    class BulletSystem : public System
-    {
-        void EntityAdded(Entity entity) override;
-        void EntityRemoved(Entity entity) override;
-
-    public:
-        void Update(float deltaTime);
-    };
-
-} // Engine
+public:
+    void Update(float deltaTime);
+};

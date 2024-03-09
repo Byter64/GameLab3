@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <iterator>
 #include <random>
-
+#include "ECSExtension.h"
 namespace Engine
 {
     EnemyBehaviourSystem::EnemyBehaviourSystem()
@@ -124,7 +124,7 @@ namespace Engine
 
         if(behaviour.shootTimer <= 0)
         {
-            SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0));
+           ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0));
             std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
             behaviour.shootTimer = distr(gen);
         }

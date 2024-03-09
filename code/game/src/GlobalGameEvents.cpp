@@ -2,9 +2,10 @@
 #include "Engine.h"
 #include "glm/glm.hpp"
 #include "CollisionLayer.h"
-
+#include "ECSExtension.h"
 extern Engine::InputSystem* inputSystem;
 
+extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
@@ -14,17 +15,19 @@ extern GLFWwindow *window;
 
 void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
+    ECSHelper::Initialize();
+
     inputSystem = new Engine::InputSystem(window);
     textRenderSystem->Initialize(screenWidth, screenHeight);
 
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Enemy, CollisionLayer::Collectible, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Bullet, CollisionLayer::Collectible, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Dungeon, CollisionLayer::Collectible, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Dungeon, CollisionLayer::Enemy, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Dungeon, CollisionLayer::Dungeon, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Collectible, CollisionLayer::Collectible, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Bullet, CollisionLayer::Bullet, false);
-    collisionSystem->SetCollisionBetweenLayers(CollisionLayer::Enemy, CollisionLayer::Enemy, false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Enemy), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Dungeon), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Collectible), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Bullet), false);
+    collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Enemy), false);
 
     Engine::Entity dungeon = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
@@ -105,5 +108,6 @@ void Engine::OnEndGame()
 
 void Engine::Update(float deltaTime)
 {
-
+    //richtige Reihenfolge beachten
+    bulletSystem->Update(deltaTime);
 }
