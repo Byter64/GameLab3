@@ -15,7 +15,7 @@ Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
 
 void ECSHelper::Initialize()
 {
-    ecsSystem->RegisterComponent<Engine::PlayerController>();
+    ecsSystem->RegisterComponent<PlayerController>();
     ecsSystem->RegisterComponent<Bullet>();
     ecsSystem->RegisterComponent<EnemyBehaviour>();
     ecsSystem->RegisterComponent<Health>();
@@ -26,7 +26,7 @@ void ECSHelper::Initialize()
     playerControllerSystem = ecsSystem->RegisterSystem<Engine::PlayerControllerSystem>();
     Engine::Signature  playerControllerSignature;
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
-    playerControllerSignature.set(ecsSystem->GetComponentType<Engine::PlayerController>());
+    playerControllerSignature.set(ecsSystem->GetComponentType<PlayerController>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
@@ -69,6 +69,8 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
     if(ecsSystem->HasComponent<Dungeon>(entity))
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
+    if(ecsSystem->HasComponent<PlayerController>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
 
     return newEntity;
 }
