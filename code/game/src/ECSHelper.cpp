@@ -7,7 +7,7 @@ extern std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; /
 std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
@@ -51,10 +51,10 @@ void ECSHelper::Initialize()
     dungeonEnemySignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
     ecsSystem->SetSystemSignature<Engine::DungeonEnemySystem>(dungeonEnemySignature);
 
-    dungeonSystem = ecsSystem->RegisterSystem<Engine::DungeonSystem>();
+    dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
     Engine::Signature dungeonSignature;
     dungeonSignature.set(ecsSystem->GetComponentType<Dungeon>());
-    ecsSystem->SetSystemSignature<Engine::DungeonSystem>(dungeonSignature);
+    ecsSystem->SetSystemSignature<DungeonSystem>(dungeonSignature);
 }
 
 Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)

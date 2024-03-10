@@ -1,6 +1,6 @@
 #pragma once
 #include "ECSSystem.h"
-#include "ECS/Systems/DungeonSystem.h"
+#include "Systems/DungeonSystem.h"
 namespace Engine
 {
 

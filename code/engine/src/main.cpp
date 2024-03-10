@@ -19,7 +19,6 @@ std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this 
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -50,10 +49,9 @@ int main()
         playerControllerSystem->Update(passedTimeInSeconds);
         //bulletSystem->Update(passedTimeInSeconds);
         enemyBehaviourSystem->Update(passedTimeInSeconds);
-        dungeonSystem->Update();
-        collisionSystem->CheckCollisions();
 
         Engine::Update(passedTimeInSeconds);
+        collisionSystem->CheckCollisions();
 
         renderSystem->Render();
         textRenderSystem->Render();

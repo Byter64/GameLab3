@@ -57,8 +57,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
         include/Components/Health.h
         include/Components/Dungeon.h
-        ../engine/src/ECS/Systems/DungeonSystem.cpp
-        ../engine/include/ECS/Systems/DungeonSystem.h
+        src/Systems/DungeonSystem.cpp
+        include/Systems/DungeonSystem.h
         ../engine/src/ECS/Systems/DungeonEnemySystem.cpp
         ../engine/include/ECS/Systems/DungeonEnemySystem.h
         src/Components/Dungeon.cpp

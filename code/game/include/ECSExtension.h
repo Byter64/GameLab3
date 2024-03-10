@@ -4,5 +4,6 @@
 #include "Components/Health.h"
 #include "Components/Dungeon.h"
 #include "Systems/BulletSystem.h"
+#include "Systems/DungeonSystem.h"
 
 #include "ECSHelper.h"
