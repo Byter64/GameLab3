@@ -17,7 +17,6 @@ std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -46,9 +45,6 @@ int main()
 
         glfwPollEvents();
         playerControllerSystem->Update(passedTimeInSeconds);
-        //bulletSystem->Update(passedTimeInSeconds);
-        enemyBehaviourSystem->Update(passedTimeInSeconds);
-
         Engine::Update(passedTimeInSeconds);
         collisionSystem->CheckCollisions();
 

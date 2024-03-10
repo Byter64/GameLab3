@@ -8,5 +8,6 @@
 #include "Systems/BulletSystem.h"
 #include "Systems/DungeonSystem.h"
 #include "Systems/DungeonEnemySystem.h"
+#include "Systems/EnemyBehaviourSystem.h"
 
 #include "ECSHelper.h"

@@ -8,7 +8,7 @@ extern Engine::InputSystem* inputSystem;
 extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::TextRenderSystem> textRenderSystem;
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
@@ -110,6 +110,8 @@ void Engine::OnEndGame()
 void Engine::Update(float deltaTime)
 {
     //richtige Reihenfolge beachten
+    bulletSystem->Update(deltaTime);
+    enemyBehaviourSystem->Update(deltaTime);
     dungeonSystem->Update();
     bulletSystem->Update(deltaTime);
 }

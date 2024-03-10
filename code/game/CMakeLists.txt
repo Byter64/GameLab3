@@ -53,8 +53,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/Systems/BulletSystem.cpp
         include/Systems/BulletSystem.h
         include/Components/EnemyBehaviour.h
-        ../engine/src/ECS/Systems/EnemyBehaviourSystem.cpp
-        ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
+        src/Systems/EnemyBehaviourSystem.cpp
+        include/Systems/EnemyBehaviourSystem.h
         include/Components/Health.h
         include/Components/Dungeon.h
         src/Systems/DungeonSystem.cpp
