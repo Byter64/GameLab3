@@ -110,7 +110,6 @@ void Engine::OnEndGame()
 void Engine::Update(float deltaTime)
 {
     //richtige Reihenfolge beachten
-    bulletSystem->Update(deltaTime);
     enemyBehaviourSystem->Update(deltaTime);
     dungeonSystem->Update();
     bulletSystem->Update(deltaTime);
