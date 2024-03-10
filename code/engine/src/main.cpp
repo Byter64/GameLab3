@@ -13,9 +13,7 @@ Engine::InputSystem* inputSystem;
 
 Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on this symbol being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
+
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -32,22 +30,21 @@ void window_pos_callback(GLFWwindow *window, int x, int y);
 
 int main()
 {
-
     if(SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::OnStartGame(screenWidth, screenHeight);
-
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
+
     while (!glfwWindowShouldClose(window)) {
         time1 = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
         Engine::Update(passedTimeInSeconds);
-        collisionSystem->CheckCollisions();
 
-        renderSystem->Render();
-        textRenderSystem->Render();
+        Engine::Systems::collisionSystem->CheckCollisions();
+        Engine::Systems::renderSystem->Render();
+        Engine::Systems::textRenderSystem->Render();
         glfwSwapBuffers(window);
         ecsSystem->DeletePurgatory();
 
@@ -57,10 +54,8 @@ int main()
 
         auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
         passedTimeInSeconds = ((float)delta.count()) / 1000000;
-        if(passedTimeInSeconds > FRAMETIME144FPS * 2)
-        {
-            passedTimeInSeconds = FRAMETIME144FPS * 2;
-        }
+
+        passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 2 ? FRAMETIME144FPS * 2 : passedTimeInSeconds;
     }
 
     Engine::OnEndGame();
@@ -111,19 +106,19 @@ void InitializeECS()
     Engine::Signature transformSignature;
     transformSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
 
-    renderSystem = ecsSystem->RegisterSystem<Engine::RenderSystem>();
+    Engine::Systems::renderSystem = ecsSystem->RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
     renderSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     renderSignature.set(ecsSystem->GetComponentType<Engine::MeshRenderer>());
     ecsSystem->SetSystemSignature<Engine::RenderSystem>(renderSignature);
 
-    collisionSystem = ecsSystem->RegisterSystem<Engine::CollisionSystem>();
+    Engine::Systems::collisionSystem = ecsSystem->RegisterSystem<Engine::CollisionSystem>();
     Engine::Signature collisionSignature;
     collisionSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     collisionSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     ecsSystem->SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
 
-    textRenderSystem = ecsSystem->RegisterSystem<Engine::TextRenderSystem>();
+    Engine::Systems::textRenderSystem = ecsSystem->RegisterSystem<Engine::TextRenderSystem>();
     Engine::Signature textRenderSignature;
     textRenderSignature.set(ecsSystem->GetComponentType<Engine::Text>());
     ecsSystem->SetSystemSignature<Engine::TextRenderSystem>(textRenderSignature);
@@ -134,7 +129,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height)
 {
     time1 = std::chrono::high_resolution_clock::now();
     glViewport(0, 0, width, height);
-    textRenderSystem->SetViewport(width, height);
+    Engine::Systems::textRenderSystem->SetViewport(width, height);
 }
 
 void window_pos_callback(GLFWwindow *window, int x, int y)

@@ -10,10 +10,9 @@
 #include <queue>
 #include "CollisionLayer.h"
 
-extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
-    Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
+    Entity GenerateEntities(const tinygltf::Node& root, Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
     /**
      * Finds a child with a name name in root and returns it. Prints a warning. if rot has not both a Name and a Transform component.
@@ -185,14 +184,14 @@ namespace Engine
             ecsSystem->RemoveEntity(entity);
     }
 
-    Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model)
+    Entity GenerateEntities(const tinygltf::Node& root, Transform* parent, std::shared_ptr<tinygltf::Model> model)
     {
-        Engine::Entity entity = ecsSystem->CreateEntity();
+        Entity entity = ecsSystem->CreateEntity();
 
-        Engine::Name name = root.name;
+        Name name = root.name;
         ecsSystem->AddComponent(entity, name);
 
-        Engine::Transform transform;
+        Transform transform;
         glm::vec3 translation{0};
         glm::vec3 scale{1};
         glm::quat rotation = glm::identity<glm::quat>();
@@ -207,18 +206,18 @@ namespace Engine
         transform.SetScale(scale);
         transform.SetRotation(rotation);
         ecsSystem->AddComponent(entity, transform);
-        ecsSystem->GetComponent<Engine::Transform>(entity).SetParent(parent);
+        ecsSystem->GetComponent<Transform>(entity).SetParent(parent);
 
         if (root.mesh != -1)
         {
-            Engine::MeshRenderer meshRenderer = renderSystem->CreateMeshRenderer(model->meshes[root.mesh], model);
+            MeshRenderer meshRenderer = Systems::renderSystem->CreateMeshRenderer(model->meshes[root.mesh], model);
             ecsSystem->AddComponent(entity, meshRenderer);
         }
 
         for (int childIndex: root.children)
         {
             const tinygltf::Node &child = model->nodes[childIndex];
-            GenerateEntities(child, &ecsSystem->GetComponent<Engine::Transform>(entity), model);
+            GenerateEntities(child, &ecsSystem->GetComponent<Transform>(entity), model);
         }
 
         return entity;

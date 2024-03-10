@@ -73,6 +73,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/ECSHelper.cpp
         include/ECSHelper.h
         include/ECSExtension.h
+        ../engine/include/ECS/Helpers/Systems.h
+        ../engine/src/ECS/Helpers/Systems.cpp
 )
 
 set(EXE_FILE Game)

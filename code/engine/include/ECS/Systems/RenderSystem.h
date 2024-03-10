@@ -15,7 +15,6 @@
 
 namespace Engine
 {
-
     class RenderSystem : public System
     {
         std::filesystem::path pathToDefaultVertexShader;
