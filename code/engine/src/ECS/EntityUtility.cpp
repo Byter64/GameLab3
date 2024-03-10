@@ -146,8 +146,6 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<BoxCollider>(entity));
         if(ecsSystem->HasComponent<PlayerController>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
-        if(ecsSystem->HasComponent<Dungeon>(entity))
-            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
         if(ecsSystem->HasComponent<Text>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Text>(entity));
 

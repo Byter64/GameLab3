@@ -32,7 +32,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     Engine::Entity dungeon = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
     ecsSystem->AddComponent(dungeon, Engine::Transform());
-    ecsSystem->AddComponent<Engine::Dungeon>(dungeon, Engine::Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
+    ecsSystem->AddComponent<Dungeon>(dungeon, Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
 
     enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 

@@ -19,7 +19,7 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<Bullet>();
     ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
     ecsSystem->RegisterComponent<Health>();
-    ecsSystem->RegisterComponent<Engine::Dungeon>();
+    ecsSystem->RegisterComponent<Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
@@ -53,7 +53,7 @@ void ECSHelper::Initialize()
 
     dungeonSystem = ecsSystem->RegisterSystem<Engine::DungeonSystem>();
     Engine::Signature dungeonSignature;
-    dungeonSignature.set(ecsSystem->GetComponentType<Engine::Dungeon>());
+    dungeonSignature.set(ecsSystem->GetComponentType<Dungeon>());
     ecsSystem->SetSystemSignature<Engine::DungeonSystem>(dungeonSignature);
 }
 
@@ -67,6 +67,8 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Loot>(entity));
     if(ecsSystem->HasComponent<Health>(entity))
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Health>(entity));
+    if(ecsSystem->HasComponent<Dungeon>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
 
     return newEntity;
 }

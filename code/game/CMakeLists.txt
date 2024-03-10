@@ -56,12 +56,12 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/EnemyBehaviourSystem.cpp
         ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
         include/Components/Health.h
-        ../engine/include/ECS/Components/Dungeon.h
+        include/Components/Dungeon.h
         ../engine/src/ECS/Systems/DungeonSystem.cpp
         ../engine/include/ECS/Systems/DungeonSystem.h
         ../engine/src/ECS/Systems/DungeonEnemySystem.cpp
         ../engine/include/ECS/Systems/DungeonEnemySystem.h
-        ../engine/src/ECS/Components/Dungeon.cpp
+        src/Components/Dungeon.cpp
         ../engine/include/ECS/Helpers/RenderLayer.h
         ../extern/glText/gltext.h
         ../engine/src/ECS/Systems/TextRenderSystem.cpp

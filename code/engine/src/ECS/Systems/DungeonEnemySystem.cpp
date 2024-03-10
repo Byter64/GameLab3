@@ -1,5 +1,6 @@
 #include "ECS/Systems/DungeonEnemySystem.h"
 #include "Engine.h"
+#include "ECSExtension.h"
 extern std::shared_ptr<Engine::DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 namespace Engine
 {
