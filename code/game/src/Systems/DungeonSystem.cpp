@@ -134,7 +134,7 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
             name += std::to_string(y);
             name += ")";
 
-            Engine::Entity wall = Engine::SpawnWall(glm::vec3(x - width / 2, y - height / 2,0));
+            Engine::Entity wall = ECSHelper::SpawnWall(glm::vec3(x - width / 2, y - height / 2,0));
 
             ecsSystem->GetComponent<Engine::Name>(wall) = name;
             ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));

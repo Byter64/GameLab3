@@ -13,8 +13,6 @@
 extern std::shared_ptr<Engine::RenderSystem> renderSystem;
 namespace Engine
 {
-    Entity wallPrefab = Entity::INVALID_ENTITY_ID;
-
     Entity GenerateEntities(const tinygltf::Node& root, Engine::Transform* parent, std::shared_ptr<tinygltf::Model> model);
 
     /**
@@ -167,28 +165,6 @@ namespace Engine
         }
 
         return newEntity;
-    }
-
-    Entity SpawnWall(glm::vec3 position)
-    {
-        if(wallPrefab == Entity::INVALID_ENTITY_ID)
-        {
-            wallPrefab = ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb")[0];
-            ecsSystem->GetComponent<Transform>(wallPrefab).SetScale(glm::vec3(0.0f));
-        }
-
-        Entity wall = CopyEntity(wallPrefab);
-
-        ecsSystem->GetComponent<Transform>(wall).SetTranslation(position);
-        ecsSystem->GetComponent<Transform>(wall).SetScale(glm::vec3(1.0f));
-
-        Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wall);
-        wallCollider.size = glm::vec3(1,1, 1000);
-        wallCollider.position = glm::vec3 (0);
-        wallCollider.isStatic = true;
-        wallCollider.layer = static_cast<unsigned char>(CollisionLayer::Dungeon);
-
-        return wall;
     }
 
     /// Removes the given entity plus all children within the transform hierarchy. In case entity does not have a Transform or no children, RemoveEntityWithChildren will behave identical with ECSSystem.RemoveEntity

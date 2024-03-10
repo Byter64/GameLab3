@@ -9,6 +9,7 @@ extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change th
 extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 
+Engine::Entity wallPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
@@ -73,6 +74,28 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
 
     return newEntity;
+}
+
+Engine::Entity ECSHelper::SpawnWall(glm::vec3 position)
+{
+    if(wallPrefab == Engine::Entity::INVALID_ENTITY_ID)
+    {
+        wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(wallPrefab).SetScale(glm::vec3(0.0f));
+    }
+
+    Engine::Entity wall = CopyEntity(wallPrefab);
+
+    ecsSystem->GetComponent<Engine::Transform>(wall).SetTranslation(position);
+    ecsSystem->GetComponent<Engine::Transform>(wall).SetScale(glm::vec3(1.0f));
+
+    Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wall);
+    wallCollider.size = glm::vec3(1,1, 1000);
+    wallCollider.position = glm::vec3 (0);
+    wallCollider.isStatic = true;
+    wallCollider.layer = static_cast<unsigned char>(CollisionLayer::Dungeon);
+
+    return wall;
 }
 
 Engine::Entity ECSHelper::SpawnBullet(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed)

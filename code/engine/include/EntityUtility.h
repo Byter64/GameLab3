@@ -13,7 +13,6 @@ namespace Engine
     Entity FindChild(Entity root, Name name);
     Entity CopyEntity(Entity entity, bool copyChildren);
     std::vector<Entity> ImportGLTF(std::filesystem::path gltf, bool addParent = false);
-    Entity SpawnWall(glm::vec3 position);
     void RemoveEntityWithChildren(Entity entity, bool removeParent = true);
 
     template<typename T>
