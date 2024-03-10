@@ -61,7 +61,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player, Health{1});
 
-//#define PLAYER2
+#define PLAYER2
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
@@ -82,16 +82,16 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 
     Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(player2).SetTranslation({1, 0, 0});
-    ecsSystem->GetComponent<Engine::Transform>(player).SetTranslation({-1, 0, 0});
-    Engine::PlayerController& controller2 = ecsSystem->AddComponent<Engine::PlayerController>(player2);
+    ecsSystem->GetComponent<Engine::Transform>(player).SetTranslation({-1, 0,  00});
+    PlayerController& controller2 = ecsSystem->AddComponent<PlayerController>(player2);
     controller2.speed = 2;
     controller2.uiTextScore = playerUI2;
     controller2.SetMovementInput(GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN);
     controller2.SetFireInput(GLFW_KEY_KP_0);
     ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
-    ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = CollisionLayer::Player;
-    ecsSystem->AddComponent<Engine::Health>(player2, Engine::Health{1});
+    ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
+    ecsSystem->AddComponent<Health>(player2, Health{1});
 #endif
 
     Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
