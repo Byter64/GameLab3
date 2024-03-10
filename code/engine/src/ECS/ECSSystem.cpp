@@ -1,4 +1,7 @@
 #include "ECSSystem.h"
+#include "Systems.h"
+
+std::shared_ptr<Engine::ECSSystem>& ecsSystem = Engine::Systems::ecsSystem;
 
 namespace Engine
 {

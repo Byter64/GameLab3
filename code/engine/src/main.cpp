@@ -9,19 +9,10 @@
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
-Engine::InputSystem* inputSystem;
-
-Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on this symbol being declared
-// somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-
-// being declared
-// somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
+int screenWidth = 1920;
+int screenHeight = 1080;
 GLFWwindow *window;
-
 std::chrono::time_point<std::chrono::steady_clock> time1;
-
-static int screenWidth = 1920;
-static int screenHeight = 1080;
 
 int SetupWindow();
 void InitializeECS();
@@ -94,7 +85,7 @@ int SetupWindow()
 
 void InitializeECS()
 {
-    ecsSystem = new Engine::ECSSystem();
+    ecsSystem = std::make_shared<Engine::ECSSystem>();
     ecsSystem->Init();
     ecsSystem->RegisterComponent<Engine::Name>();
     ecsSystem->RegisterComponent<Engine::Transform>();

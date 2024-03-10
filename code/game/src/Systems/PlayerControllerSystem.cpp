@@ -1,9 +1,6 @@
-#include "Systems/PlayerControllerSystem.h"
 #include "Engine.h"
 #include <iostream>
 #include "ECSExtension.h"
-extern Engine::ECSSystem* ecsSystem;
-extern GLFWwindow* window;
 
 void PlayerControllerSystem::EntityAdded(Engine::Entity entity)
 {
@@ -55,7 +52,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
                 if (health.health <= 0)
                 {
                     std::cout << "Player dead" << std::endl;
-                    glfwSetWindowShouldClose(window, true);
+                    Engine::EndGame();
                 }
             }
         }

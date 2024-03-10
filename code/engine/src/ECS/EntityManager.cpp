@@ -1,7 +1,6 @@
 #include "ECS/EntityManager.h"
 #include "ECSSystem.h"
 
-extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     EntityManager::EntityManager()

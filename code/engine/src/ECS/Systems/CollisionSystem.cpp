@@ -1,7 +1,6 @@
 #include "Engine.h"
 #include <cstdlib>
 
-extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     void CollisionSystem::CheckCollision(Entity entity1, Entity entity2)

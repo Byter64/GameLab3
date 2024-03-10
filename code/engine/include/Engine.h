@@ -3,8 +3,9 @@
 #include "EntityUtility.h"
 #include "ECSSystem.h"
 #include "FileSystem.h"
-#include "ECS/Helpers/Systems.h"
+#include "Systems.h"
 #include "ECS/Entity.h"
+#include "Miscellaneous.h"
 
 #include "ECS/Components/Name.h"
 #include "ECS/Components/Transform.h"

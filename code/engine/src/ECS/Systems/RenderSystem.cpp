@@ -1,17 +1,10 @@
-#include "ECS/Systems/RenderSystem.h"
+#include "Engine.h"
 #include <string>
 #include <fstream>
 #include <sstream>
 #include <array>
 #include <stdexcept>
-#include "ECS/Entity.h"
-#include "ECSSystem.h"
-#include "ECS/Components/MeshRenderer.h"
-#include "ECS/Components/Transform.h"
-#include "FileSystem.h"
-#include "ECS/Components/Name.h"
 
-extern Engine::ECSSystem* ecsSystem;
 namespace Engine
 {
     void RenderSystem::Render()

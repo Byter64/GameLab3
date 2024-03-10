@@ -3,7 +3,6 @@
 #include "glm/glm.hpp"
 #include "CollisionLayer.h"
 #include "ECSExtension.h"
-extern Engine::InputSystem* inputSystem;
 
 extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
@@ -16,7 +15,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
     ECSHelper::Initialize();
 
-    inputSystem = new Engine::InputSystem(window);
+    Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
     Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
 
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);

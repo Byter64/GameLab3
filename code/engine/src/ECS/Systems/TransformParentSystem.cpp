@@ -1,6 +1,6 @@
 #include "Engine.h"
 #include <list>
-extern Engine::ECSSystem* ecsSystem;
+
 namespace Engine
 {
     void TransformParentSystem::EntityAdded(Entity entity)
