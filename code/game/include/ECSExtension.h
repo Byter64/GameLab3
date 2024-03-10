@@ -9,5 +9,6 @@
 #include "Systems/DungeonSystem.h"
 #include "Systems/DungeonEnemySystem.h"
 #include "Systems/EnemyBehaviourSystem.h"
+#include "Systems/PlayerControllerSystem.h"
 
 #include "ECSHelper.h"

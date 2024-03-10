@@ -12,7 +12,6 @@
 #include "ECS/Systems/TransformParentSystem.h"
 #include "ECS/Systems/RenderSystem.h"
 #include "ECS/Systems/CollisionSystem.h"
-#include "ECS/Systems/PlayerControllerSystem.h"
 #include "ECS/Systems/TextRenderSystem.h"
 #include "InputSystem/InputSystem.h"
 #include "InputSystem/InputActionVec2.h"

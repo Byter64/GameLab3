@@ -12,6 +12,7 @@ extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never chang
 extern std::shared_ptr<Engine::TextRenderSystem> textRenderSystem;
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 extern GLFWwindow *window;
 
 void Engine::OnStartGame(int screenWidth, int screenHeight)
@@ -109,7 +110,7 @@ void Engine::OnEndGame()
 
 void Engine::Update(float deltaTime)
 {
-    //richtige Reihenfolge beachten
+    playerControllerSystem->Update(deltaTime);
     enemyBehaviourSystem->Update(deltaTime);
     dungeonSystem->Update();
     bulletSystem->Update(deltaTime);

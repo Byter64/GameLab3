@@ -5,7 +5,7 @@
 
 struct PlayerController
 {
-    friend class Engine::PlayerControllerSystem;
+    friend class PlayerControllerSystem;
     glm::vec3 movementInput;
     glm::vec3 lookDirection;
     float wasFirePushed;

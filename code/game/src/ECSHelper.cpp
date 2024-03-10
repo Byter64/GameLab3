@@ -3,7 +3,7 @@
 #include "ECSExtension.h"
 #include "CollisionLayer.h"
 
-extern std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
@@ -23,13 +23,13 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<Loot>();
     //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
 
-    playerControllerSystem = ecsSystem->RegisterSystem<Engine::PlayerControllerSystem>();
+    playerControllerSystem = ecsSystem->RegisterSystem<PlayerControllerSystem>();
     Engine::Signature  playerControllerSignature;
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     playerControllerSignature.set(ecsSystem->GetComponentType<PlayerController>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Health>());
-    ecsSystem->SetSystemSignature<Engine::PlayerControllerSystem>(playerControllerSignature);
+    ecsSystem->SetSystemSignature<PlayerControllerSystem>(playerControllerSignature);
 
     bulletSystem = ecsSystem->RegisterSystem<BulletSystem>();
     Engine::Signature bulletSignature;

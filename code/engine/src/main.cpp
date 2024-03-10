@@ -16,7 +16,6 @@ Engine::ECSSystem* ecsSystem; //Never change this name, as Systems depend on thi
 std::shared_ptr<Engine::RenderSystem> renderSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
@@ -44,7 +43,6 @@ int main()
         time1 = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
-        playerControllerSystem->Update(passedTimeInSeconds);
         Engine::Update(passedTimeInSeconds);
         collisionSystem->CheckCollisions();
 

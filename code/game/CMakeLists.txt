@@ -46,8 +46,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Helpers/Collision.cpp
         src/Components/PlayerController.cpp
         include/Components/PlayerController.h
-        ../engine/src/ECS/Systems/PlayerControllerSystem.cpp
-        ../engine/include/ECS/Systems/PlayerControllerSystem.h
+        src/Systems/PlayerControllerSystem.cpp
+        include/Systems/PlayerControllerSystem.h
         ../engine/src/ECS/Entity.cpp
         include/Components/Bullet.h
         src/Systems/BulletSystem.cpp
