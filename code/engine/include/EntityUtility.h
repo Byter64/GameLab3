@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <vector>
 #include "glm/glm.hpp"
-#include "ECS/Components/EnemyBehaviour.h"
+#include "Components/EnemyBehaviour.h"
 #include "ECSSystem.h"
 #include "ECS/Components/Transform.h"
 

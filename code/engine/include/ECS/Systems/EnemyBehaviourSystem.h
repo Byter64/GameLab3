@@ -1,5 +1,5 @@
 #pragma once
-#include "ECS/Components/EnemyBehaviour.h"
+#include "Components/EnemyBehaviour.h"
 #include "ECS/System.h"
 #include <vector>
 #include <queue>

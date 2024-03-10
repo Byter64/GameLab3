@@ -9,7 +9,6 @@
 #include "ECS/Components/MeshRenderer.h"
 #include "ECS/Components/BoxCollider.h"
 #include "ECS/Components/PlayerController.h"
-#include "ECS/Components/EnemyBehaviour.h"
 #include "ECS/Components/Text.h"
 #include "ECS/Systems/TransformParentSystem.h"
 #include "ECS/Systems/RenderSystem.h"

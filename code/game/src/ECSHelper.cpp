@@ -17,7 +17,7 @@ void ECSHelper::Initialize()
 {
     ecsSystem->RegisterComponent<Engine::PlayerController>();
     ecsSystem->RegisterComponent<Bullet>();
-    ecsSystem->RegisterComponent<Engine::EnemyBehaviour>();
+    ecsSystem->RegisterComponent<EnemyBehaviour>();
     ecsSystem->RegisterComponent<Health>();
     ecsSystem->RegisterComponent<Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
@@ -41,14 +41,14 @@ void ECSHelper::Initialize()
     enemyBehaviourSystem = ecsSystem->RegisterSystem<Engine::EnemyBehaviourSystem>();
     Engine::Signature enemyBehaviourSignature;
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
-    enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
+    enemyBehaviourSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
 
     dungeonEnemySystem = ecsSystem->RegisterSystem<DungeonEnemySystem>();
     Engine::Signature dungeonEnemySignature;
-    dungeonEnemySignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
+    dungeonEnemySignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
     ecsSystem->SetSystemSignature<DungeonEnemySystem>(dungeonEnemySignature);
 
     dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
@@ -123,7 +123,7 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
     return loot;
 }
 
-Engine::Entity ECSHelper::SpawnEnemy(std::pair<int, int> startPos, Engine::EnemyBehaviour::Behaviour behaviour)
+Engine::Entity ECSHelper::SpawnEnemy(std::pair<int, int> startPos, EnemyBehaviour::Behaviour behaviour)
 {
     if(hubertusPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
@@ -136,9 +136,9 @@ Engine::Entity ECSHelper::SpawnEnemy(std::pair<int, int> startPos, Engine::Enemy
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
-    ecsSystem->AddComponent<Engine::EnemyBehaviour>(enemy, Engine::EnemyBehaviour());
-    ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).behaviour = behaviour;
-    ecsSystem->GetComponent<Engine::EnemyBehaviour>(enemy).startPos = startPos;
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
+    ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = behaviour;
+    ecsSystem->GetComponent<EnemyBehaviour>(enemy).startPos = startPos;
     ecsSystem->AddComponent<Health>(enemy, Health());
     ecsSystem->GetComponent<Health>(enemy).health = 3;
 

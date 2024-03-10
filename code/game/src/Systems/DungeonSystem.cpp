@@ -89,7 +89,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
 
     for(int i = 0; i < file.size(); i += 3)
     {
-        Engine::EnemyBehaviour::Behaviour behaviour = Engine::EnemyBehaviour::stringToBehaviour.at(file[i]);
+        EnemyBehaviour::Behaviour behaviour = EnemyBehaviour::stringToBehaviour.at(file[i]);
         std::pair<int, int> pos = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
 
         dungeon.enemies[pos].push_back(behaviour);

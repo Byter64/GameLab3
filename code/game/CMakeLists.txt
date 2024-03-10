@@ -52,7 +52,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Bullet.h
         src/Systems/BulletSystem.cpp
         include/Systems/BulletSystem.h
-        ../engine/include/ECS/Components/EnemyBehaviour.h
+        include/Components/EnemyBehaviour.h
         ../engine/src/ECS/Systems/EnemyBehaviourSystem.cpp
         ../engine/include/ECS/Systems/EnemyBehaviourSystem.h
         include/Components/Health.h
