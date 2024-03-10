@@ -6,7 +6,7 @@
 extern std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
@@ -46,10 +46,10 @@ void ECSHelper::Initialize()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->SetSystemSignature<Engine::EnemyBehaviourSystem>(enemyBehaviourSignature);
 
-    dungeonEnemySystem = ecsSystem->RegisterSystem<Engine::DungeonEnemySystem>();
+    dungeonEnemySystem = ecsSystem->RegisterSystem<DungeonEnemySystem>();
     Engine::Signature dungeonEnemySignature;
     dungeonEnemySignature.set(ecsSystem->GetComponentType<Engine::EnemyBehaviour>());
-    ecsSystem->SetSystemSignature<Engine::DungeonEnemySystem>(dungeonEnemySignature);
+    ecsSystem->SetSystemSignature<DungeonEnemySystem>(dungeonEnemySignature);
 
     dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
     Engine::Signature dungeonSignature;

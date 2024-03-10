@@ -11,6 +11,7 @@ extern std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change 
 extern std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<Engine::TextRenderSystem> textRenderSystem;
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 extern GLFWwindow *window;
 
 void Engine::OnStartGame(int screenWidth, int screenHeight)

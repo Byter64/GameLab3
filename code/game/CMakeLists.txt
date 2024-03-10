@@ -59,8 +59,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Dungeon.h
         src/Systems/DungeonSystem.cpp
         include/Systems/DungeonSystem.h
-        ../engine/src/ECS/Systems/DungeonEnemySystem.cpp
-        ../engine/include/ECS/Systems/DungeonEnemySystem.h
+        src/Systems/DungeonEnemySystem.cpp
+        include/Systems/DungeonEnemySystem.h
         src/Components/Dungeon.cpp
         ../engine/include/ECS/Helpers/RenderLayer.h
         ../extern/glText/gltext.h

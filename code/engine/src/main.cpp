@@ -18,7 +18,6 @@ std::shared_ptr<Engine::CollisionSystem> collisionSystem; //Never change this na
 std::shared_ptr<Engine::TextRenderSystem> textRenderSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<Engine::EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<Engine::DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 // being declared
 // somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 GLFWwindow *window;
