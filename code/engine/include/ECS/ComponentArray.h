@@ -18,7 +18,7 @@ namespace Engine
         std::unordered_map<size_t, std::uint32_t> indexToEntity;
 
     public:
-        //Component data is undefined, when using this AddComponent overload!!!
+        //Component data is default initialized, when using this AddComponent overload
         T& AddComponent(Entity entity)
         {
             if(entityToIndex.find(entity.id) != entityToIndex.end())

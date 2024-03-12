@@ -4,12 +4,17 @@
 
 void PlayerControllerSystem::EntityAdded(Engine::Entity entity)
 {
-
+    alivePlayers++;
 }
 
 void PlayerControllerSystem::EntityRemoved(Engine::Entity entity)
 {
-
+    alivePlayers--;
+    if(alivePlayers == 0)
+    {
+        std::cout << "All players dead" << std::endl;
+        Engine::EndGame();
+    }
 }
 
 void PlayerControllerSystem::Update(float deltaTime)
@@ -51,8 +56,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
                 health.health--;
                 if (health.health <= 0)
                 {
-                    std::cout << "Player dead" << std::endl;
-                    Engine::EndGame();
+                    Engine::RemoveEntityWithChildren(playerEntity);
                 }
             }
         }

@@ -5,6 +5,7 @@ class PlayerControllerSystem : public Engine::System
 {
     const float stunnedTime = 5.0f;
 
+    unsigned int alivePlayers = 0;
     void ResolveCollisions(Engine::Entity playerEntity, float deltaTime);
     void HandleInput(Engine::Entity playerEntity, float deltaTime);
     void UpdateUI(Engine::Entity playerEntity);

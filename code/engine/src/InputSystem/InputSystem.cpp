@@ -55,8 +55,9 @@ namespace Engine
             list.remove(result->get());
         }
 
+        result = inputActions.erase(result);
         //return it
-        return std::move(*result);
+        return *result;
     }
 
     std::shared_ptr<InputAction> InputSystem::Remove(std::string inputActionName)

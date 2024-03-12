@@ -12,10 +12,10 @@ void PlayerController::GetMovement(void* object, glm::vec2 input)
 void PlayerController::SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey, int frontKey)
 {
     if(inputAction != nullptr)
-    {
         Engine::Systems::inputSystem->Remove(inputAction);
+
+    if(inputActionZ != nullptr)
         Engine::Systems::inputSystem->Remove(inputActionZ);
-    }
 
     inputAction = std::make_shared<Engine::InputActionVec2>("Movement");
     inputAction->AddKeyboardBinding(leftKey, rightKey, upKey, downKey);
@@ -31,16 +31,6 @@ void PlayerController::SetMovementInput(int leftKey, int rightKey, int upKey, in
     }
 }
 
-PlayerController::~PlayerController()
-{
-    if(inputAction != nullptr)
-    {
-        Engine::Systems::inputSystem->Remove(inputAction);
-        Engine::Systems::inputSystem->Remove(inputActionZ);
-        Engine::Systems::inputSystem->Remove(fireAction);
-    }
-}
-
 void PlayerController::GetMovementZ(void *object, glm::vec2 input)
 {
     PlayerController* player = static_cast<PlayerController*>(object);
@@ -50,9 +40,7 @@ void PlayerController::GetMovementZ(void *object, glm::vec2 input)
 void PlayerController::SetFireInput(int key)
 {
     if(fireAction != nullptr)
-    {
         Engine::Systems::inputSystem->Remove(fireAction);
-    }
 
     fireAction = std::make_shared<Engine::InputActionButton>("Fire");
     fireAction->AddKeyboardBinding(key);
@@ -78,4 +66,49 @@ void PlayerController::AddScore(int points)
 {
     score += points;
     hasScoreChanged = true;
+}
+
+PlayerController &PlayerController::operator=(PlayerController &&other)
+{
+    if(inputAction != nullptr)
+        Engine::Systems::inputSystem->Remove(inputAction);
+    if(inputActionZ != nullptr)
+        Engine::Systems::inputSystem->Remove(inputActionZ);
+    if(fireAction != nullptr)
+        Engine::Systems::inputSystem->Remove(fireAction);
+
+    movementInput = other.movementInput;
+    lookDirection = other.lookDirection;
+    wasFirePushed = other.wasFirePushed;
+    speed = other.speed;
+
+    hasScoreChanged = true;
+    stunnedTimer = other.stunnedTimer;
+    uiTextScore = other.uiTextScore;
+    score = other.score;
+
+    if(other.inputAction != nullptr)
+    {
+        other.inputAction->RemoveOnValueChange(&other, GetMovement);
+        inputAction = other.inputAction;
+        inputAction->AddOnValueChange(this, GetMovement);
+    }
+
+    if(other.inputActionZ != nullptr)
+    {
+        other.inputActionZ->RemoveOnValueChange(&other, GetMovementZ);
+        inputActionZ = other.inputActionZ;
+        inputActionZ->AddOnValueChange(this, GetMovementZ);
+    }
+
+    if(other.fireAction != nullptr)
+    {
+        other.fireAction->RemoveOnStart(&other, GetFireActionStart);
+        other.fireAction->RemoveOnEnd(&other, GetFireActionEnd);
+        fireAction = other.fireAction;
+        fireAction->AddOnStart(this, GetFireActionStart);
+        fireAction->RemoveOnStart(&other, GetFireActionEnd);
+    }
+
+    return *this;
 }

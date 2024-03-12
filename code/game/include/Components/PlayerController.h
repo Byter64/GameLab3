@@ -19,7 +19,11 @@ struct PlayerController
     Engine::Entity uiTextScore = Engine::Entity::INVALID_ENTITY_ID;
 
     PlayerController() = default;
-    ~PlayerController();
+    PlayerController(PlayerController& other) = default;
+
+    PlayerController& operator= (PlayerController& other) = default;
+    PlayerController& operator= (PlayerController&& other);
+
     void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey = -1, int frontKey = -1);
     void SetFireInput(int key);
     void AddScore(int points);
@@ -27,9 +31,9 @@ struct PlayerController
 private:
     long long int score = 0;
 
-    std::shared_ptr<Engine::InputActionVec2> inputAction;
-    std::shared_ptr<Engine::InputActionVec2> inputActionZ;
-    std::shared_ptr<Engine::InputActionButton> fireAction;
+    std::shared_ptr<Engine::InputActionVec2> inputAction{};
+    std::shared_ptr<Engine::InputActionVec2> inputActionZ{};
+    std::shared_ptr<Engine::InputActionButton> fireAction{};
 
     static void GetMovement(void* object, glm::vec2 input);
     static void GetMovementZ(void* object, glm::vec2 input);
