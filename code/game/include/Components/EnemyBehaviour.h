@@ -4,25 +4,26 @@
 #include <map>
 #include <string>
 #include <vector>
+#include "Helpers/EnemyExtra.h"
 
 struct EnemyBehaviour
 {
     enum Behaviour
     {
-        Default,
+        Hubertus,
         KindredSpirit,
         Assi,
         Cuball
     };
     inline static const std::map<std::string, Behaviour> stringToBehaviour =
             {
-                    {"Hubertus", Default},
+                    {"Hubertus", Hubertus},
                     {"KindredSpirit", KindredSpirit}
     };
 
     inline static const std::map<Behaviour, std::string> behaviourToString =
             {
-                    {Default, "Hubertus"},
+                    {Hubertus, "Hubertus"},
                     {KindredSpirit, "KindredSpirit"}
             };
 
@@ -36,7 +37,7 @@ struct EnemyBehaviour
             };
 
     bool isMoving = false;
-    Behaviour behaviour = Default;
+    Behaviour behaviour = Hubertus;
     float idlerTimer = 0;
     float shootTimer = 0;
 
@@ -46,4 +47,8 @@ struct EnemyBehaviour
     glm::vec2 targetPos;
     glm::vec2 movement;
     float movementSpeed = 1.0f;
+
+    //The type is determined by behaviour
+    //You could call it a tagged union ヾ(⌐■_■)ノ♪
+    EnemyExtra enemyExtra;
 };

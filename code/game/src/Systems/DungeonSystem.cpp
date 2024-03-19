@@ -50,9 +50,28 @@ void DungeonSystem::Update()
             {
                 if (dungeon.enemies.count(pair.first))
                 {
-                    Engine::Entity hubertus = ECSHelper::SpawnEnemy(pair.first, dungeon.enemies[pair.first].front());
+                    Engine::Entity enemy;
+                    switch(dungeon.enemies[pair.first].front())
+                    {
+                        case EnemyBehaviour::Hubertus:
+                            enemy = ECSHelper::SpawnHubertus(pair.first);
+                            break;
+
+                        case EnemyBehaviour::KindredSpirit:
+                        {
+                            auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
+                            enemy = enemyPair.first;
+                            std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
+                            dungeon.activeEnemies[secondPos] = enemyPair.second;
+                            break;
+                        }
+                        case EnemyBehaviour::Assi:
+                            break;
+                        case EnemyBehaviour::Cuball:
+                            break;
+                    }
                     dungeon.enemies[pair.first].pop_front();
-                    dungeon.activeEnemies[pair.first] = hubertus;
+                    dungeon.activeEnemies[pair.first] = enemy;
                 }
             }
         }

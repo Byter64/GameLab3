@@ -52,7 +52,6 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
-    controller.speed = 2;
     controller.uiTextScore = playerUI;
     controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
     controller.SetFireInput(GLFW_KEY_SPACE);
@@ -84,7 +83,6 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::Transform>(player2).SetTranslation({1, 0, 0});
     ecsSystem->GetComponent<Engine::Transform>(player).SetTranslation({-1, 0,  00});
     PlayerController& controller2 = ecsSystem->AddComponent<PlayerController>(player2);
-    controller2.speed = 2;
     controller2.uiTextScore = playerUI2;
     controller2.SetMovementInput(GLFW_KEY_LEFT, GLFW_KEY_RIGHT, GLFW_KEY_UP, GLFW_KEY_DOWN);
     controller2.SetFireInput(GLFW_KEY_KP_0);

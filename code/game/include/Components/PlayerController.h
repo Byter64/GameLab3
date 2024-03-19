@@ -12,7 +12,7 @@ struct PlayerController
     /*
      * Units per second
      */
-    float speed;
+    float speed = 3.0f;
 
     bool hasScoreChanged = true;
     float stunnedTimer = 0;

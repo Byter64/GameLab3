@@ -7,6 +7,7 @@
 #include <iterator>
 #include <random>
 #include "ECSExtension.h"
+#include <cmath>
 
 EnemyBehaviourSystem::EnemyBehaviourSystem()
 {
@@ -17,6 +18,10 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    if(behaviour.behaviour == EnemyBehaviour::KindredSpirit && behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
+        return;
+
     std::vector<std::pair<int,int>> targetNodes;
     auto target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 1, 0);
     if(target.first != -1) targetNodes.push_back(target);
@@ -54,8 +59,12 @@ void EnemyBehaviourSystem::Update(float deltaTime)
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
         switch (behaviour.behaviour)
         {
-            default:case EnemyBehaviour::Default:
-                Update1(entity, deltaTime);
+            default:
+            case EnemyBehaviour::Hubertus:
+                UpdateHubertus(entity, deltaTime);
+                break;
+            case EnemyBehaviour::KindredSpirit:
+                UpdateKindredSpirit(entity, deltaTime);
                 break;
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
@@ -65,44 +74,28 @@ void EnemyBehaviourSystem::Update(float deltaTime)
             //If is a bullet and was not shot from an enemy
             if(ecsSystem->HasComponent<Bullet>(other) && !ecsSystem->HasComponent<EnemyBehaviour>(ecsSystem->GetComponent<Bullet>(other).spawner))
             {
-                //Bullet is already destroying itself, so no need to do it here
-                Health& health = ecsSystem->GetComponent<Health>(entity);
-                health.health--;
-                if(health.health <= 0)
+                switch (behaviour.behaviour)
                 {
-                    RemoveEntityWithChildren(entity);
-                    ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), EnemyBehaviour::scores[behaviour.behaviour]);
+                    default:
+                    case EnemyBehaviour::Hubertus:
+                        HandleDamageHubertus(entity, other);
+                        break;
+                    case EnemyBehaviour::KindredSpirit:
+                        HandleDamageKindredSpirit(entity, other);
+                        break;
                 }
             }
         }
     }
 }
 
-void EnemyBehaviourSystem::Update1(Engine::Entity entity, float deltaTime)
+void EnemyBehaviourSystem::UpdateHubertus(Engine::Entity entity, float deltaTime)
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
     if(behaviour.isMoving)
-        transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
-    if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
-    {
-        std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
-        auto iter = list.end();
-        int i = 0;
-        do
-        {
-            int index = rand() % list.size();
-            iter = list.begin();
-            std::advance(iter, index);
-            i++;
-        } while(i < 5 && *iter == behaviour.oldTargetNode);
-        behaviour.oldTargetNode = behaviour.targetNode;
-        behaviour.targetNode = *iter;
-        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
-    }
+        MoveEnemy(behaviour, transform, deltaTime);
+
     std::random_device rd;
     std::mt19937 gen(rd());
     if(behaviour.shootTimer <= 0)
@@ -123,6 +116,88 @@ void EnemyBehaviourSystem::Update1(Engine::Entity entity, float deltaTime)
     }
     behaviour.idlerTimer -= deltaTime;
     behaviour.shootTimer -= deltaTime;
+}
+
+void EnemyBehaviourSystem::HandleDamageHubertus(Engine::Entity entity, Engine::Entity other)
+{
+    //Bullet is already destroying itself, so no need to do it here
+    Health& health = ecsSystem->GetComponent<Health>(entity);
+    health.health--;
+    if(health.health <= 0)
+    {
+        RemoveEntityWithChildren(entity);
+        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), EnemyBehaviour::scores[EnemyBehaviour::Hubertus]);
+    }
+}
+
+void EnemyBehaviourSystem::UpdateKindredSpirit(Engine::Entity entity, float deltaTime)
+{
+    EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    if(behaviour.enemyExtra.kindredSpirit.isMainEntity)
+    {
+        MoveEnemy(behaviour, transform, deltaTime);
+    }
+    else
+    {
+        EnemyBehaviour &mainEnemy = ecsSystem->GetComponent<EnemyBehaviour>(behaviour.enemyExtra.kindredSpirit.other);
+        Engine::Transform &mainTransform = ecsSystem->GetComponent<Engine::Transform>(behaviour.enemyExtra.kindredSpirit.other);
+
+        transform.SetTranslation(mainTransform.GetTranslation() * -1.0f);
+        transform.SetRotation(mainTransform.GetRotation() * glm::quat(glm::vec3(0, 0, glm::radians((180.0f)))));
+        behaviour.isMoving = mainEnemy.isMoving;
+    }
+}
+
+void EnemyBehaviourSystem::HandleDamageKindredSpirit(Engine::Entity entity, Engine::Entity other)
+{
+    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    EnemyBehaviour& otherSpiritBehaviour = ecsSystem->GetComponent<EnemyBehaviour>(behaviour.enemyExtra.kindredSpirit.other);
+
+    behaviour.enemyExtra.kindredSpirit.timeWhenLastHit = std::chrono::system_clock::now();
+    std::chrono::duration<float> timeDifference = (behaviour.enemyExtra.kindredSpirit.timeWhenLastHit - otherSpiritBehaviour.enemyExtra.kindredSpirit.timeWhenLastHit);
+
+    if(abs(timeDifference.count()) <= KindredSpiritExtra::maxTimeDifference)
+    {
+        //Bullet is already destroying itself, so no need to do it here
+        //Get the health of the main kindred spirit
+        Health &health = behaviour.enemyExtra.kindredSpirit.isMainEntity ? ecsSystem->GetComponent<Health>(entity) : ecsSystem->GetComponent<Health>(behaviour.enemyExtra.kindredSpirit.other);
+
+        health.health--;
+        if (health.health <= 0)
+        {
+            RemoveEntityWithChildren(entity);
+            ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(),EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit]);
+
+            RemoveEntityWithChildren(behaviour.enemyExtra.kindredSpirit.other);
+            ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(behaviour.enemyExtra.kindredSpirit.other).GetGlobalTranslation(),EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit]);
+        }
+    }
+}
+
+void EnemyBehaviourSystem::MoveEnemy(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
+{
+    transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
+    if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
+    {
+        std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
+        auto iter = list.end();
+        int i = 0;
+        do
+        {
+            int index = rand() % list.size();
+            iter = list.begin();
+            std::advance(iter, index);
+            i++;
+        } while(i < 5 && *iter == behaviour.oldTargetNode);
+        behaviour.oldTargetNode = behaviour.targetNode;
+        behaviour.targetNode = *iter;
+        behaviour.targetPos = ToGlobal(behaviour.targetNode);
+        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
+        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+    }
 }
 
 /// Finds a node by raytracing into a given direction from a given point

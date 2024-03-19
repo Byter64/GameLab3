@@ -25,11 +25,12 @@ class EnemyBehaviourSystem : public Engine::System
     std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 4.0f);
     std::pair<float, float> idleTimeRange = std::make_pair(10.0f, 30.0f);
     std::pair<float, float> shootTimeRange = std::make_pair(2.0f, 8.0f);
-    void Update1(Engine::Entity entity, float deltaTime);
+    void UpdateHubertus(Engine::Entity entity, float deltaTime);
+    void HandleDamageHubertus(Engine::Entity entity, Engine::Entity other);
+    void UpdateKindredSpirit(Engine::Entity entity, float deltaTime);
+    void HandleDamageKindredSpirit(Engine::Entity entity, Engine::Entity other);
+    void MoveEnemy(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
 public:
-    /*
-    * outer dimension is x, inner is y
-    */
 
     EnemyBehaviourSystem();
     void Initialize(std::vector<std::vector<bool>>& wallMap);

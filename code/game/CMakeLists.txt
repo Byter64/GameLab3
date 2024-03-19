@@ -77,6 +77,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Helpers/Systems.cpp
         ../engine/src/Miscellaneous.cpp
         ../engine/include/Miscellaneous.h
+        include/Helpers/EnemyExtra.h
+        include/Helpers/KindredSpiritExtra.h
 )
 
 set(EXE_FILE Game)
