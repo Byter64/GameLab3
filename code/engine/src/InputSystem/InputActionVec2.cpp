@@ -127,11 +127,11 @@ namespace Engine
         input = glm::normalize(input);
         if(oldInput == glm::vec2(0,0))
         {
-            for (auto pair: valueChangeCallbacks)
+            for (auto pair: startCallbacks)
             {
                 pair.second(pair.first, input);
             }
-            for (auto pair: startCallbacks)
+            for (auto pair: valueChangeCallbacks)
             {
                 pair.second(pair.first, input);
             }
