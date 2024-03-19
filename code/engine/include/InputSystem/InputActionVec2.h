@@ -31,6 +31,7 @@ namespace Engine
         void RemoveOnEnd(void* object, CallbackVec2 callback);
 
         void Update(int key) override;
+        void Update(GamepadInputID& input) override;
 
     private:
         struct DirectionMap

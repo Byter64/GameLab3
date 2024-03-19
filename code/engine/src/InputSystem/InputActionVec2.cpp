@@ -149,4 +149,9 @@ namespace Engine
             return;
         }
     }
+
+    void InputActionVec2::Update(GamepadInputID &input)
+    {
+
+    }
 }

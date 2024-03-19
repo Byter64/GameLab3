@@ -24,6 +24,7 @@ namespace Engine
         void RemoveOnEnd(void* object, CallbackButton callback);
 
         void Update(int key) override;
+        void Update(GamepadInputID& input) override;
     };
 
 } // Engine

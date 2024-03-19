@@ -57,4 +57,9 @@ namespace Engine
     {
 
     }
+
+    void InputActionButton::Update(GamepadInputID &input)
+    {
+
+    }
 } // Engine

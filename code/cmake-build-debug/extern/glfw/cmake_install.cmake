@@ -80,7 +80,3 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/pkgconfig" TYPE FILE FILES "C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/extern/glfw/src/glfw3.pc")
 endif()
 
-if(CMAKE_INSTALL_COMPONENT STREQUAL "Unspecified" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/doc/GLFW" TYPE DIRECTORY FILES "C:/Users/Yanni/Uni/Game Lab/Repositories/02-gl3-stamm/code/cmake-build-debug/extern/glfw/docs/html")
-endif()
-

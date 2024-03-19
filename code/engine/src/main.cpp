@@ -23,6 +23,8 @@ int main()
 {
     if(SetupWindow() == -1) return -1;
     InitializeECS();
+    Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
+
     Engine::OnStartGame(screenWidth, screenHeight);
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
@@ -31,6 +33,8 @@ int main()
         time1 = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
+        Engine::Systems::inputSystem->Update();
+
         Engine::Update(passedTimeInSeconds);
 
         Engine::Systems::collisionSystem->CheckCollisions();
@@ -56,6 +60,7 @@ int main()
 
 int SetupWindow()
 {
+    glfwInitHint(GLFW_JOYSTICK_HAT_BUTTONS, GLFW_FALSE);
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);

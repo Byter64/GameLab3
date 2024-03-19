@@ -79,6 +79,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/Miscellaneous.h
         include/Helpers/EnemyExtra.h
         include/Helpers/KindredSpiritExtra.h
+        ../engine/include/InputSystem/GamepadInputID.h
+        ../engine/src/InputSystem/GamepadInputID.cpp
 )
 
 set(EXE_FILE Game)

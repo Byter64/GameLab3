@@ -14,8 +14,6 @@ extern GLFWwindow *window;
 void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
     ECSHelper::Initialize();
-
-    Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
     Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
 
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);

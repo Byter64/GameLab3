@@ -29,14 +29,47 @@ namespace Engine
         }
     }
 
+    ///
+    /// \param maxJoysticks how many joystick inputs should be checked at max
+    void InputSystem::Update(unsigned char maxJoysticks)
+    {
+        maxJoysticks = maxJoysticks > GLFW_JOYSTICK_LAST ? GLFW_JOYSTICK_LAST : maxJoysticks;
+
+        for(unsigned char i = 0; i < 1; i++)
+        {
+            GLFWgamepadstate state;
+            glfwGetGamepadState(i, &state);
+
+            for(unsigned char axis = 0; axis <= GLFW_GAMEPAD_AXIS_LAST; axis++)
+            {
+                GamepadInputID input = {i, axis, GamepadInputID::Axis};
+                for(const auto &inputAction : instance->inputToInputActions[input])
+                    if(state.axes[axis] != gamePadStates[i].axes[axis])
+                        inputAction->Update(input);
+            }
+
+            for(unsigned char button = 0; button <= GLFW_GAMEPAD_BUTTON_LAST; button++)
+            {
+                GamepadInputID input = {i, button, GamepadInputID::Button};
+                for(const auto &inputAction : instance->inputToInputActions[input])
+                    if(state.buttons[button] != gamePadStates[i].buttons[button])
+                        inputAction->Update(input);
+            }
+
+            gamePadStates[i] = state;
+        }
+    }
+
     void InputSystem::Add(std::shared_ptr<InputAction> inputAction)
     {
         inputAction->inputSystem = this;
 
         for (int key: inputAction->keyboardBindings)
-        {
             keyToInputActions[key].push_back(inputAction.get());
-        }
+
+        for (GamepadInputID& input: inputAction->gamepadBindings)
+            inputToInputActions[input].push_back(inputAction.get());
+
         inputActions.push_back(std::move(inputAction));
     }
 
