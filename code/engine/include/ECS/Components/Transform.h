@@ -53,6 +53,8 @@ namespace Engine
         glm::quat GetRotation();
         glm::quat GetGlobalRotation();
         void SetRotation(const glm::quat& rotation);
+        void AddRotation(const glm::quat& rotation);
+        void AddRotation(const glm::vec3& rotation);
 
         const glm::mat4x4& GetMatrix();
         const glm::mat4x4& GetGlobalMatrix();

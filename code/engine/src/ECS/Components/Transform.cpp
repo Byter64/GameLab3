@@ -67,6 +67,22 @@ namespace Engine
         SetIsGlobalRotationOutdated();
     }
 
+    void Transform::AddRotation(const glm::quat &rotation)
+    {
+        this->rotation = glm::normalize(this->rotation * rotation);
+        hasTransformChanged = true;
+
+        SetIsGlobalTranslationOutdated();
+        SetIsGlobalRotationOutdated();
+    }
+
+    /// Adds euler angles
+    /// \param rotation the rotation in radians in euler angles
+    void Transform::AddRotation(const glm::vec3 &rotation)
+    {
+        AddRotation(glm::quat(rotation));
+    }
+
     const glm::mat4x4 &Transform::GetMatrix()
     {
         if(hasTransformChanged)
