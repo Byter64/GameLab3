@@ -89,6 +89,12 @@ namespace Engine
             list.remove(result->get());
         }
 
+        for(auto& pair : inputToInputActions)
+        {
+            std::list<InputAction*>& list = pair.second;
+            list.remove(result->get());
+        }
+
         result = inputActions.erase(result);
         //return it
         return *result;
