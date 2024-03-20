@@ -121,12 +121,16 @@ void PlayerControllerSystem::UpdateUI(Engine::Entity playerEntity)
 
 glm::vec3 PlayerControllerSystem::RoundToAxis(glm::vec3 vec)
 {
-    vec = glm::normalize(vec);
+
+    if(vec != glm::vec3(0))
+        vec = glm::normalize(vec);
+
     vec *= SQRT_THREE_FOURTH; //Normalize
     vec.x = roundf(vec.x);
     vec.y = roundf(vec.y);
     vec.z = roundf(vec.z);
 
-    vec = glm::normalize(vec);
+    if(vec != glm::vec3(0))
+        vec = glm::normalize(vec);
     return vec;
 }

@@ -61,6 +61,8 @@ namespace Engine
         }
     }
 
+    //Only call this AFTER all bindings have been assigned to inputAction
+    //If bindings are assigned after the inputAction is added, the inputAction needs to be removed before added again
     void InputSystem::Add(std::shared_ptr<InputAction> inputAction)
     {
         inputAction->inputSystem = this;
@@ -95,9 +97,13 @@ namespace Engine
             list.remove(result->get());
         }
 
-        result = inputActions.erase(result);
-        //return it
-        return *result;
+        if(result != inputActions.end())
+        {
+            std::shared_ptr<InputAction> action = *result;
+            inputActions.remove(*result);
+            return action;
+        }
+        return nullptr;
     }
 
     std::shared_ptr<InputAction> InputSystem::Remove(std::string inputActionName)

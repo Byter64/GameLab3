@@ -24,9 +24,9 @@ struct PlayerController
     PlayerController& operator= (PlayerController& other) = default;
     PlayerController& operator= (PlayerController&& other);
 
-    void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey = -1, int frontKey = -1);
-    void SetMovementInput(Engine::GamepadInputID leftKey, Engine::GamepadInputID rightKey, Engine::GamepadInputID upKey, Engine::GamepadInputID downKey);
-    void SetMovementInput(Engine::GamepadInputID xAxis, Engine::GamepadInputID yAxis);
+    void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey);
+    void SetMovementInput(unsigned char joystickID, unsigned char leftButton, unsigned char rightButton, unsigned char upButton, unsigned char downButton);
+    void SetMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis);
     void SetFireInput(int key);
     void SetFireInput(Engine::GamepadInputID button);
     void AddScore(int points);
@@ -35,7 +35,6 @@ private:
     long long int score = 0;
 
     std::shared_ptr<Engine::InputActionVec2> inputAction{};
-    std::shared_ptr<Engine::InputActionVec2> inputActionZ{};
     std::shared_ptr<Engine::InputActionButton> fireAction{};
 
     static void GetMovement(void* object, glm::vec2 input);
