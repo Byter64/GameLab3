@@ -2,6 +2,8 @@
 #include <iostream>
 #include "ECSExtension.h"
 
+static const float SQRT_THREE_FOURTH = 0.866025f;
+
 void PlayerControllerSystem::EntityAdded(Engine::Entity entity)
 {
     alivePlayers++;
@@ -21,8 +23,8 @@ void PlayerControllerSystem::Update(float deltaTime)
 {
     for (Engine::Entity playerEntity: entities)
     {
-        ResolveCollisions(playerEntity, deltaTime);
         HandleInput(playerEntity, deltaTime);
+        ResolveCollisions(playerEntity, deltaTime);
         UpdateUI(playerEntity);
     }
 }
@@ -33,6 +35,8 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
     Engine::BoxCollider& boxCollider = ecsSystem->GetComponent<Engine::BoxCollider>(playerEntity);
     PlayerController& controller = ecsSystem->GetComponent<PlayerController>(playerEntity);
 
+    glm::vec3 averageDirection{0};
+    int count = 0;
     for(auto pair : boxCollider.collisions)
     {
         Engine::Entity other = pair.first.other;
@@ -64,10 +68,24 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         {
             Engine::Transform &otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
             glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
-            if (distance == glm::vec3(0))
-                distance.x += 1;
-            transform.AddTranslation(glm::normalize(distance) * controller.speed * 2.0f * deltaTime);
+            averageDirection += distance;
+            count++;
         }
+    }
+
+    if(count != 0)
+    {
+        glm::vec3 roundedDistance = glm::normalize(averageDirection);
+        roundedDistance *= SQRT_THREE_FOURTH; //Normalize for rounding
+        roundedDistance.x = roundf(roundedDistance.x);
+        roundedDistance.y = roundf(roundedDistance.y);
+        roundedDistance.z = roundf(roundedDistance.z);
+
+        roundedDistance = glm::normalize(roundedDistance);
+
+        if (glm::length(controller.movementInput) >= inputDeadzone)
+            roundedDistance *= glm::length(controller.movementInput) * controller.speed;
+        transform.AddTranslation(roundedDistance * deltaTime);
     }
 }
 
