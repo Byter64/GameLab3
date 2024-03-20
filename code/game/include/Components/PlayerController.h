@@ -25,7 +25,10 @@ struct PlayerController
     PlayerController& operator= (PlayerController&& other);
 
     void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey = -1, int frontKey = -1);
+    void SetMovementInput(Engine::GamepadInputID leftKey, Engine::GamepadInputID rightKey, Engine::GamepadInputID upKey, Engine::GamepadInputID downKey);
+    void SetMovementInput(Engine::GamepadInputID xAxis, Engine::GamepadInputID yAxis);
     void SetFireInput(int key);
+    void SetFireInput(Engine::GamepadInputID button);
     void AddScore(int points);
 
 private:

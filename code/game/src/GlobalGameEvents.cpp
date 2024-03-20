@@ -51,8 +51,8 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     controller.uiTextScore = playerUI;
-    controller.SetMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S, GLFW_KEY_Q, GLFW_KEY_E);
-    controller.SetFireInput(GLFW_KEY_SPACE);
+    controller.SetMovementInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_X, Engine::GamepadInputID::Axis}, {GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_Y, Engine::GamepadInputID::Axis});
+    controller.SetFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);

@@ -1,21 +1,11 @@
 #include "Components/PlayerController.h"
 #include "Engine.h"
 
-
-void PlayerController::GetMovement(void* object, glm::vec2 input)
-{
-    PlayerController* player = static_cast<PlayerController*>(object);
-    player->movementInput.x = input.x;
-    player->movementInput.y = input.y;
-}
-
 void PlayerController::SetMovementInput(int leftKey, int rightKey, int upKey, int downKey, int backKey, int frontKey)
 {
     if(inputAction != nullptr)
         Engine::Systems::inputSystem->Remove(inputAction);
 
-    if(inputActionZ != nullptr)
-        Engine::Systems::inputSystem->Remove(inputActionZ);
 
     inputAction = std::make_shared<Engine::InputActionVec2>("Movement");
     inputAction->AddKeyboardBinding(leftKey, rightKey, upKey, downKey);
@@ -24,11 +14,46 @@ void PlayerController::SetMovementInput(int leftKey, int rightKey, int upKey, in
 
     if(backKey != -1 && frontKey != -1)
     {
+        if(inputActionZ != nullptr)
+            Engine::Systems::inputSystem->Remove(inputActionZ);
+
         inputActionZ = std::make_shared<Engine::InputActionVec2>("MovementZ");
         inputActionZ->AddKeyboardBinding(backKey, frontKey, 0, 0);
         inputActionZ->AddOnValueChange(this, GetMovementZ);
         Engine::Systems::inputSystem->Add(inputActionZ);
     }
+}
+
+void PlayerController::SetMovementInput(Engine::GamepadInputID leftKey, Engine::GamepadInputID rightKey,Engine::GamepadInputID upKey, Engine::GamepadInputID downKey)
+{
+    if(inputAction != nullptr)
+        Engine::Systems::inputSystem->Remove(inputAction);
+
+    inputAction = std::make_shared<Engine::InputActionVec2>("Movement");
+    inputAction->AddGamepadButtonBinding(leftKey, rightKey, upKey, downKey);
+    inputAction->AddOnValueChange(this, GetMovement);
+    Engine::Systems::inputSystem->Add(inputAction);
+}
+
+void PlayerController::SetMovementInput(Engine::GamepadInputID xAxis, Engine::GamepadInputID yAxis)
+{
+    if(inputAction != nullptr)
+        Engine::Systems::inputSystem->Remove(inputAction);
+
+    inputAction = std::make_shared<Engine::InputActionVec2>("Movement");
+    inputAction->AddGamepadAxesBinding(xAxis, yAxis);
+    inputAction->AddOnValueChange(this, GetMovement);
+    Engine::Systems::inputSystem->Add(inputAction);
+}
+
+void PlayerController::GetMovement(void* object, glm::vec2 input)
+{
+    if(glm::length(input) < 0.05f)
+        input = glm::vec2(0);
+
+    PlayerController* player = static_cast<PlayerController*>(object);
+    player->movementInput.x = input.x;
+    player->movementInput.y = input.y;
 }
 
 void PlayerController::GetMovementZ(void *object, glm::vec2 input)
@@ -44,6 +69,18 @@ void PlayerController::SetFireInput(int key)
 
     fireAction = std::make_shared<Engine::InputActionButton>("Fire");
     fireAction->AddKeyboardBinding(key);
+    fireAction->AddOnStart(this, GetFireActionStart);
+    fireAction->AddOnEnd(this, GetFireActionEnd);
+    Engine::Systems::inputSystem->Add(fireAction);
+}
+
+void PlayerController::SetFireInput(Engine::GamepadInputID button)
+{
+    if(fireAction != nullptr)
+        Engine::Systems::inputSystem->Remove(fireAction);
+
+    fireAction = std::make_shared<Engine::InputActionButton>("Fire");
+    fireAction->AddGamepadBinding(button);
     fireAction->AddOnStart(this, GetFireActionStart);
     fireAction->AddOnEnd(this, GetFireActionEnd);
     Engine::Systems::inputSystem->Add(fireAction);

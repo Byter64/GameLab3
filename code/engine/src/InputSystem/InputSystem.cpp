@@ -35,16 +35,19 @@ namespace Engine
     {
         maxJoysticks = maxJoysticks > GLFW_JOYSTICK_LAST ? GLFW_JOYSTICK_LAST : maxJoysticks;
 
-        for(unsigned char i = 0; i < 1; i++)
+        for(unsigned char i = 0; i < maxJoysticks; i++)
         {
-            GLFWgamepadstate state;
-            glfwGetGamepadState(i, &state);
+            GLFWgamepadstate oldState = gamePadStates[i];
+            glfwGetGamepadState(i, &gamePadStates[i]);
+
+            gamePadStates[i].axes[GLFW_GAMEPAD_AXIS_LEFT_Y] *= -1;
+            gamePadStates[i].axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] *= -1;
 
             for(unsigned char axis = 0; axis <= GLFW_GAMEPAD_AXIS_LAST; axis++)
             {
                 GamepadInputID input = {i, axis, GamepadInputID::Axis};
                 for(const auto &inputAction : instance->inputToInputActions[input])
-                    if(state.axes[axis] != gamePadStates[i].axes[axis])
+                    if(gamePadStates[i].axes[axis] != oldState.axes[axis])
                         inputAction->Update(input);
             }
 
@@ -52,11 +55,9 @@ namespace Engine
             {
                 GamepadInputID input = {i, button, GamepadInputID::Button};
                 for(const auto &inputAction : instance->inputToInputActions[input])
-                    if(state.buttons[button] != gamePadStates[i].buttons[button])
+                    if(gamePadStates[i].buttons[button] != oldState.buttons[button])
                         inputAction->Update(input);
             }
-
-            gamePadStates[i] = state;
         }
     }
 
@@ -108,5 +109,15 @@ namespace Engine
     int InputSystem::GetKeyState(int key)
     {
         return keyStates[key];
+    }
+
+    int InputSystem::GetButtonState(unsigned char joystick, unsigned char button)
+    {
+        return gamePadStates[joystick].buttons[button];
+    }
+
+    float InputSystem::GetAxisState(unsigned char joystick, unsigned char axis)
+    {
+        return gamePadStates[joystick].axes[axis];
     }
 } // Engine

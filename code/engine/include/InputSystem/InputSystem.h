@@ -15,7 +15,7 @@ namespace Engine
 
 
         int keyStates[GLFW_KEY_LAST - 1];
-        GLFWgamepadstate gamePadStates[GLFW_JOYSTICK_LAST + 1];
+        GLFWgamepadstate gamePadStates[GLFW_JOYSTICK_LAST + 1]{};
         GLFWwindow* window;
 
         std::list<std::shared_ptr<InputAction>> inputActions;
@@ -32,6 +32,8 @@ namespace Engine
         std::shared_ptr<InputAction> Remove(std::shared_ptr<InputAction> inputAction);
         std::shared_ptr<InputAction> Remove(std::string inputActionName);
         int GetKeyState(int key);
+        int GetButtonState(unsigned char joystick, unsigned char button);
+        float GetAxisState(unsigned char joystick, unsigned char axis);
     };
 
 } // Engine

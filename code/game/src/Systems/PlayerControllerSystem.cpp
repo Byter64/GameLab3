@@ -84,7 +84,7 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
 
     if(controller.movementInput != glm::vec3(0))
     {
-        transform.AddTranslation(glm::normalize(glm::vec3(controller.movementInput)) * deltaTime * controller.speed);
+        transform.AddTranslation(glm::vec3(controller.movementInput) * deltaTime * controller.speed);
         controller.lookDirection = glm::normalize(glm::vec3(controller.movementInput));
     }
     if(controller.wasFirePushed)

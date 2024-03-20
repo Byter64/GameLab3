@@ -15,6 +15,8 @@ namespace Engine
         unsigned char inputID; //either button ID or axis ID
         InputType inputType;
 
+        bool operator ==(GamepadInputID const& other) const;
+        bool operator !=(GamepadInputID const& other) const;
         bool operator <(GamepadInputID const& other) const;
     };
 
