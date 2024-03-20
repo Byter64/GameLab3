@@ -21,6 +21,7 @@ void window_pos_callback(GLFWwindow *window, int x, int y);
 
 int main()
 {
+    Engine::Systems::timeManager = std::make_shared<Engine::TimeManager>();
     if(SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);

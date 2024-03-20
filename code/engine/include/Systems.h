@@ -5,6 +5,7 @@
 #include "ECS/Systems/TextRenderSystem.h"
 #include "InputSystem/InputSystem.h"
 #include "ECSSystem.h"
+#include "TimeManager.h"
 
 namespace Engine::Systems
 {
@@ -13,4 +14,5 @@ namespace Engine::Systems
     extern std::shared_ptr<RenderSystem> renderSystem;
     extern std::shared_ptr<CollisionSystem> collisionSystem;
     extern std::shared_ptr<TextRenderSystem> textRenderSystem;
+    extern std::shared_ptr<TimeManager> timeManager;
 } // Engine::Systems

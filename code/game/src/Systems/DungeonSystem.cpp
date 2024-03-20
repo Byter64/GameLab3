@@ -4,6 +4,8 @@
 #include "../../../extern/tinygltf/stb_image.h"
 #define STBI_FAILURE_USERMSG
 #include "ECSExtension.h"
+#include <cstring>
+#include <algorithm>
 
 void DungeonSystem::EntityAdded(Engine::Entity entity)
 {
@@ -46,33 +48,31 @@ void DungeonSystem::Update()
         //Spawn enemies
         for (auto &pair: dungeon.enemies)
         {
-            if (dungeon.activeEnemies.count(pair.first) == 0)
+            if (dungeon.activeEnemies.count(pair.first) == 0 &&
+            pair.second.top().first < (Engine::Systems::timeManager->GetTimeSinceStartup() - dungeon.creationTime))
             {
-                if (dungeon.enemies.count(pair.first))
+                Engine::Entity enemy;
+                switch (pair.second.top().second)
                 {
-                    Engine::Entity enemy;
-                    switch(dungeon.enemies[pair.first].front())
-                    {
-                        case EnemyBehaviour::Hubertus:
-                            enemy = ECSHelper::SpawnHubertus(pair.first);
-                            break;
+                    case EnemyBehaviour::Hubertus:
+                        enemy = ECSHelper::SpawnHubertus(pair.first);
+                        break;
 
-                        case EnemyBehaviour::KindredSpirit:
-                        {
-                            auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
-                            enemy = enemyPair.first;
-                            std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
-                            dungeon.activeEnemies[secondPos] = enemyPair.second;
-                            break;
-                        }
-                        case EnemyBehaviour::Assi:
-                            break;
-                        case EnemyBehaviour::Cuball:
-                            break;
+                    case EnemyBehaviour::KindredSpirit:
+                    {
+                        auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
+                        enemy = enemyPair.first;
+                        std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
+                        dungeon.activeEnemies[secondPos] = enemyPair.second;
+                        break;
                     }
-                    dungeon.enemies[pair.first].pop_front();
-                    dungeon.activeEnemies[pair.first] = enemy;
+                    case EnemyBehaviour::Assi:
+                        break;
+                    case EnemyBehaviour::Cuball:
+                        break;
                 }
+                pair.second.pop();
+                dungeon.activeEnemies[pair.first] = enemy;
             }
         }
 
@@ -88,6 +88,8 @@ void DungeonSystem::Update()
 
 void DungeonSystem::ReadInEnemies(Engine::Entity entity)
 {
+    static const std::string WAIT_KEYWORD = "wait";
+
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
     std::vector<std::string> file;
@@ -106,12 +108,67 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
         exit(-1);
     }
 
-    for(int i = 0; i < file.size(); i += 3)
-    {
-        EnemyBehaviour::Behaviour behaviour = EnemyBehaviour::stringToBehaviour.at(file[i]);
-        std::pair<int, int> pos = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
 
-        dungeon.enemies[pos].push_back(behaviour);
+    enum
+    {
+        Nothing,
+        ExpectingTime,
+        ExpectingXPos,
+        ExpectingYPos
+    } state = Nothing;
+
+    float time = 0;
+    EnemyBehaviour::Behaviour behaviour;
+    std::pair<int, int> pos;
+    float timeDelta;
+    for (int i = 0; i < file.size(); i++)
+    {
+        std::string& symbol = file[i];
+        std::transform(symbol.begin(), symbol.end(), symbol.begin(), tolower);
+
+        switch (state)
+        {
+            case Nothing:
+                if(symbol == WAIT_KEYWORD)
+                    state = ExpectingTime;
+                if(EnemyBehaviour::stringToBehaviour.count(symbol))
+                {
+                    behaviour = EnemyBehaviour::stringToBehaviour.at(symbol);
+                    state = ExpectingXPos;
+                }
+                break;
+            case ExpectingTime:
+                try { timeDelta = std::stof(symbol); }
+                catch (std::invalid_argument exception)
+                {
+                    std::cout << "a time value was expected but none was given. Problematic symbol: " << file[i] << std::endl;
+                    exit(-1);
+                }
+                time += timeDelta;
+                state = Nothing;
+                break;
+
+            case ExpectingXPos:
+                try { pos.first = std::stoi(symbol); }
+                catch (std::invalid_argument exception)
+                {
+                    std::cout << "a value for x position was expected but none was given. Problematic symbol: " << file[i] << std::endl;
+                    exit(-1);
+                }
+                state = ExpectingYPos;
+                break;
+            case ExpectingYPos:
+                try { pos.second = std::stoi(symbol); }
+                catch (std::invalid_argument exception)
+                {
+                    std::cout << "a value for y position was expected but none was given. Problematic symbol: " << file[i] << std::endl;
+                    exit(-1);
+                }
+                dungeon.enemies[pos].push({time, behaviour});
+                state = Nothing;
+                break;
+        }
+        
     }
 }
 

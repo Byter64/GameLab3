@@ -81,6 +81,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Helpers/KindredSpiritExtra.h
         ../engine/include/InputSystem/GamepadInputID.h
         ../engine/src/InputSystem/GamepadInputID.cpp
+        ../engine/src/TimeManager.cpp
+        ../engine/include/TimeManager.h
 )
 
 set(EXE_FILE Game)

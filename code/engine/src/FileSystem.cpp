@@ -15,7 +15,7 @@ namespace Engine::Files
 
     /// Parses a file and separates the text by whitespaces
     /// \param path
-    /// \return
+    /// \return the whole content of the file, split by whitespaces
     std::vector<std::string> ParseFile(std::filesystem::path path)
     {
         std::vector<std::string> result;

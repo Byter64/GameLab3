@@ -18,13 +18,17 @@ struct EnemyBehaviour
     inline static const std::map<std::string, Behaviour> stringToBehaviour =
             {
                     {"Hubertus", Hubertus},
-                    {"KindredSpirit", KindredSpirit}
+                    {"KindredSpirit", KindredSpirit},
+                    {"hubertus", Hubertus},
+                    {"kindredspirit", KindredSpirit}
     };
 
     inline static const std::map<Behaviour, std::string> behaviourToString =
             {
                     {Hubertus, "Hubertus"},
-                    {KindredSpirit, "KindredSpirit"}
+                    {KindredSpirit, "KindredSpirit"},
+                    {Hubertus, "hubertus"},
+                    {KindredSpirit, "kindredspirit"}
             };
 
     //Use the enum Behaviour to access the appropriate scores
