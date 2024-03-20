@@ -49,7 +49,7 @@ int main()
 
         auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
         passedTimeInSeconds = ((float)delta.count());
-        passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 2 ? FRAMETIME144FPS * 2 : passedTimeInSeconds;
+        passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 14 ? FRAMETIME144FPS * 14 : passedTimeInSeconds;
         passedTimeInSeconds /= 1000000;
 
     }
