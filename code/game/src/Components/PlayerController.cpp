@@ -48,9 +48,6 @@ void PlayerController::SetMovementInput(Engine::GamepadInputID xAxis, Engine::Ga
 
 void PlayerController::GetMovement(void* object, glm::vec2 input)
 {
-    if(glm::length(input) < 0.05f)
-        input = glm::vec2(0);
-
     PlayerController* player = static_cast<PlayerController*>(object);
     player->movementInput.x = input.x;
     player->movementInput.y = input.y;
