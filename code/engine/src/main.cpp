@@ -48,9 +48,10 @@ int main()
             time2 = std::chrono::high_resolution_clock::now();
 
         auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
-        passedTimeInSeconds = ((float)delta.count()) / 1000000;
-
+        passedTimeInSeconds = ((float)delta.count());
         passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 2 ? FRAMETIME144FPS * 2 : passedTimeInSeconds;
+        passedTimeInSeconds /= 1000000;
+
     }
 
     Engine::OnEndGame();
