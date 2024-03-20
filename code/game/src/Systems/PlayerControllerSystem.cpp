@@ -1,6 +1,8 @@
 #include "Engine.h"
 #include <iostream>
 #include "ECSExtension.h"
+#include "Systems/PlayerControllerSystem.h"
+
 
 static const float SQRT_THREE_FOURTH = 0.866025f;
 
@@ -75,17 +77,11 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
 
     if(count != 0)
     {
-        glm::vec3 roundedDistance = glm::normalize(averageDirection);
-        roundedDistance *= SQRT_THREE_FOURTH; //Normalize for rounding
-        roundedDistance.x = roundf(roundedDistance.x);
-        roundedDistance.y = roundf(roundedDistance.y);
-        roundedDistance.z = roundf(roundedDistance.z);
-
-        roundedDistance = glm::normalize(roundedDistance);
+        averageDirection = RoundToAxis(averageDirection);
 
         if (glm::length(controller.movementInput) >= inputDeadzone)
-            roundedDistance *= glm::length(controller.movementInput) * controller.speed;
-        transform.AddTranslation(roundedDistance * deltaTime);
+            averageDirection *= glm::length(controller.movementInput) * controller.speed;
+        transform.AddTranslation(averageDirection * deltaTime);
     }
 }
 
@@ -108,7 +104,7 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
     if(controller.wasFirePushed)
     {
         controller.wasFirePushed = false;
-        ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(), controller.lookDirection);
+        ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(), RoundToAxis(controller.lookDirection), 6);
     }
 }
 
@@ -121,4 +117,16 @@ void PlayerControllerSystem::UpdateUI(Engine::Entity playerEntity)
         uiText.SetText(std::to_string(controller.score));
         controller.hasScoreChanged = false;
     }
+}
+
+glm::vec3 PlayerControllerSystem::RoundToAxis(glm::vec3 vec)
+{
+    vec = glm::normalize(vec);
+    vec *= SQRT_THREE_FOURTH; //Normalize
+    vec.x = roundf(vec.x);
+    vec.y = roundf(vec.y);
+    vec.z = roundf(vec.z);
+
+    vec = glm::normalize(vec);
+    return vec;
 }
