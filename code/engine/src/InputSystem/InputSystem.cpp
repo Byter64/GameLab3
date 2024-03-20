@@ -38,7 +38,14 @@ namespace Engine
         for(unsigned char i = 0; i < maxJoysticks; i++)
         {
             GLFWgamepadstate oldState = gamePadStates[i];
-            glfwGetGamepadState(i, &gamePadStates[i]);
+            int gamePadExists = glfwGetGamepadState(i, &gamePadStates[i]);
+            if(gamePadExists == GLFW_FALSE)
+            {
+                for(auto& axis : gamePadStates[i].axes)
+                    axis = 0;
+                for(auto& button : gamePadStates[i].buttons)
+                    button = 0;
+            }
 
             gamePadStates[i].axes[GLFW_GAMEPAD_AXIS_LEFT_Y] *= -1;
             gamePadStates[i].axes[GLFW_GAMEPAD_AXIS_RIGHT_Y] *= -1;
