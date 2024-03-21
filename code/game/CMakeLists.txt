@@ -85,6 +85,10 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/TimeManager.h
         src/GameDefines.cpp
         include/GameDefines.h
+        ../engine/include/ECS/Helpers/Animation.h
+        ../engine/src/ECS/Systems/AnimationSystem.cpp
+        ../engine/include/ECS/Systems/AnimationSystem.h
+        ../engine/src/ECS/Helpers/Animation.cpp
 )
 
 set(EXE_FILE Game)
