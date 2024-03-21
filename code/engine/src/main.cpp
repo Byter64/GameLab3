@@ -120,6 +120,8 @@ void InitializeECS()
     Engine::Signature textRenderSignature;
     textRenderSignature.set(ecsSystem->GetComponentType<Engine::Text>());
     ecsSystem->SetSystemSignature<Engine::TextRenderSystem>(textRenderSignature);
+
+    Engine::Systems::animationSystem = ecsSystem->RegisterSystem<Engine::AnimationSystem>();
 }
 
 

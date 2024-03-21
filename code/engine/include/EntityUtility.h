@@ -12,7 +12,7 @@ namespace Engine
 {
     Entity FindChild(Entity root, Name name);
     Entity CopyEntity(Entity entity, bool copyChildren);
-    std::vector<Entity> ImportGLTF(std::filesystem::path gltf, bool addParent = false);
+    std::vector<Entity> ImportGLTF(std::filesystem::path gltf, std::string animationPrefix = "", bool addParent = false);
     void RemoveEntityWithChildren(Entity entity, bool removeParent = true);
 
     template<typename T>

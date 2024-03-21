@@ -9,10 +9,13 @@
 #include <iostream>
 #include <queue>
 #include "CollisionLayer.h"
+#include "ECS/Helpers/Animation.h"
 
 namespace Engine
 {
     Entity GenerateEntities(const tinygltf::Node& root, Transform* parent, std::shared_ptr<tinygltf::Model> model);
+    Animation GenerateAnimation(const tinygltf::Animation& gltfAnimation, std::shared_ptr<tinygltf::Model> model);
+    std::vector<unsigned int> FindHierarchy(const tinygltf::Node& node, std::shared_ptr<tinygltf::Model> model, const tinygltf::Node& currentNode = tinygltf::Node(), std::vector<unsigned int> hierarchy = std::vector<unsigned int>());
 
     /**
      * Finds a child with a name name in root and returns it. Prints a warning. if rot has not both a Name and a Transform component.
@@ -39,9 +42,7 @@ namespace Engine
         }
 
         if(ecsSystem->GetComponent<Name>(root) == name)
-        {
             return root;
-        }
 
         std::queue<Entity> entityQueue;
         entityQueue.push(root);
@@ -52,14 +53,10 @@ namespace Engine
             entityQueue.pop();
 
             if(ecsSystem->GetComponent<Name>(subject) == name)
-            {
                 return subject;
-            }
 
             for(Transform* childTransform : ecsSystem->GetComponent<Transform>(subject).GetChildren())
-            {
                 entityQueue.push(ecsSystem->GetEntity(*childTransform));
-            }
         }
 
         std::cout << "WARNING: No child with name \"" << name << "\" in " << root << " found. \n"
@@ -75,9 +72,10 @@ namespace Engine
      * @param filePath
      * @param addParent if true, the returned vector only contains one entity, to which all top entities are parented
      * to.
+     * @param animationPrefix the prefix that will be added to animations. E.g. prefix "Player_" + animation "Jump" ==> "Player_Jump"
      * @return
      */
-    std::vector<Entity> ImportGLTF(std::filesystem::path filePath, bool addParent)
+    std::vector<Entity> ImportGLTF(std::filesystem::path filePath, std::string animationPrefix, bool addParent)
     {
         std::vector<Entity> entities;
         bool hasWorked;
@@ -126,6 +124,14 @@ namespace Engine
             }
             entities.clear();
             entities.push_back(parent);
+        }
+
+        //Add all animations in the model to the animation system
+        for(tinygltf::Animation& gltfAnimation : model->animations)
+        {
+            Animation animation = GenerateAnimation(gltfAnimation, model);
+            animation.name = animationPrefix + animation.name;
+            Systems::animationSystem->AddAnimation(animation);
         }
 
         return entities;
@@ -221,5 +227,97 @@ namespace Engine
         }
 
         return entity;
+    }
+
+    Animation GenerateAnimation(const tinygltf::Animation& gltfAnimation, std::shared_ptr<tinygltf::Model> model)
+    {
+        Animation animation;
+        animation.name = gltfAnimation.name;
+
+        for(int i = 0; i < gltfAnimation.channels.size(); i++)
+        {
+            const tinygltf::AnimationChannel& gltfChannel = gltfAnimation.channels[i];
+            const tinygltf::AnimationSampler& sampler = gltfAnimation.samplers[gltfChannel.sampler];
+            const tinygltf::Accessor& domain = model->accessors[sampler.input];
+            const tinygltf::Accessor& codomain = model->accessors[sampler.output];
+            const tinygltf::BufferView& domainBV = model->bufferViews[domain.bufferView];
+            const tinygltf::BufferView& codomainBV = model->bufferViews[codomain.bufferView];
+            const tinygltf::Buffer& domainBuf = model->buffers[domainBV.buffer];
+            const tinygltf::Buffer& codomainBuf = model->buffers[codomainBV.buffer];
+
+            Animation::Channel channel;
+
+            channel.target = Animation::Channel::StringToTarget(gltfChannel.target_path);
+            channel.interpolation = Animation::Channel::StringToInterpolation((sampler.interpolation));
+
+            const float* domainPointer = reinterpret_cast<const float*>(&domainBuf.data[domainBV.byteOffset + domain.byteOffset]);
+            const float* codomainPointer = reinterpret_cast<const float*>(&codomainBuf.data[codomainBV.byteOffset + codomain.byteOffset]);
+            if(domain.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT || codomain.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT)
+            {
+                throw std::runtime_error("feeec");
+            }
+            for(int i = 0; i < domain.count; i++)
+            {
+                std::vector<float> value;
+
+                if(codomain.type == TINYGLTF_TYPE_VEC4)
+                {
+                    value.push_back(codomainPointer[(i * 4) + 0]);
+                    value.push_back(codomainPointer[(i * 4) + 1]);
+                    value.push_back(codomainPointer[(i * 4) + 2]);
+                    value.push_back(codomainPointer[(i * 4) + 3]);
+                }
+                else if (codomain.type == TINYGLTF_TYPE_VEC3)
+                {
+                    value.push_back(codomainPointer[(i * 3) + 0]);
+                    value.push_back(codomainPointer[(i * 3) + 1]);
+                    value.push_back(codomainPointer[(i * 3) + 2]);
+                }
+                channel.function[domainPointer[i]] = value;
+            }
+
+            //channel.hierarchy = FindHierarchy(model->nodes[gltfChannel.target_node], model);
+
+            animation.channels.push_back(channel);
+        }
+        return animation;
+    }
+
+    std::vector<unsigned int> FindHierarchy(const tinygltf::Node& node, std::shared_ptr<tinygltf::Model> model, const tinygltf::Node& currentNode, std::vector<unsigned int> hierarchy)
+    {
+        static bool foundNode = false;
+        if(hierarchy.empty())
+        {
+            foundNode = false;
+
+            for(int i = 0; i < model->nodes.size(); i++)
+            {
+                hierarchy.push_back(i);
+                hierarchy = FindHierarchy(node, model, model->nodes[i], hierarchy);
+
+                if(foundNode) break;
+
+                hierarchy.pop_back();
+            }
+            return FindHierarchy(node, model, node, hierarchy);
+        }
+
+        if(node == currentNode)
+        {
+            foundNode = true;
+            return hierarchy;
+        }
+
+        for(int i = 0; i < currentNode.children.size(); i++)
+        {
+            hierarchy.push_back(i);
+            hierarchy = FindHierarchy(node, model, model->nodes[i], hierarchy);
+
+            if(foundNode) break;
+
+            hierarchy.pop_back();
+        }
+
+        return hierarchy;
     }
 } // Engine
