@@ -83,6 +83,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/InputSystem/GamepadInputID.cpp
         ../engine/src/TimeManager.cpp
         ../engine/include/TimeManager.h
+        src/GameDefines.cpp
+        include/GameDefines.h
 )
 
 set(EXE_FILE Game)

@@ -53,7 +53,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             //If bullet is shot from player
             if (ecsSystem->HasComponent<PlayerController>(ecsSystem->GetComponent<Bullet>(other).spawner))
             {
-                controller.stunnedTimer = stunnedTime;
+                controller.stunnedTimer = controller.stunnedTime;
             }
             else
             {
@@ -104,7 +104,7 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
     if(controller.wasFirePushed)
     {
         controller.wasFirePushed = false;
-        ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(), RoundToAxis(controller.lookDirection), 6);
+        ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(), RoundToAxis(controller.lookDirection), controller.bulletSpeed);
     }
 }
 

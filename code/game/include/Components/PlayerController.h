@@ -9,12 +9,12 @@ struct PlayerController
     glm::vec3 movementInput;
     glm::vec3 lookDirection;
     float wasFirePushed;
-    /*
-     * Units per second
-     */
+    float bulletSpeed;
     float speed = 3.0f;
 
     bool hasScoreChanged = true;
+
+    float stunnedTime = 5.0f;
     float stunnedTimer = 0;
     Engine::Entity uiTextScore = Engine::Entity::INVALID_ENTITY_ID;
 

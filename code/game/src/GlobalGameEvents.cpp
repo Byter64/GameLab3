@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 #include "CollisionLayer.h"
 #include "ECSExtension.h"
+#include "GameDefines.h"
 
 extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
@@ -15,6 +16,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
     ECSHelper::Initialize();
     Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
+    Defines::InitializeDefines();
 
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Collectible), false);
@@ -55,12 +57,16 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller.SetMovementInput(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
     controller.SetFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
     controller.SetFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+    controller.speed = Defines::Float("Player1_Speed");
+    controller.stunnedTime = Defines::Float("Player1_StunnedTime");
+    controller.bulletSpeed = Defines::Float("Player1_BulletSpeed");
+
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
-    ecsSystem->AddComponent<Health>(player, Health{1});
+    ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
 
-//#define PLAYER2
+#define PLAYER2
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
@@ -88,11 +94,14 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller2.SetMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
     controller2.SetFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
     controller2.SetFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+    controller2.speed = Defines::Float("Player2_Speed");
+    controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
+    controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
 
     ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
-    ecsSystem->AddComponent<Health>(player2, Health{1});
+    ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health")});
 #endif
 
     Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));

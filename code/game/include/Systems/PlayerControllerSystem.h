@@ -3,7 +3,6 @@
 
 class PlayerControllerSystem : public Engine::System
 {
-    const float stunnedTime = 5.0f;
     const float inputDeadzone = 0.05f;
 
     unsigned int alivePlayers = 0;
