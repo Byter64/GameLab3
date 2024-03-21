@@ -14,9 +14,9 @@ extern GLFWwindow *window;
 
 void Engine::OnStartGame(int screenWidth, int screenHeight)
 {
+    Defines::InitializeDefines();
     ECSHelper::Initialize();
     Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
-    Defines::InitializeDefines();
 
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Collectible), false);
@@ -26,6 +26,9 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Collectible), static_cast<unsigned char>(CollisionLayer::Collectible), false);
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Bullet), false);
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Enemy), false);
+
+    EnemyBehaviour::scores[EnemyBehaviour::Hubertus] = Defines::Int("Hubertus_Score");
+
 
     Engine::Entity dungeon = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
@@ -60,13 +63,14 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller.speed = Defines::Float("Player1_Speed");
     controller.stunnedTime = Defines::Float("Player1_StunnedTime");
     controller.bulletSpeed = Defines::Float("Player1_BulletSpeed");
+    controller.maxBullets = Defines::Int("Player1_MaxBullets");
 
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
 
-#define PLAYER2
+//#define PLAYER2
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
@@ -97,6 +101,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller2.speed = Defines::Float("Player2_Speed");
     controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
     controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
+    controller2.maxBullets = Defines::Int("Player2_MaxBullets");
 
     ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);

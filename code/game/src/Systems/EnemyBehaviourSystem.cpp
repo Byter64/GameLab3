@@ -8,10 +8,18 @@
 #include <random>
 #include "ECSExtension.h"
 #include <cmath>
+#include "GameDefines.h"
 
 EnemyBehaviourSystem::EnemyBehaviourSystem()
 {
     srand(std::chrono::system_clock::now().time_since_epoch().count());
+
+    idleDurationRange.first = Defines::Float("Hubertus_IdleDuration_Min");
+    idleDurationRange.second = Defines::Float("Hubertus_IdleDuration_Max");
+    walkDurationRange.first = Defines::Float("Hubertus_WalkDuration_Min");
+    walkDurationRange.second = Defines::Float("Hubertus_WalkDuration_Max");
+    shootIntervalRange.first = Defines::Float("Hubertus_ShootInterval_Min");
+    shootIntervalRange.second = Defines::Float("Hubertus_ShootInterval_Max");
 }
 
 void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
@@ -40,9 +48,9 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
+    std::uniform_real_distribution<> distr(shootIntervalRange.first, shootIntervalRange.second);
     behaviour.shootTimer = distr(gen);
-    distr = std::uniform_real_distribution<>(idleTimeRange.first, idleTimeRange.second);
+    distr = std::uniform_real_distribution<>(walkDurationRange.first, walkDurationRange.second);
     behaviour.idlerTimer = distr(gen);
     behaviour.isMoving = true;
 }
@@ -100,8 +108,8 @@ void EnemyBehaviourSystem::UpdateHubertus(Engine::Entity entity, float deltaTime
     std::mt19937 gen(rd());
     if(behaviour.shootTimer <= 0)
     {
-        ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0));
-        std::uniform_real_distribution<> distr(shootTimeRange.first, shootTimeRange.second);
+        ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0), behaviour.bulletSpeed);
+        std::uniform_real_distribution<> distr(shootIntervalRange.first, shootIntervalRange.second);
         behaviour.shootTimer = distr(gen);
     }
     if(behaviour.idlerTimer <= 0)
@@ -110,7 +118,7 @@ void EnemyBehaviourSystem::UpdateHubertus(Engine::Entity entity, float deltaTime
         if(behaviour.isMoving)
             distr = std::uniform_real_distribution<>(idleDurationRange.first, idleDurationRange.second);
         else
-            distr = std::uniform_real_distribution<>(idleTimeRange.first, idleTimeRange.second);
+            distr = std::uniform_real_distribution<>(walkDurationRange.first, walkDurationRange.second);
         behaviour.isMoving = !behaviour.isMoving;
         behaviour.idlerTimer = distr(gen);
     }
@@ -178,8 +186,8 @@ void EnemyBehaviourSystem::HandleDamageKindredSpirit(Engine::Entity entity, Engi
 
 void EnemyBehaviourSystem::MoveEnemy(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
 {
-    transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.movementSpeed * deltaTime, 0));
-    if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.movementSpeed * deltaTime * 2)
+    transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.speed * deltaTime, 0));
+    if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
     {
         std::list<std::pair<int, int>>& list = graph[behaviour.targetNode];
         auto iter = list.end();

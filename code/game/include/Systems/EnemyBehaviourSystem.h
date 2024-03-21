@@ -22,9 +22,10 @@ class EnemyBehaviourSystem : public Engine::System
     glm::vec2 ToGlobal(std::pair<int, int> dungeonPos);
 
     //Stuff for Hubertus
-    std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 4.0f);
-    std::pair<float, float> idleTimeRange = std::make_pair(10.0f, 30.0f);
-    std::pair<float, float> shootTimeRange = std::make_pair(2.0f, 8.0f);
+    inline static std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 4.0f);
+    inline static std::pair<float, float> walkDurationRange = std::make_pair(10.0f, 30.0f);
+    inline static std::pair<float, float> shootIntervalRange = std::make_pair(2.0f, 8.0f);
+
     void UpdateHubertus(Engine::Entity entity, float deltaTime);
     void HandleDamageHubertus(Engine::Entity entity, Engine::Entity other);
     void UpdateKindredSpirit(Engine::Entity entity, float deltaTime);

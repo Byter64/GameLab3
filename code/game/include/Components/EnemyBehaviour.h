@@ -32,7 +32,7 @@ struct EnemyBehaviour
             };
 
     //Use the enum Behaviour to access the appropriate scores
-    inline static const std::vector<int> scores =
+    inline static std::vector<int> scores =
             {
                 100,
                 200,
@@ -50,7 +50,8 @@ struct EnemyBehaviour
     std::pair<int, int> oldTargetNode;
     glm::vec2 targetPos;
     glm::vec2 movement;
-    float movementSpeed = 1.0f;
+    float speed = 1.0f;
+    float bulletSpeed = 3.0f;
 
     //The type is determined by behaviour
     //You could call it a tagged union ヾ(⌐■_■)ノ♪

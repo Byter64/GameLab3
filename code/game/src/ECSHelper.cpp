@@ -2,6 +2,7 @@
 #include "Engine.h"
 #include "ECSExtension.h"
 #include "CollisionLayer.h"
+#include "GameDefines.h"
 
 extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
@@ -163,11 +164,12 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy, EnemyBehaviour());
-    ecsSystem->GetComponent<EnemyBehaviour>(enemy).behaviour = EnemyBehaviour::Hubertus;
-    ecsSystem->GetComponent<EnemyBehaviour>(enemy).startPos = startPos;
-    ecsSystem->AddComponent<Health>(enemy, Health());
-    ecsSystem->GetComponent<Health>(enemy).health = 3;
+    EnemyBehaviour& behaviour = ecsSystem->AddComponent<EnemyBehaviour>(enemy);
+    behaviour.behaviour = EnemyBehaviour::Hubertus;
+    behaviour.startPos = startPos;
+    behaviour.speed = Defines::Float("Hubertus_Speed");
+    behaviour.bulletSpeed = Defines::Float("Hubertus_BulletSpeed");
+    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Hubertus_Health")});
 
     return enemy;
 }
@@ -200,7 +202,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     behav1.behaviour = EnemyBehaviour::KindredSpirit;
     behav1.startPos = startPos;
     behav1.enemyExtra.kindredSpirit.isMainEntity = true;
-    behav1.movementSpeed = 3.0f;
+    behav1.speed = 3.0f;
 
     ecsSystem->AddComponent<Health>(enemy1, Health());
     ecsSystem->GetComponent<Health>(enemy1).health = 1;
