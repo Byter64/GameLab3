@@ -104,7 +104,11 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
     if(controller.wasFirePushed)
     {
         controller.wasFirePushed = false;
-        ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(), RoundToAxis(controller.lookDirection), controller.bulletSpeed);
+        if(controller.activeBullets != controller.maxBullets)
+        {
+            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(),RoundToAxis(controller.lookDirection), controller.bulletSpeed);
+            controller.activeBullets++;
+        }
     }
 }
 

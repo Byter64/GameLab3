@@ -25,7 +25,10 @@ void BulletSystem::Update(float deltaTime)
             const Engine::Collision& collision = pair.first;
             if(collision.other != bullet.spawner)
             {
-                ecsSystem->RemoveEntity(entity);
+                Engine::RemoveEntityWithChildren(entity);
+
+                if(ecsSystem->HasComponent<PlayerController>(bullet.spawner))
+                    ecsSystem->GetComponent<PlayerController>(bullet.spawner).activeBullets--;
                 break;
             }
         }

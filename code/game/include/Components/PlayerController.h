@@ -8,10 +8,13 @@ struct PlayerController
     friend class PlayerControllerSystem;
     glm::vec3 movementInput;
     glm::vec3 lookDirection;
-    float wasFirePushed;
-    float bulletSpeed;
-    float speed = 3.0f;
+    bool wasFirePushed;
 
+    float bulletSpeed;
+    int maxBullets = 2;
+    int activeBullets = 0;
+
+    float speed = 3.0f;
     bool hasScoreChanged = true;
 
     float stunnedTime = 5.0f;

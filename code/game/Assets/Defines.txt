@@ -1,11 +1,11 @@
 Player1_Speed = 3
 Player1_Health = 1
-Player1_BulletSpeed = 1
+Player1_BulletSpeed = 6
 Player1_MaxBullets = 2
-Player1_StunnedTime = 3 /*This is the time, the other player is stunned, when player1 hits him*/
+Player1_StunnedTime = 5 /*This is the time, the other player is stunned, when player1 hits him*/
 
 Player2_Speed = 3
-Player2_Health = 1
+Player2_Health = 6
 Player2_BulletSpeed = 6
 Player2_MaxBullets = 2
-Player2_StunnedTime = 3 /*This is the time, the other player is stunned, when player2 hits him*/
+Player2_StunnedTime = 5 /*This is the time, the other player is stunned, when player2 hits him*/
