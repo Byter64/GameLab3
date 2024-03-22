@@ -276,7 +276,8 @@ namespace Engine
                 channel.function[domainPointer[i]] = value;
             }
 
-            //channel.hierarchy = FindHierarchy(model->nodes[gltfChannel.target_node], model);
+            channel.hierarchy = FindHierarchy(model->nodes[gltfChannel.target_node], model);
+            channel.hierarchy.erase(channel.hierarchy.begin()); //The to be deleted element is the index within the root nodes. This index however is not needed
 
             animation.channels.push_back(channel);
         }
@@ -286,20 +287,11 @@ namespace Engine
     std::vector<unsigned int> FindHierarchy(const tinygltf::Node& node, std::shared_ptr<tinygltf::Model> model, const tinygltf::Node& currentNode, std::vector<unsigned int> hierarchy)
     {
         static bool foundNode = false;
+        std::vector<int> children = currentNode.children;
         if(hierarchy.empty())
         {
             foundNode = false;
-
-            for(int i = 0; i < model->nodes.size(); i++)
-            {
-                hierarchy.push_back(i);
-                hierarchy = FindHierarchy(node, model, model->nodes[i], hierarchy);
-
-                if(foundNode) break;
-
-                hierarchy.pop_back();
-            }
-            return FindHierarchy(node, model, node, hierarchy);
+            children = model->scenes[0].nodes;
         }
 
         if(node == currentNode)
@@ -308,12 +300,12 @@ namespace Engine
             return hierarchy;
         }
 
-        for(int i = 0; i < currentNode.children.size(); i++)
+        for(int i = 0; i < children.size(); i++)
         {
             hierarchy.push_back(i);
-            hierarchy = FindHierarchy(node, model, model->nodes[i], hierarchy);
 
-            if(foundNode) break;
+            std::vector<unsigned int> result = FindHierarchy(node, model, model->nodes[children[i]], hierarchy);
+            if(foundNode) return result;
 
             hierarchy.pop_back();
         }

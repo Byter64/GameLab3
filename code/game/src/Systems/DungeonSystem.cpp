@@ -168,7 +168,6 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
                 state = Nothing;
                 break;
         }
-        
     }
 }
 
