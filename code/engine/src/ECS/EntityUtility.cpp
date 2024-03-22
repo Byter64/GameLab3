@@ -256,24 +256,31 @@ namespace Engine
             {
                 throw std::runtime_error("feeec");
             }
+
+            if(codomain.type == TINYGLTF_TYPE_VEC4)
+                channel.functionTo4D = std::map<float, glm::vec4>();
+            else if (codomain.type == TINYGLTF_TYPE_VEC3)
+                channel.functionTo3D = std::map<float, glm::vec3>();
+
             for(int i = 0; i < domain.count; i++)
             {
-                std::vector<float> value;
-
                 if(codomain.type == TINYGLTF_TYPE_VEC4)
                 {
-                    value.push_back(codomainPointer[(i * 4) + 0]);
-                    value.push_back(codomainPointer[(i * 4) + 1]);
-                    value.push_back(codomainPointer[(i * 4) + 2]);
-                    value.push_back(codomainPointer[(i * 4) + 3]);
+                    glm::vec4 value;
+                    value.x = codomainPointer[(i * 4) + 0];
+                    value.y = codomainPointer[(i * 4) + 1];
+                    value.z = codomainPointer[(i * 4) + 2];
+                    value.w = codomainPointer[(i * 4) + 3];
+                    channel.functionTo4D[domainPointer[i]] = value;
                 }
                 else if (codomain.type == TINYGLTF_TYPE_VEC3)
                 {
-                    value.push_back(codomainPointer[(i * 3) + 0]);
-                    value.push_back(codomainPointer[(i * 3) + 1]);
-                    value.push_back(codomainPointer[(i * 3) + 2]);
+                    glm::vec3 value;
+                    value.x = codomainPointer[(i * 4) + 0];
+                    value.y = codomainPointer[(i * 4) + 1];
+                    value.z = codomainPointer[(i * 4) + 2];
+                    channel.functionTo3D[domainPointer[i]] = value;
                 }
-                channel.function[domainPointer[i]] = value;
             }
 
             channel.hierarchy = FindHierarchy(model->nodes[gltfChannel.target_node], model);
