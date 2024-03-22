@@ -121,6 +121,13 @@ namespace Engine
         return parent;
     }
 
+    Transform* Transform::GetChild(int index)
+    {
+        auto child = children.begin();
+        std::advance(child, index);
+        return *child;
+    }
+
     std::list<Transform*> &Transform::GetChildren()
     {
         return children;
