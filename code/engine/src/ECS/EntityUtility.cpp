@@ -250,6 +250,8 @@ namespace Engine
             channel.target = Animation::Channel::StringToTarget(gltfChannel.target_path);
             channel.interpolation = Animation::Channel::StringToInterpolation((sampler.interpolation));
 
+            if(channel.target != Animation::Channel::Target::Rotation) continue;
+
             const float* domainPointer = reinterpret_cast<const float*>(&domainBuf.data[domainBV.byteOffset + domain.byteOffset]);
             const float* codomainPointer = reinterpret_cast<const float*>(&codomainBuf.data[codomainBV.byteOffset + codomain.byteOffset]);
             if(domain.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT || codomain.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT)
@@ -292,6 +294,9 @@ namespace Engine
                 std::advance(iter, -1);
                 if(iter->first > animation.endTime)
                     animation.endTime = iter->first;
+
+                if(channel.functionTo4D.begin()->first < animation.startTime)
+                    animation.startTime = channel.functionTo4D.begin()->first;
             }
             else
             {
@@ -299,10 +304,15 @@ namespace Engine
                 std::advance(iter, -1);
                 if(iter->first > animation.endTime)
                     animation.endTime = iter->first;
+
+                if(channel.functionTo3D.begin()->first < animation.startTime)
+                    animation.startTime = channel.functionTo3D.begin()->first;
             }
 
             animation.channels.push_back(channel);
         }
+
+        animation.duration = animation.endTime - animation.startTime;
         return animation;
     }
 

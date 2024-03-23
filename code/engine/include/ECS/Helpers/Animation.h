@@ -52,7 +52,9 @@ namespace Engine
 
         std::string name;
         std::vector<Channel> channels;
+        float startTime = std::numeric_limits<float>::infinity();
         float endTime;
+        float duration;
     };
 
 } // Engine

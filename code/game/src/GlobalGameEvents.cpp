@@ -5,6 +5,7 @@
 #include "ECSExtension.h"
 #include "GameDefines.h"
 
+
 extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
@@ -69,6 +70,8 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
+
+    ECSHelper::SpawnLoot(glm::vec3(2,1,0), -2);
 
 //#define PLAYER2
 #ifdef PLAYER2

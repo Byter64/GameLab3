@@ -52,15 +52,17 @@ namespace Engine
                     if (iterator == channel.functionTo4D.begin())
                     {
                         SetValue(transform, (*iterator).second, channel.target);
+                        std::cout << "HIER ";
                         continue;
                     }
 
                     std::pair<float, glm::quat> const &upperBound = *iterator; //always greater than animator.currentTime
                     std::advance(iterator, -1);
                     std::pair<float, glm::quat> const &lowerBound = *iterator; // always smaller equal animator.currentTime
-                    float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - animator.currentTime);
-
-                    SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue, channel.interpolation), channel.target);
+                    float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
+                    glm::quat value = Interpolate(lowerBound.second, upperBound.second, interpolationValue, channel.interpolation);
+                    std::cout << value.w << " "<< value.x << " "<< value.y << " "<< value.z << " ";
+                    SetValue(transform, value, channel.target);
                 }
                 else
                 {
@@ -83,21 +85,22 @@ namespace Engine
                     std::pair<float, glm::vec3> const &upperBound = *iterator; //always greater than animator.currentTime
                     std::advance(iterator, -1);
                     std::pair<float, glm::vec3> const &lowerBound = *iterator; // always smaller equal animator.currentTime
-                    float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - animator.currentTime);
+                    float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
 
                     SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue, channel.interpolation), channel.target);
                 }
             }
 
+            std::cout << animator.currentTime << std::endl;
+            animator.currentTime += deltaTime * animator.speed;
             if(animator.currentTime >= animation.endTime)
             {
                 if(animator.isLooping)
-                    animator.currentTime -= animation.endTime;
+                    animator.currentTime -= animation.duration;
                 else
                     ecsSystem->RemoveComponent<Animator>(entity);
             }
 
-            animator.currentTime += deltaTime * animator.speed;
         }
     }
 
@@ -170,6 +173,8 @@ namespace Engine
             case Animation::Channel::Interpolation::Step:
                 return x;
             case Animation::Channel::Interpolation::Linear:
+                if(x.w < 0.03f)
+                    return x;
                 return glm::mix(x, y, a);
             case Animation::Channel::Interpolation::CubicSpline:
                 return x;
