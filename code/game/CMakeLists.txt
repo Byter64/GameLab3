@@ -74,7 +74,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/ECSHelper.h
         include/ECSExtension.h
         ../engine/include/Systems.h
-        ../engine/src/ECS/Helpers/Systems.cpp
+        ../engine/src/Systems.cpp
         ../engine/src/Miscellaneous.cpp
         ../engine/include/Miscellaneous.h
         include/Helpers/EnemyExtra.h

@@ -16,9 +16,9 @@ namespace Engine
         explicit InputActionButton(std::string name);
 
         void AddKeyboardBinding(int key);
-        void AddGamepadBinding(GamepadInputID& inputID);
+        void AddGamepadBinding(GamepadInputID inputID);
         void RemoveKeyboardBinding(int key);
-        void RemoveGamepadBinding(GamepadInputID& inputID);
+        void RemoveGamepadBinding(GamepadInputID inputID);
 
         void AddOnStart(void* object, CallbackButton callback);
         void RemoveOnStart(void* object, CallbackButton callback);

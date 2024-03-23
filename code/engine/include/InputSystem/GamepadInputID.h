@@ -11,6 +11,8 @@ namespace Engine
             Axis
         };
 
+        GamepadInputID() = default;
+
         unsigned char joystickID;
         unsigned char inputID; //either button ID or axis ID
         InputType inputType;

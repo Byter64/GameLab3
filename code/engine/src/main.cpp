@@ -9,6 +9,12 @@
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
+namespace Engine
+{
+    extern bool isGamePaused;
+    extern bool areAnimationsPaused;
+}
+
 int screenWidth = 1920;
 int screenHeight = 1080;
 GLFWwindow *window;
@@ -26,7 +32,7 @@ int main()
     InitializeECS();
     Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
 
-    Engine::OnStartGame(screenWidth, screenHeight);
+    OnStartGame(screenWidth, screenHeight);
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
 
@@ -36,14 +42,19 @@ int main()
         glfwPollEvents();
         Engine::Systems::inputSystem->Update();
 
-        Engine::Update(passedTimeInSeconds);
+        if(!Engine::isGamePaused)
+        {
+            Update(passedTimeInSeconds);
 
-        Engine::Systems::collisionSystem->CheckCollisions();
-        Engine::Systems::animationSystem->Update(passedTimeInSeconds);
+            Engine::Systems::collisionSystem->CheckCollisions();
+            ecsSystem->DeletePurgatory();
+        }
         Engine::Systems::renderSystem->Render();
         Engine::Systems::textRenderSystem->Render();
+        if(!Engine::areAnimationsPaused)
+            Engine::Systems::animationSystem->Update(passedTimeInSeconds);
+
         glfwSwapBuffers(window);
-        ecsSystem->DeletePurgatory();
 
         auto time2 = std::chrono::high_resolution_clock::now();
         while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
@@ -56,7 +67,7 @@ int main()
 
     }
 
-    Engine::OnEndGame();
+    OnEndGame();
     glfwTerminate();
     return 0;
 }

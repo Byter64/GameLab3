@@ -11,7 +11,7 @@ namespace Engine
         keyboardBindings.push_back(key);
     }
 
-    void InputActionButton::AddGamepadBinding(GamepadInputID& inputID)
+    void InputActionButton::AddGamepadBinding(GamepadInputID inputID)
     {
         gamepadBindings.push_back(inputID);
     }
@@ -21,7 +21,7 @@ namespace Engine
         keyboardBindings.remove(key);
     }
 
-    void InputActionButton::RemoveGamepadBinding(GamepadInputID &inputID)
+    void InputActionButton::RemoveGamepadBinding(GamepadInputID inputID)
     {
         gamepadBindings.remove(inputID);
     }

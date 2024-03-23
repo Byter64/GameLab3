@@ -13,7 +13,12 @@ std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name
 std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 extern GLFWwindow *window;
 
-void Engine::OnStartGame(int screenWidth, int screenHeight)
+static std::shared_ptr<Engine::InputActionButton> pause;
+
+static void PauseGame(void*);
+static bool isGamePaused = false;
+
+void OnStartGame(int screenWidth, int screenHeight)
 {
     Defines::InitializeDefines();
     ECSHelper::Initialize();
@@ -66,6 +71,12 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller.bulletSpeed = Defines::Float("Player1_BulletSpeed");
     controller.maxBullets = Defines::Int("Player1_MaxBullets");
 
+    pause = std::make_shared<Engine::InputActionButton>("Pause");
+    pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
+    pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
+    pause->AddOnStart(nullptr, PauseGame);
+    Engine::Systems::inputSystem->Add(pause);
+
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
@@ -104,6 +115,11 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
     controller2.maxBullets = Defines::Int("Player2_MaxBullets");
 
+    pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
+    pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
+    Engine::Systems::inputSystem->Remove(pause);
+    Engine::Systems::inputSystem->Add(pause);
+
     ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
@@ -113,17 +129,27 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
+
 }
 
-void Engine::OnEndGame()
+void OnEndGame()
 {
 
 }
 
-void Engine::Update(float deltaTime)
+void Update(float deltaTime)
 {
+    if(isGamePaused) return;
     playerControllerSystem->Update(deltaTime);
     enemyBehaviourSystem->Update(deltaTime);
     dungeonSystem->Update();
     bulletSystem->Update(deltaTime);
+}
+
+static void PauseGame(void*)
+{
+    if(Engine::GetIsGamePaused())
+        Engine::ContinueGame();
+    else
+        Engine::PauseGame(false);
 }
