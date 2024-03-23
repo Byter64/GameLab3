@@ -32,39 +32,3 @@ Engine::Animation::Channel::Interpolation Engine::Animation::Channel::StringToIn
     std::cout << "malformed gltf file. Animation interpolation: " << interpolation << " not valid" << std::endl;
     return Interpolation::Invalid;
 }
-
-Engine::Animation::Channel::~Channel()
-{
-    hierarchy.~vector();
-
-    if(target == Target::Rotation)
-        functionTo4D.~map();
-    else
-        functionTo3D.~map();
-}
-
-Engine::Animation::Channel::Channel(Engine::Animation::Channel const &other)
-{
-    this->target = other.target;
-    this->hierarchy = other.hierarchy;
-    this->interpolation = other.interpolation;
-
-    if(target == Target::Rotation)
-        this->functionTo4D = other.functionTo4D;
-    else
-        this->functionTo3D = other.functionTo3D;
-}
-
-Engine::Animation::Channel& Engine::Animation::Channel::operator=(const Engine::Animation::Channel &other)
-{
-    this->target = other.target;
-    this->hierarchy = other.hierarchy;
-    this->interpolation = other.interpolation;
-
-    if(target == Target::Rotation)
-        this->functionTo4D = other.functionTo4D;
-    else
-        this->functionTo3D = other.functionTo3D;
-
-    return *this;
-}

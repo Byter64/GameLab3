@@ -250,7 +250,7 @@ namespace Engine
             channel.target = Animation::Channel::StringToTarget(gltfChannel.target_path);
             channel.interpolation = Animation::Channel::StringToInterpolation((sampler.interpolation));
 
-            if(channel.target != Animation::Channel::Target::Rotation) continue;
+            if(channel.target != Animation::Channel::Target::Translation) continue;
 
             const float* domainPointer = reinterpret_cast<const float*>(&domainBuf.data[domainBV.byteOffset + domain.byteOffset]);
             const float* codomainPointer = reinterpret_cast<const float*>(&codomainBuf.data[codomainBV.byteOffset + codomain.byteOffset]);

@@ -52,7 +52,6 @@ namespace Engine
                     if (iterator == channel.functionTo4D.begin())
                     {
                         SetValue(transform, (*iterator).second, channel.target);
-                        std::cout << "HIER ";
                         continue;
                     }
 
@@ -61,7 +60,7 @@ namespace Engine
                     std::pair<float, glm::quat> const &lowerBound = *iterator; // always smaller equal animator.currentTime
                     float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
                     glm::quat value = Interpolate(lowerBound.second, upperBound.second, interpolationValue, channel.interpolation);
-                    std::cout << value.w << " "<< value.x << " "<< value.y << " "<< value.z << " ";
+
                     SetValue(transform, value, channel.target);
                 }
                 else
@@ -91,7 +90,6 @@ namespace Engine
                 }
             }
 
-            std::cout << animator.currentTime << std::endl;
             animator.currentTime += deltaTime * animator.speed;
             if(animator.currentTime >= animation.endTime)
             {
