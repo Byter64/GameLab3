@@ -172,6 +172,7 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
     behaviour.startPos = startPos;
     behaviour.speed = Defines::Float("Hubertus_Speed");
     behaviour.bulletSpeed = Defines::Float("Hubertus_BulletSpeed");
+    behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Hubertus_Health")});
 
     return enemy;
@@ -206,6 +207,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     behav1.startPos = startPos;
     behav1.enemyExtra.kindredSpirit.isMainEntity = true;
     behav1.speed = 3.0f;
+    behav1.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
 
     ecsSystem->AddComponent<Health>(enemy1, Health());
     ecsSystem->GetComponent<Health>(enemy1).health = 1;
@@ -224,6 +226,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     behav2.startPos = {startPos.first * -1, startPos.second * -1};
     behav2.enemyExtra.kindredSpirit.isMainEntity = false;
     behav2.enemyExtra.kindredSpirit.other = enemy1;
+    behav2.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<Health>(enemy2, Health());
     ecsSystem->GetComponent<Health>(enemy2).health = 1;
 

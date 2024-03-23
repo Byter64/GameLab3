@@ -52,6 +52,7 @@ struct EnemyBehaviour
     glm::vec2 movement;
     float speed = 1.0f;
     float bulletSpeed = 3.0f;
+    float spawnTime;
 
     //The type is determined by behaviour
     //You could call it a tagged union ヾ(⌐■_■)ノ♪

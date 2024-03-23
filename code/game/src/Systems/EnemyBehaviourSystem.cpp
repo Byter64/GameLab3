@@ -20,6 +20,8 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     walkDurationRange.second = Defines::Float("Hubertus_WalkDuration_Max");
     shootIntervalRange.first = Defines::Float("Hubertus_ShootInterval_Min");
     shootIntervalRange.second = Defines::Float("Hubertus_ShootInterval_Max");
+
+    enemyScoreDecrease = Defines::Float("Enemy_ScoreDecrease");
 }
 
 void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
@@ -130,11 +132,15 @@ void EnemyBehaviourSystem::HandleDamageHubertus(Engine::Entity entity, Engine::E
 {
     //Bullet is already destroying itself, so no need to do it here
     Health& health = ecsSystem->GetComponent<Health>(entity);
+    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     health.health--;
     if(health.health <= 0)
     {
         RemoveEntityWithChildren(entity);
-        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), EnemyBehaviour::scores[EnemyBehaviour::Hubertus]);
+        float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
+        int score = EnemyBehaviour::scores[EnemyBehaviour::Hubertus] - (int)(timeAlive * enemyScoreDecrease);
+        score = score < 1 ? 1 : score;
+        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
     }
 }
 
