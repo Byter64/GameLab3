@@ -133,6 +133,7 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
     {
         lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel\\Jewel.glb", "Loot_")[0];
         ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetScale(glm::vec3(0));
+        ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f),0,0)));
         ecsSystem->AddComponent<Loot>(lootPrefab, {0});
     }
 

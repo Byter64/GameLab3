@@ -250,19 +250,12 @@ namespace Engine
             channel.target = Animation::Channel::StringToTarget(gltfChannel.target_path);
             channel.interpolation = Animation::Channel::StringToInterpolation((sampler.interpolation));
 
-            if(channel.target != Animation::Channel::Target::Translation) continue;
-
             const float* domainPointer = reinterpret_cast<const float*>(&domainBuf.data[domainBV.byteOffset + domain.byteOffset]);
             const float* codomainPointer = reinterpret_cast<const float*>(&codomainBuf.data[codomainBV.byteOffset + codomain.byteOffset]);
             if(domain.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT || codomain.componentType != TINYGLTF_COMPONENT_TYPE_FLOAT)
             {
                 throw std::runtime_error("feeec");
             }
-
-            if(codomain.type == TINYGLTF_TYPE_VEC4)
-                channel.functionTo4D = std::map<float, glm::quat>();
-            else if (codomain.type == TINYGLTF_TYPE_VEC3)
-                channel.functionTo3D = std::map<float, glm::vec3>();
 
             for(int i = 0; i < domain.count; i++)
             {
@@ -278,9 +271,9 @@ namespace Engine
                 else if (codomain.type == TINYGLTF_TYPE_VEC3)
                 {
                     glm::vec3 value;
-                    value.x = codomainPointer[(i * 4) + 0];
-                    value.y = codomainPointer[(i * 4) + 1];
-                    value.z = codomainPointer[(i * 4) + 2];
+                    value.x = codomainPointer[(i * 3) + 0];
+                    value.y = codomainPointer[(i * 3) + 1];
+                    value.z = codomainPointer[(i * 3) + 2];
                     channel.functionTo3D[domainPointer[i]] = value;
                 }
             }

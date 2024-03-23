@@ -71,9 +71,7 @@ void Engine::OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
 
-    ECSHelper::SpawnLoot(glm::vec3(2,1,0), -2);
-
-//#define PLAYER2
+#define PLAYER2
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
