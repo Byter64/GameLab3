@@ -2,6 +2,7 @@
 #include "../../../../extern/tinygltf/tiny_gltf.h"
 #include "glad/glad.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 #include <vector>
 #include <map>
 
@@ -15,6 +16,8 @@ namespace Engine
             ~Channel();
             Channel() = default;
             Channel(Channel const& other);
+
+            Channel& operator= (Channel const& other);
 
             enum class Target
             {
@@ -39,7 +42,7 @@ namespace Engine
             union
             {
                 std::map<float, glm::vec3> functionTo3D{}; //Domain and codomain of the animation function if its target is Translation or Scale
-                std::map<float, glm::vec4> functionTo4D; //Domain and codomain of the animation function if its target is Rotation
+                std::map<float, glm::quat> functionTo4D; //Domain and codomain of the animation function if its target is Rotation
 
             };
 
@@ -49,6 +52,7 @@ namespace Engine
 
         std::string name;
         std::vector<Channel> channels;
+        float endTime;
     };
 
 } // Engine

@@ -89,6 +89,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Systems/AnimationSystem.cpp
         ../engine/include/ECS/Systems/AnimationSystem.h
         ../engine/src/ECS/Helpers/Animation.cpp
+        ../engine/include/ECS/Components/Animator.h
 )
 
 set(EXE_FILE Game)

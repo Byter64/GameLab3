@@ -131,7 +131,7 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
 {
     if(lootPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel\\Jewel.glb")[0];
+        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel\\Jewel.glb", "Loot_")[0];
         ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetScale(glm::vec3(0));
         ecsSystem->AddComponent<Loot>(lootPrefab, {0});
     }
@@ -147,6 +147,8 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
     collider.position = glm::vec3 (0);
     collider.isStatic = true;
     collider.layer = static_cast<unsigned char>(CollisionLayer::Collectible);
+
+    Engine::Systems::animationSystem->PlayAnimation(loot, "Loot_Hovering", true,0, 1);
 
     return loot;
 }

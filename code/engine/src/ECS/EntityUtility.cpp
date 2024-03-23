@@ -258,7 +258,7 @@ namespace Engine
             }
 
             if(codomain.type == TINYGLTF_TYPE_VEC4)
-                channel.functionTo4D = std::map<float, glm::vec4>();
+                channel.functionTo4D = std::map<float, glm::quat>();
             else if (codomain.type == TINYGLTF_TYPE_VEC3)
                 channel.functionTo3D = std::map<float, glm::vec3>();
 
@@ -266,7 +266,7 @@ namespace Engine
             {
                 if(codomain.type == TINYGLTF_TYPE_VEC4)
                 {
-                    glm::vec4 value;
+                    glm::quat value;
                     value.x = codomainPointer[(i * 4) + 0];
                     value.y = codomainPointer[(i * 4) + 1];
                     value.z = codomainPointer[(i * 4) + 2];
@@ -285,6 +285,21 @@ namespace Engine
 
             channel.hierarchy = FindHierarchy(model->nodes[gltfChannel.target_node], model);
             channel.hierarchy.erase(channel.hierarchy.begin()); //The to be deleted element is the index within the root nodes. This index however is not needed
+
+            if(channel.target == Animation::Channel::Target::Rotation)
+            {
+                auto iter = channel.functionTo4D.end();
+                std::advance(iter, -1);
+                if(iter->first > animation.endTime)
+                    animation.endTime = iter->first;
+            }
+            else
+            {
+                auto iter = channel.functionTo3D.end();
+                std::advance(iter, -1);
+                if(iter->first > animation.endTime)
+                    animation.endTime = iter->first;
+            }
 
             animation.channels.push_back(channel);
         }

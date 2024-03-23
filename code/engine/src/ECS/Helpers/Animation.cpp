@@ -52,5 +52,19 @@ Engine::Animation::Channel::Channel(Engine::Animation::Channel const &other)
     if(target == Target::Rotation)
         this->functionTo4D = other.functionTo4D;
     else
-        this->functionTo3D = other.functionTo3D
+        this->functionTo3D = other.functionTo3D;
+}
+
+Engine::Animation::Channel& Engine::Animation::Channel::operator=(const Engine::Animation::Channel &other)
+{
+    this->target = other.target;
+    this->hierarchy = other.hierarchy;
+    this->interpolation = other.interpolation;
+
+    if(target == Target::Rotation)
+        this->functionTo4D = other.functionTo4D;
+    else
+        this->functionTo3D = other.functionTo3D;
+
+    return *this;
 }

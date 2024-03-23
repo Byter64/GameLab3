@@ -39,6 +39,7 @@ int main()
         Engine::Update(passedTimeInSeconds);
 
         Engine::Systems::collisionSystem->CheckCollisions();
+        Engine::Systems::animationSystem->Update(passedTimeInSeconds);
         Engine::Systems::renderSystem->Render();
         Engine::Systems::textRenderSystem->Render();
         glfwSwapBuffers(window);
@@ -99,6 +100,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::MeshRenderer>();
     ecsSystem->RegisterComponent<Engine::BoxCollider>();
     ecsSystem->RegisterComponent<Engine::Text>();
+    ecsSystem->RegisterComponent<Engine::Animator>();
 
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
     Engine::Signature transformSignature;
@@ -122,6 +124,10 @@ void InitializeECS()
     ecsSystem->SetSystemSignature<Engine::TextRenderSystem>(textRenderSignature);
 
     Engine::Systems::animationSystem = ecsSystem->RegisterSystem<Engine::AnimationSystem>();
+    Engine::Signature animationSignature;
+    animationSignature.set(ecsSystem->GetComponentType<Engine::Animator>());
+    animationSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    ecsSystem->SetSystemSignature<Engine::AnimationSystem>(animationSignature);
 }
 
 
