@@ -55,7 +55,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             controller.AddScore(ecsSystem->GetComponent<Loot>(other).score);
             RemoveEntityWithChildren(other);
         }
-        //If bullet was hit
+            //If bullet was hit
         else if (ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
         {
             //If bullet is shot from player
@@ -73,6 +73,17 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
                     health.health = health.maxHealth;
                     DeactivatePlayer(playerEntity);
                 }
+            }
+        }
+        //If kindredSpirit was hit
+        else if (ecsSystem->HasComponent<EnemyBehaviour>(other) && ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::KindredSpirit)
+        {
+            Health &health = ecsSystem->GetComponent<Health>(playerEntity);
+            health.health--;
+            if (health.health <= 0)
+            {
+                health.health = health.maxHealth;
+                DeactivatePlayer(playerEntity);
             }
         }
         else
