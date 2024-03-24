@@ -2,6 +2,7 @@
 #include "ECS/System.h"
 #include <map>
 #include <set>
+#include "ECS/Components/BoxCollider.h"
 
 namespace Engine
 {
@@ -17,6 +18,7 @@ namespace Engine
         void EntityRemoved(Entity entity) override;
     public:
         void CheckCollisions();
+        bool CheckCollision(BoxCollider const &collider1, BoxCollider const &collider2);
         void SetCollisionBetweenLayers(unsigned char layer1, unsigned char layer2, bool canCollide);
     };
 

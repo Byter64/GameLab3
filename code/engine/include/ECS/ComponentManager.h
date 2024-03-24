@@ -103,7 +103,7 @@ namespace Engine
         }
 
         template<typename T>
-        Entity GetEntity(T& component)
+        Entity GetEntity(T const& component)
         {
             return GetComponentArray<T>()->GetEntity(component);
         }

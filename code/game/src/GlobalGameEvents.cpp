@@ -65,6 +65,8 @@ void OnStartGame(int screenWidth, int screenHeight)
     controller.SetMovementInput(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
     controller.SetFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
     controller.SetFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+    controller.SetReviveInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
+    controller.SetReviveInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
     controller.speed = Defines::Float("Player1_Speed");
     controller.stunnedTime = Defines::Float("Player1_StunnedTime");
     controller.bulletSpeed = Defines::Float("Player1_BulletSpeed");
@@ -110,6 +112,8 @@ void OnStartGame(int screenWidth, int screenHeight)
     controller2.SetMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
     controller2.SetFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
     controller2.SetFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+    controller2.SetReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
+    controller2.SetReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
     controller2.speed = Defines::Float("Player2_Speed");
     controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
     controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");

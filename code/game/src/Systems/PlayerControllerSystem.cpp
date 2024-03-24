@@ -119,6 +119,26 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
             controller.activeBullets++;
         }
     }
+    if(controller.wasRevivePushed)
+    {
+        controller.wasRevivePushed = false;
+        Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(playerEntity);
+        for(Engine::Entity otherPlayer : entities)
+        {
+            Engine::BoxCollider& otherCollider = ecsSystem->GetComponent<Engine::BoxCollider>(otherPlayer);
+
+            if(&collider == &otherCollider) continue;
+            ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, respawnDistance));
+            if(Engine::Systems::collisionSystem->CheckCollision(collider, otherCollider))
+            {
+                ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, -respawnDistance));
+                ActivatePlayer(otherPlayer);
+                break;
+            }
+            ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, -respawnDistance));
+        }
+
+    }
 }
 
 void PlayerControllerSystem::UpdateUI(Engine::Entity playerEntity)
@@ -153,11 +173,11 @@ void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)
     PlayerController& player = ecsSystem->GetComponent<PlayerController>(entity);
     player.isActive = false;
     player.spawnTimer = player.spawnTime;
-    ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, -5));
+    ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, -respawnDistance));
 }
 
 void PlayerControllerSystem::ActivatePlayer(Engine::Entity entity)
 {
     ecsSystem->GetComponent<PlayerController>(entity).isActive = true;
-    ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, 5));
+    ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, respawnDistance));
 }

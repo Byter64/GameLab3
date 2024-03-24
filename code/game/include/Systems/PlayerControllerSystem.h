@@ -6,6 +6,7 @@ class PlayerControllerSystem : public Engine::System
     const float inputDeadzone = 0.05f;
 
     unsigned int alivePlayers = 0;
+    inline static const float respawnDistance = 1.5f;
     void ResolveCollisions(Engine::Entity playerEntity, float deltaTime);
     void HandleInput(Engine::Entity playerEntity, float deltaTime);
     void UpdateUI(Engine::Entity playerEntity);

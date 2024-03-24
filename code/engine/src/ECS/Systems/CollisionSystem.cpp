@@ -1,4 +1,6 @@
 #include "Engine.h"
+#include "ECS/Systems/CollisionSystem.h"
+
 #include <cstdlib>
 
 namespace Engine
@@ -7,23 +9,8 @@ namespace Engine
     {
         BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(entity1);
         BoxCollider& collider2 = ecsSystem->GetComponent<BoxCollider>(entity2);
-        Transform& transform1 = ecsSystem->GetComponent<Transform>(entity1);
-        Transform& transform2 = ecsSystem->GetComponent<Transform>(entity2);
 
-        transform1.AddTranslation(collider1.position);
-        transform2.AddTranslation(collider2.position);
-        glm::vec3 position1 = transform1.GetGlobalTranslation();
-        glm::vec3 position2 = transform2.GetGlobalTranslation();
-        transform1.AddTranslation(-collider1.position);
-        transform2.AddTranslation(-collider2.position);
-
-        glm::vec3 size1 = collider1.size * transform1.GetGlobalScale() * 0.5f; //Size is now half of the actual size
-        glm::vec3 size2 = collider2.size * transform2.GetGlobalScale() * 0.5f;
-
-        bool areColliding = true;
-        if ( std::abs(position1[0] - position2[0]) > (size1[0] + size2[0]) ) areColliding = false;
-        if ( std::abs(position1[1] - position2[1]) > (size1[1] + size2[1]) ) areColliding = false;
-        if ( std::abs(position1[2] - position2[2]) > (size1[2] + size2[2]) ) areColliding = false;
+        bool areColliding = CheckCollision(collider1, collider2);
 
         Collision collision1 = {entity1, entity2};
         Collision collision2 = {entity2, entity1};
@@ -64,6 +51,33 @@ namespace Engine
                 CheckCollision(*entity1, *entity2);
             }
         }
+    }
+
+    /// return, if the two given Colliders collide
+    /// \param collider1
+    /// \param collider2
+    /// \return
+    bool CollisionSystem::CheckCollision(const BoxCollider &collider1, const BoxCollider &collider2)
+    {
+        Transform& transform1 = ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider1));
+        Transform& transform2 = ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2));
+
+        transform1.AddTranslation(collider1.position);
+        transform2.AddTranslation(collider2.position);
+        glm::vec3 position1 = transform1.GetGlobalTranslation();
+        glm::vec3 position2 = transform2.GetGlobalTranslation();
+        transform1.AddTranslation(-collider1.position);
+        transform2.AddTranslation(-collider2.position);
+
+        glm::vec3 size1 = collider1.size * transform1.GetGlobalScale() * 0.5f; //Size is now half of the actual size
+        glm::vec3 size2 = collider2.size * transform2.GetGlobalScale() * 0.5f;
+
+        bool areColliding = true;
+        if ( std::abs(position1[0] - position2[0]) > (size1[0] + size2[0]) ) areColliding = false;
+        if ( std::abs(position1[1] - position2[1]) > (size1[1] + size2[1]) ) areColliding = false;
+        if ( std::abs(position1[2] - position2[2]) > (size1[2] + size2[2]) ) areColliding = false;
+
+        return areColliding;
     }
 
     void CollisionSystem::CleanExitCollision(Entity entity)

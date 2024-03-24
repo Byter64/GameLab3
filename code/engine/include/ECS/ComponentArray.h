@@ -105,10 +105,10 @@ namespace Engine
             return entityToIndex.find(entity.id) != entityToIndex.end();
         }
 
-        Entity GetEntity(T& component)
+        Entity GetEntity(T const& component)
         {
             T* firstElement = &components[0];
-            T* thisElement = &component;
+            const T* thisElement = &component;
             int index = thisElement - firstElement;
             return indexToEntity.at(index);
         }

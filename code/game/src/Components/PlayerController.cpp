@@ -102,6 +102,26 @@ void PlayerController::GetFireActionEnd(void *object)
     player->wasFirePushed = false;
 }
 
+void PlayerController::SetReviveInput(Engine::GamepadInputID button)
+{
+    if(reviveAction == nullptr)
+    {
+        reviveAction = std::make_shared<Engine::InputActionButton>("Revive");
+        reviveAction->AddOnStart(this, GetReviveActionStart);
+    }
+
+    Engine::Systems::inputSystem->Remove(reviveAction);
+    reviveAction->AddGamepadBinding(button);
+    Engine::Systems::inputSystem->Add(reviveAction);
+}
+
+void PlayerController::GetReviveActionStart(void *object)
+{
+    PlayerController* player = static_cast<PlayerController*>(object);
+    player->wasRevivePushed = true;
+}
+
+
 void PlayerController::AddScore(int points)
 {
     score += points;
@@ -114,6 +134,8 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
         Engine::Systems::inputSystem->Remove(inputAction);
     if(fireAction != nullptr)
         Engine::Systems::inputSystem->Remove(fireAction);
+    if(reviveAction != nullptr)
+        Engine::Systems::inputSystem->Remove(reviveAction);
 
     movementInput = other.movementInput;
     lookDirection = other.lookDirection;
