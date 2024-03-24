@@ -7,6 +7,8 @@
 #include <cstring>
 #include <algorithm>
 
+extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
+
 void DungeonSystem::EntityAdded(Engine::Entity entity)
 {
     if(entities.size() != 0)
@@ -36,6 +38,7 @@ void DungeonSystem::Update()
             dungeon.activeDungeon++;
             try
             {
+
                 ReadInDungeonMap(entity);
                 ReadInEnemies(entity);
             }
@@ -108,7 +111,6 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
         exit(-1);
     }
 
-
     enum
     {
         Nothing,
@@ -174,6 +176,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
 void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
 {
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    dungeon.creationTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     RemoveEntityWithChildren(entity, false);
 
     int width, height, channels;
@@ -215,4 +218,6 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
             ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));
         }
     }
+    enemyBehaviourSystem->ChangeWallMap(wallMap);
+
 }

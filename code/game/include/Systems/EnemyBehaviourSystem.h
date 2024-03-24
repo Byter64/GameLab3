@@ -36,5 +36,6 @@ public:
 
     EnemyBehaviourSystem();
     void Initialize(std::vector<std::vector<bool>>& wallMap);
+    void ChangeWallMap(std::vector<std::vector<bool>>& wallMap);
     void Update(float deltaTime);
 };

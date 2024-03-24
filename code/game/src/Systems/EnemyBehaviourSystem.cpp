@@ -261,6 +261,11 @@ bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> &wallMap, int x
 /// \param wallMap a bool map of the dungeon, where true marks a wall, a false marks free space
 void EnemyBehaviourSystem::Initialize(std::vector<std::vector<bool>>& wallMap)
 {
+    ChangeWallMap(wallMap);
+}
+
+void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap)
+{
     this->wallMap = wallMap;
     dungeonSize = std::make_pair(wallMap.size(), wallMap[0].size());
     originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f + 0.5f;
@@ -294,6 +299,7 @@ void EnemyBehaviourSystem::Initialize(std::vector<std::vector<bool>>& wallMap)
             pair.second.push_back(right);
     }
 }
+
 
 /// Transforms the given point, which is in dungeon coordinates, into global coordinates
 /// \param dungeonPos
