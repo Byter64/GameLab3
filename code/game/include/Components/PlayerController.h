@@ -21,6 +21,9 @@ struct PlayerController
     float stunnedTimer = 0;
     Engine::Entity uiTextScore = Engine::Entity::INVALID_ENTITY_ID;
 
+    float spawnTime;
+    float spawnTimer;
+
     PlayerController() = default;
     PlayerController(PlayerController& other) = default;
 
@@ -36,6 +39,7 @@ struct PlayerController
 
 private:
     long long int score = 0;
+    bool isActive = true;
 
     std::shared_ptr<Engine::InputActionVec2> inputAction{};
     std::shared_ptr<Engine::InputActionButton> fireAction{};

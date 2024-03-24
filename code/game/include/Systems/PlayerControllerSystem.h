@@ -10,6 +10,8 @@ class PlayerControllerSystem : public Engine::System
     void HandleInput(Engine::Entity playerEntity, float deltaTime);
     void UpdateUI(Engine::Entity playerEntity);
     glm::vec3 RoundToAxis(glm::vec3 vec);
+    void DeactivatePlayer(Engine::Entity entity);
+    void ActivatePlayer(Engine::Entity entity);
 public:
     void EntityAdded(Engine::Entity entity) override;
     void EntityRemoved(Engine::Entity entity) override;

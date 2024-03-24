@@ -3,12 +3,14 @@ Player1_Health = 1
 Player1_BulletSpeed = 6.0
 Player1_MaxBullets = 2
 Player1_StunnedTime = 3.0 /*This is the time, the other player is stunned, when player1 hits him*/
+Player1_RespawnTime = 5.0
 
 Player2_Speed = 3.0
 Player2_Health = 1
 Player2_BulletSpeed = 6.0
 Player2_MaxBullets = 2
 Player2_StunnedTime = 3.0 /*This is the time, the other player is stunned, when player2 hits him*/
+Player2_RespawnTime = 5.0
 
 Enemy_ScoreDecrease = 1.0 /*After how many seconds the enemy value decreases by one point */
 

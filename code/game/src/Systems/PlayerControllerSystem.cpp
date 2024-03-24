@@ -25,7 +25,15 @@ void PlayerControllerSystem::Update(float deltaTime)
 {
     for (Engine::Entity playerEntity: entities)
     {
-        HandleInput(playerEntity, deltaTime);
+        if(ecsSystem->GetComponent<PlayerController>(playerEntity).isActive)
+            HandleInput(playerEntity, deltaTime);
+        else
+        {
+            ecsSystem->GetComponent<PlayerController>(playerEntity).spawnTimer -= deltaTime;
+            if(ecsSystem->GetComponent<PlayerController>(playerEntity).spawnTimer <= 0.0f)
+                ActivatePlayer(playerEntity);
+        }
+
         ResolveCollisions(playerEntity, deltaTime);
         UpdateUI(playerEntity);
     }
@@ -62,7 +70,8 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
                 health.health--;
                 if (health.health <= 0)
                 {
-                    Engine::RemoveEntityWithChildren(playerEntity);
+                    health.health = health.maxHealth;
+                    DeactivatePlayer(playerEntity);
                 }
             }
         }
@@ -137,4 +146,18 @@ glm::vec3 PlayerControllerSystem::RoundToAxis(glm::vec3 vec)
     if(vec != glm::vec3(0))
         vec = glm::normalize(vec);
     return vec;
+}
+
+void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)
+{
+    PlayerController& player = ecsSystem->GetComponent<PlayerController>(entity);
+    player.isActive = false;
+    player.spawnTimer = player.spawnTime;
+    ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, -5));
+}
+
+void PlayerControllerSystem::ActivatePlayer(Engine::Entity entity)
+{
+    ecsSystem->GetComponent<PlayerController>(entity).isActive = true;
+    ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, 5));
 }
