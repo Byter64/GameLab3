@@ -93,7 +93,7 @@ Engine::Entity ECSHelper::SpawnWall(glm::vec3 position)
     ecsSystem->GetComponent<Engine::Transform>(wall).SetScale(glm::vec3(1.0f));
 
     Engine::BoxCollider& wallCollider = ecsSystem->AddComponent<Engine::BoxCollider>(wall);
-    wallCollider.size = glm::vec3(1,1, 1000);
+    wallCollider.size = glm::vec3(1,1, 1);
     wallCollider.position = glm::vec3 (0);
     wallCollider.isStatic = true;
     wallCollider.layer = static_cast<unsigned char>(CollisionLayer::Dungeon);
