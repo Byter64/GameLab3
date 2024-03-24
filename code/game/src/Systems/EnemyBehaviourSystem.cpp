@@ -22,6 +22,8 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     shootIntervalRange.second = Defines::Float("Hubertus_ShootInterval_Max");
 
     enemyScoreDecrease = Defines::Float("Enemy_ScoreDecrease");
+
+    KindredSpiritExtra::maxTimeDifference = Defines::Float("KindredSpirit_TimeTolerance");
 }
 
 void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)

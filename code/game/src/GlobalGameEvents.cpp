@@ -33,6 +33,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Enemy), false);
 
     EnemyBehaviour::scores[EnemyBehaviour::Hubertus] = Defines::Int("Hubertus_Score");
+    EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit] = Defines::Int("KindredSpirit_Score");
 
 
     Engine::Entity dungeon = ecsSystem->CreateEntity();

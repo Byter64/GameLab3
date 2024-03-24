@@ -206,10 +206,10 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     behav1.behaviour = EnemyBehaviour::KindredSpirit;
     behav1.startPos = startPos;
     behav1.enemyExtra.kindredSpirit.isMainEntity = true;
-    behav1.speed = 3.0f;
+    behav1.speed = Defines::Float("KindredSpirit_Speed");
     behav1.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
 
-    ecsSystem->AddComponent<Health>(enemy1, Health{1, 1});
+    ecsSystem->AddComponent<Health>(enemy1, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     Engine::Entity enemy2 = CopyEntity(kindredSpiritPrefabSecondary, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy2).SetScale(glm::vec3(1.0f));
@@ -223,10 +223,11 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     EnemyBehaviour& behav2 = ecsSystem->GetComponent<EnemyBehaviour>(enemy2);
     behav2.behaviour = EnemyBehaviour::KindredSpirit;
     behav2.startPos = {startPos.first * -1, startPos.second * -1};
+    behav1.speed = Defines::Float("KindredSpirit_Speed");
     behav2.enemyExtra.kindredSpirit.isMainEntity = false;
     behav2.enemyExtra.kindredSpirit.other = enemy1;
     behav2.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    ecsSystem->AddComponent<Health>(enemy2, Health{1, 1});
+    ecsSystem->AddComponent<Health>(enemy2, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     behav1.enemyExtra.kindredSpirit.other = enemy2;
 
