@@ -34,19 +34,9 @@ void DungeonSystem::Update()
 
         if(dungeon.enemies.empty() && dungeon.activeEnemies.empty())
         {
-            std::cout << "All enemies are defeated, you win" << std::endl;
-            dungeon.activeDungeon++;
-            try
-            {
-                ReadInDungeonMap(entity);
-                ReadInEnemies(entity);
-            }
-            catch (std::runtime_error& e)
-            {
-                exit(-1);
-            }
+            dungeon.areAllEnemiesDefeated = true;
+            continue;
         }
-
         //Spawn enemies
         for (auto &pair: dungeon.enemies)
         {
@@ -226,4 +216,20 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
     }
     enemyBehaviourSystem->ChangeWallMap(wallMap);
 
+}
+
+void DungeonSystem::UpdateDungeon(Engine::Entity entity)
+{
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    dungeon.activeDungeon++;
+    dungeon.areAllEnemiesDefeated = false;
+    try
+    {
+        ReadInDungeonMap(entity);
+        ReadInEnemies(entity);
+    }
+    catch (std::runtime_error& e)
+    {
+        exit(-1);
+    }
 }

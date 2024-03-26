@@ -103,6 +103,12 @@ namespace Engine
         }
 
         template<typename T>
+        int GetNumberOfComponents()
+        {
+            return GetComponentArray<T>()->GetNumberOfComponents();
+        }
+
+        template<typename T>
         Entity GetEntity(T const& component)
         {
             return GetComponentArray<T>()->GetEntity(component);

@@ -12,4 +12,5 @@ public:
     std::vector<std::vector<bool>> wallMap;
 
     void Update();
+    void UpdateDungeon(Engine::Entity entity);
 };

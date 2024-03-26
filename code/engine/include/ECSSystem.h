@@ -80,6 +80,12 @@ namespace Engine
             return componentManager->HasComponent<T>(entity);
         }
 
+        template<typename T>
+        int GetNumberOfComponents()
+        {
+            return componentManager->GetNumberOfComponents<T>();
+        }
+
         Signature GetSignature(Entity entity);
 
         template<typename T>

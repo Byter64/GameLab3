@@ -105,6 +105,11 @@ namespace Engine
             return entityToIndex.find(entity.id) != entityToIndex.end();
         }
 
+        int GetNumberOfComponents()
+        {
+            return size;
+        }
+
         Entity GetEntity(T const& component)
         {
             T* firstElement = &components[0];

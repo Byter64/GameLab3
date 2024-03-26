@@ -19,7 +19,7 @@ struct Dungeon
     std::map<std::pair<int, int>, Engine::Entity> activeEnemies;
     int activeDungeon = 0;
     float creationTime;
-
+    bool areAllEnemiesDefeated = false;
     Dungeon();
     Dungeon(std::filesystem::path pathToDungeons, std::string fileName);
 };

@@ -20,6 +20,7 @@ static void PauseGame(void*);
 static float pauseStartTime;
 static Engine::Entity pauseText;
 static float pauseTextScale = 8;
+static Dungeon* dungeon;
 
 void OnStartGame(int screenWidth, int screenHeight)
 {
@@ -52,6 +53,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
     ecsSystem->AddComponent(dungeon, Engine::Transform());
     ecsSystem->AddComponent<Dungeon>(dungeon, Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
+    ::dungeon = &ecsSystem->GetComponent<Dungeon>(dungeon);
 
     enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 
@@ -169,6 +171,9 @@ void Update(float deltaTime)
     dungeonSystem->Update();
     elevatorSystem->Update();
     bulletSystem->Update(deltaTime);
+
+    if(dungeon->areAllEnemiesDefeated && ecsSystem->GetNumberOfComponents<Loot>() == 0)
+        dungeonSystem->UpdateDungeon(ecsSystem->GetEntity(*dungeon));
 }
 
 void UpdateWithoutPause()
