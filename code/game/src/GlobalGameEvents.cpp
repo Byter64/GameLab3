@@ -22,6 +22,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     Defines::InitializeDefines();
     ECSHelper::Initialize();
     Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
+    Engine::Systems::textRenderSystem->SetReferenceResolution(screenWidth, screenHeight);
 
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Collectible), false);
@@ -43,21 +44,32 @@ void OnStartGame(int screenWidth, int screenHeight)
 
     enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 
+    Engine::Entity playersText = ecsSystem->CreateEntity();
+    auto& playersUI = ecsSystem->AddComponent<Engine::Text>(playersText);
+    playersUI.scale = 4;
+    playersUI.position = {890, 0};
+    playersUI.SetText("Both");
+
+    Engine::Entity playersUIActualScore = ecsSystem->CreateEntity();
+    auto& playersTextUI = ecsSystem->AddComponent<Engine::Text>(playersUIActualScore);
+    playersTextUI.scale = 4;
+    playersTextUI.position = {960, 80};
+    playersTextUI.horizontalAlignment = Engine::Text::Center;
+    playerControllerSystem->scoreUI = playersUIActualScore;
+
+
     Engine::Entity player1Text = ecsSystem->CreateEntity();
     auto& player1UI = ecsSystem->AddComponent<Engine::Text>(player1Text);
-    player1UI.scale = 2;
+    player1UI.scale = 4;
+    player1UI.position = {200, 0};
     player1UI.SetText("Player 1");
-
-    Engine::Entity scoreText = ecsSystem->CreateEntity();
-    auto& scoreTextUI = ecsSystem->AddComponent<Engine::Text>(scoreText);
-    scoreTextUI.scale = 2;
-    scoreTextUI.position = {0, 35};
-    scoreTextUI.SetText("Score:");
 
     Engine::Entity playerUI = ecsSystem->CreateEntity();
     auto& textUI = ecsSystem->AddComponent<Engine::Text>(playerUI);
-    textUI.scale = 2;
-    textUI.position = {110, 35};
+    textUI.scale = 4;
+    textUI.position = {330, 80};
+    textUI.horizontalAlignment = Engine::Text::Center;
+
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
@@ -89,20 +101,16 @@ void OnStartGame(int screenWidth, int screenHeight)
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
-    player2UI.scale = 2;
-    player2UI.position = {0, 200};
+    player2UI.scale = 4;
+    player2UI.position = {1400, 0};
     player2UI.SetText("Player 2");
-
-    Engine::Entity scoreText2 = ecsSystem->CreateEntity();
-    auto& scoreTextUI2 = ecsSystem->AddComponent<Engine::Text>(scoreText2);
-    scoreTextUI2.scale = 2;
-    scoreTextUI2.position = {0, 235};
-    scoreTextUI2.SetText("Score:");
 
     Engine::Entity playerUI2 = ecsSystem->CreateEntity();
     auto& textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
-    textUI2.scale = 2;
-    textUI2.position = {110, 235};
+    textUI2.scale = 4;
+    textUI2.position = {1530, 80};
+    textUI2.horizontalAlignment = Engine::Text::Center;
+
 
     Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(player2).SetTranslation({1, 0, 0});

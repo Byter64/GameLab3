@@ -160,6 +160,9 @@ void PlayerControllerSystem::UpdateUI(Engine::Entity playerEntity)
         Engine::Text& uiText = ecsSystem->GetComponent<Engine::Text>(controller.uiTextScore);
         uiText.SetText(std::to_string(controller.score));
         controller.hasScoreChanged = false;
+
+        Engine::Text& uiTextAll = ecsSystem->GetComponent<Engine::Text>(scoreUI);
+        uiTextAll.SetText(std::to_string(SumUpAllScores()));
     }
 }
 
@@ -191,4 +194,14 @@ void PlayerControllerSystem::ActivatePlayer(Engine::Entity entity)
 {
     ecsSystem->GetComponent<PlayerController>(entity).isActive = true;
     ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, respawnDistance));
+}
+
+int PlayerControllerSystem::SumUpAllScores()
+{
+    int sum = 0;
+    for(Engine::Entity player : entities)
+    {
+        sum += ecsSystem->GetComponent<PlayerController>(player).score;
+    }
+    return sum;
 }

@@ -13,7 +13,10 @@ class PlayerControllerSystem : public Engine::System
     glm::vec3 RoundToAxis(glm::vec3 vec);
     void DeactivatePlayer(Engine::Entity entity);
     void ActivatePlayer(Engine::Entity entity);
+    int SumUpAllScores();
 public:
+    Engine::Entity scoreUI;
+
     void EntityAdded(Engine::Entity entity) override;
     void EntityRemoved(Engine::Entity entity) override;
     void Update(float deltaTime);
