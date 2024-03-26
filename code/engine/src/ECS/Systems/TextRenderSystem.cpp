@@ -19,7 +19,7 @@ namespace Engine
         for(Entity entity : entities)
         {
             Text& text = ecsSystem->GetComponent<Text>(entity);
-            gltDrawText2D(text.text.get(), text.position.x, text.position.y, text.scale);
+            gltDrawText2D(text.text.get(), text.position.x * resolutionScale.first, text.position.y * resolutionScale.second, text.scale * resolutionScale.first);
         }
         gltEndDraw();
     }
@@ -27,11 +27,21 @@ namespace Engine
     void TextRenderSystem::Initialize(int screenWidth, int screenHeight)
     {
         gltInit();
+        targetResolution = {screenWidth, screenHeight};
         gltViewport(screenWidth, screenHeight);
     }
 
     void TextRenderSystem::SetViewport(int screenWidth, int screenHeight)
     {
         gltViewport(screenWidth, screenHeight);
+        targetResolution = {screenWidth, screenHeight};
+        resolutionScale = {screenWidth / (float)referenceResolution.first, screenHeight / (float)referenceResolution.second};
+    }
+
+    //This reference resolution should have the same aspect ratio as the actual resolution
+    void TextRenderSystem::SetReferenceResolution(int width, int height)
+    {
+        referenceResolution = {width, height};
+        resolutionScale = {targetResolution.first / (float)width, targetResolution.second / (float)height};
     }
 } // Engine
