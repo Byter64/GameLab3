@@ -89,8 +89,8 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         else
         {
             Engine::Transform &otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
-            glm::vec3 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
-            averageDirection += distance;
+            glm::vec2 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
+            averageDirection += glm::vec3(distance, 0);
             count++;
         }
     }
