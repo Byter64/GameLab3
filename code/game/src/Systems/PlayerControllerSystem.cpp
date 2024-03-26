@@ -184,6 +184,7 @@ glm::vec3 PlayerControllerSystem::RoundToAxis(glm::vec3 vec)
 
 void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)
 {
+    CheckIfAllPlayerDead();
     PlayerController& player = ecsSystem->GetComponent<PlayerController>(entity);
     player.isActive = false;
     player.spawnTimer = player.spawnTime;
@@ -204,4 +205,17 @@ int PlayerControllerSystem::SumUpAllScores()
         sum += ecsSystem->GetComponent<PlayerController>(player).score;
     }
     return sum;
+}
+
+void PlayerControllerSystem::CheckIfAllPlayerDead()
+{
+    for(Engine::Entity entity : entities)
+    {
+        PlayerController& controller = ecsSystem->GetComponent<PlayerController>(entity);
+        if(controller.isActive)
+            break;
+    }
+
+    std::cout << "You are so good. You all died. Game over now" << std::endl;
+    Engine::EndGame();
 }

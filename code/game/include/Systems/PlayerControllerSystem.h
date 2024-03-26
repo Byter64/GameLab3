@@ -14,6 +14,7 @@ class PlayerControllerSystem : public Engine::System
     void DeactivatePlayer(Engine::Entity entity);
     void ActivatePlayer(Engine::Entity entity);
     int SumUpAllScores();
+    void CheckIfAllPlayerDead();
 public:
     Engine::Entity scoreUI;
 
