@@ -17,6 +17,9 @@ extern GLFWwindow *window;
 static std::shared_ptr<Engine::InputActionButton> pause;
 
 static void PauseGame(void*);
+static float pauseStartTime;
+static Engine::Entity pauseText;
+static float pauseTextScale = 8;
 
 void OnStartGame(int screenWidth, int screenHeight)
 {
@@ -37,6 +40,13 @@ void OnStartGame(int screenWidth, int screenHeight)
     EnemyBehaviour::scores[EnemyBehaviour::Hubertus] = Defines::Int("Hubertus_Score");
     EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit] = Defines::Int("KindredSpirit_Score");
 
+    pauseText = ecsSystem->CreateEntity();
+    Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);
+    pauseTextText.scale = 0;
+    pauseTextText.position = {screenWidth / 2, screenHeight / 2};
+    pauseTextText.horizontalAlignment = Engine::Text::Center;
+    pauseTextText.verticalAlignment = Engine::Text::Center;
+    pauseTextText.SetText("Game Paused");
 
     Engine::Entity dungeon = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
@@ -161,10 +171,32 @@ void Update(float deltaTime)
     bulletSystem->Update(deltaTime);
 }
 
+void UpdateWithoutPause()
+{
+    if(!Engine::GetIsGamePaused()) return;
+    float delta = Engine::Systems::timeManager->GetTimeSinceStartupWithoutPauses() - pauseStartTime;
+    if(((int)delta) % 2 == 0)
+    {
+        Engine::Text& text = ecsSystem->GetComponent<Engine::Text>(pauseText);
+        text.scale = pauseTextScale;
+    }
+    else
+    {
+        Engine::Text& text = ecsSystem->GetComponent<Engine::Text>(pauseText);
+        text.scale = 0;
+    }
+}
+
 static void PauseGame(void*)
 {
     if(Engine::GetIsGamePaused())
+    {
         Engine::ContinueGame();
+        ecsSystem->GetComponent<Engine::Text>(pauseText).scale = 0;
+    }
     else
-        Engine::PauseGame(false);
+    {
+        Engine::PauseGame();
+        pauseStartTime = Engine::Systems::timeManager->GetTimeSinceStartupWithoutPauses();
+    }
 }
