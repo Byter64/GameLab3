@@ -64,7 +64,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             {
                 controller.stunnedTimer = controller.stunnedTime;
             }
-            else
+            else if(controller.stunnedTimer < 0.0f)
             {
                 //Bullet is already destroying itself, so no need to do it here
                 Health &health = ecsSystem->GetComponent<Health>(playerEntity);
