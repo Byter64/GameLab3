@@ -10,7 +10,7 @@ namespace Engine
     class AnimationSystem : public System
     {
         std::map<std::string, Animation> animations;
-
+        std::vector<Engine::Entity> finishedAnimations;
         void EntityAdded(Entity entity) override;
         void EntityRemoved(Entity entity) override;
 

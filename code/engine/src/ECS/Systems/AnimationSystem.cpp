@@ -96,10 +96,15 @@ namespace Engine
                 if(animator.isLooping)
                     animator.currentTime -= animation.duration;
                 else
-                    ecsSystem->RemoveComponent<Animator>(entity);
+                    finishedAnimations.push_back(entity);
             }
-
         }
+
+        for(Engine::Entity entity : finishedAnimations)
+        {
+            ecsSystem->RemoveComponent<Animator>(entity);
+        }
+        finishedAnimations.clear();
     }
 
     void AnimationSystem::PlayAnimation(Entity entity, const std::string &name, bool isLooping, float startTime, float speed)
