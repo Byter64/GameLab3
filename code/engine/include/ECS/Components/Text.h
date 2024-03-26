@@ -13,9 +13,19 @@ namespace Engine
     struct Text
     {
         friend class TextRenderSystem;
+
+        enum Alignment {
+            Left = GLT_LEFT,
+            Top = GLT_TOP,
+            Center = GLT_CENTER,
+            Bottom = GLT_BOTTOM,
+            Right = GLT_RIGHT
+        };
+
         float scale;
         glm::vec2 position{};
-
+        Alignment horizontalAlignment = Left;
+        Alignment verticalAlignment = Top;
     private:
         std::unique_ptr<GLTtext> text;
         std::string string;

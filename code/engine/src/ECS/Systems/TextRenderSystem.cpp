@@ -19,7 +19,8 @@ namespace Engine
         for(Entity entity : entities)
         {
             Text& text = ecsSystem->GetComponent<Text>(entity);
-            gltDrawText2D(text.text.get(), text.position.x * resolutionScale.first, text.position.y * resolutionScale.second, text.scale * resolutionScale.first);
+            gltDrawText2DAligned(text.text.get(), text.position.x * resolutionScale.first, text.position.y * resolutionScale.second,
+                                 text.scale * resolutionScale.first, text.horizontalAlignment, text.verticalAlignment);
         }
         gltEndDraw();
     }
