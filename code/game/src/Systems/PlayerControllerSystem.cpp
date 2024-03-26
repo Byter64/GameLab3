@@ -25,12 +25,13 @@ void PlayerControllerSystem::Update(float deltaTime)
 {
     for (Engine::Entity playerEntity: entities)
     {
+        ecsSystem->GetComponent<PlayerController>(playerEntity).stunnedTimer -= deltaTime;
         if(ecsSystem->GetComponent<PlayerController>(playerEntity).isActive)
             HandleInput(playerEntity, deltaTime);
         else
         {
-            ecsSystem->GetComponent<PlayerController>(playerEntity).spawnTimer -= deltaTime;
-            if(ecsSystem->GetComponent<PlayerController>(playerEntity).spawnTimer <= 0.0f)
+            ecsSystem->GetComponent<PlayerController>(playerEntity).respawnTimer -= deltaTime;
+            if(ecsSystem->GetComponent<PlayerController>(playerEntity).respawnTimer <= 0.0f)
                 ActivatePlayer(playerEntity);
         }
 
@@ -68,7 +69,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
                 //Bullet is already destroying itself, so no need to do it here
                 Health &health = ecsSystem->GetComponent<Health>(playerEntity);
                 health.health--;
-                if (health.health <= 0 && controller.spawnTimer <= 0.0f)
+                if (health.health <= 0 && controller.respawnTimer <= 0.0f)
                 {
                     health.health = health.maxHealth;
                     DeactivatePlayer(playerEntity);
@@ -80,7 +81,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         {
             Health &health = ecsSystem->GetComponent<Health>(playerEntity);
             health.health--;
-            if (health.health <= 0 && controller.spawnTimer <= 0.0f)
+            if (health.health <= 0 && controller.respawnTimer <= 0.0f)
             {
                 health.health = health.maxHealth;
                 DeactivatePlayer(playerEntity);
@@ -112,7 +113,6 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
 
     if(controller.stunnedTimer > 0)
     {
-        controller.stunnedTimer -= deltaTime;
         return;
     }
 
@@ -187,7 +187,7 @@ void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)
     CheckIfAllPlayerDead();
     PlayerController& player = ecsSystem->GetComponent<PlayerController>(entity);
     player.isActive = false;
-    player.spawnTimer = player.spawnTime;
+    player.respawnTimer = player.respawnTime;
     ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, -respawnDistance));
 }
 

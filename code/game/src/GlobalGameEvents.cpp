@@ -95,7 +95,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     controller.stunnedTime = Defines::Float("Player1_StunnedTime");
     controller.bulletSpeed = Defines::Float("Player1_BulletSpeed");
     controller.maxBullets = Defines::Int("Player1_MaxBullets");
-    controller.spawnTime = Defines::Float("Player1_RespawnTime");
+    controller.respawnTime = Defines::Float("Player1_RespawnTime");
 
     pause = std::make_shared<Engine::InputActionButton>("Pause");
     pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
@@ -138,7 +138,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
     controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
     controller2.maxBullets = Defines::Int("Player2_MaxBullets");
-    controller2.spawnTime = Defines::Float("Player2_RespawnTime");
+    controller2.respawnTime = Defines::Float("Player2_RespawnTime");
 
     pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
     pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});

@@ -22,8 +22,8 @@ struct PlayerController
     float stunnedTimer = 0;
     Engine::Entity uiTextScore = Engine::Entity::INVALID_ENTITY_ID;
 
-    float spawnTime;
-    float spawnTimer;
+    float respawnTime;
+    float respawnTimer;
 
     PlayerController() = default;
     PlayerController(PlayerController& other) = default;
