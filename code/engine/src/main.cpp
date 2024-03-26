@@ -42,13 +42,14 @@ int main()
         glfwPollEvents();
         Engine::Systems::inputSystem->Update();
 
+        UpdateWithoutPause();
         if(!Engine::isGamePaused)
         {
             Update(passedTimeInSeconds);
-
             Engine::Systems::collisionSystem->CheckCollisions();
             ecsSystem->DeletePurgatory();
         }
+
         Engine::Systems::renderSystem->Render();
         Engine::Systems::textRenderSystem->Render();
         if(!Engine::areAnimationsPaused)
