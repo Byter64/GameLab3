@@ -38,7 +38,6 @@ void DungeonSystem::Update()
             dungeon.activeDungeon++;
             try
             {
-
                 ReadInDungeonMap(entity);
                 ReadInEnemies(entity);
             }
@@ -54,17 +53,18 @@ void DungeonSystem::Update()
             if (dungeon.activeEnemies.count(pair.first) == 0 &&
             pair.second.top().first < (Engine::Systems::timeManager->GetTimeSinceStartup() - dungeon.creationTime))
             {
-                Engine::Entity enemy;
+                std::vector<Engine::Entity> enemies;
                 switch (pair.second.top().second)
                 {
                     case EnemyBehaviour::Hubertus:
-                        enemy = ECSHelper::SpawnHubertus(pair.first);
+                        enemies.push_back(ECSHelper::SpawnHubertus(pair.first));
                         break;
 
                     case EnemyBehaviour::KindredSpirit:
                     {
                         auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
-                        enemy = enemyPair.first;
+                        enemies.push_back(enemyPair.second);
+                        enemies.push_back(enemyPair.first);
                         std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
                         dungeon.activeEnemies[secondPos] = enemyPair.second;
                         break;
@@ -75,7 +75,13 @@ void DungeonSystem::Update()
                         break;
                 }
                 pair.second.pop();
-                dungeon.activeEnemies[pair.first] = enemy;
+                dungeon.activeEnemies[pair.first] = enemies.back();
+
+                for(Engine::Entity spawnedEntity : enemies)
+                {
+                    Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(), spawnedEntity);
+                    Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
+                }
             }
         }
 

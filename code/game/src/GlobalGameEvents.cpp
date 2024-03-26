@@ -8,9 +8,10 @@
 
 extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
+extern std::shared_ptr<ElevatorSystem> elevatorSystem;
 extern GLFWwindow *window;
 
 static std::shared_ptr<Engine::InputActionButton> pause;
@@ -140,7 +141,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health")});
 #endif
 
-    Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,0,-12));
+    Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,2,-12));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
 
@@ -156,6 +157,7 @@ void Update(float deltaTime)
     playerControllerSystem->Update(deltaTime);
     enemyBehaviourSystem->Update(deltaTime);
     dungeonSystem->Update();
+    elevatorSystem->Update();
     bulletSystem->Update(deltaTime);
 }
 

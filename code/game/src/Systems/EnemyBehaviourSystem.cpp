@@ -69,6 +69,7 @@ void EnemyBehaviourSystem::Update(float deltaTime)
     for (Engine::Entity entity: entities)
     {
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+        if(!behaviour.isActive) continue;
         switch (behaviour.behaviour)
         {
             default:

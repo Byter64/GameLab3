@@ -4,15 +4,17 @@
 #include "CollisionLayer.h"
 #include "GameDefines.h"
 
-extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
+std::shared_ptr<ElevatorSystem> elevatorSystem;
 
 Engine::Entity wallPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
+Engine::Entity elevatorPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity kindredSpiritPrefabMain = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity kindredSpiritPrefabSecondary = Engine::Entity::INVALID_ENTITY_ID;
@@ -25,7 +27,8 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<Health>();
     ecsSystem->RegisterComponent<Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
-    //When adding new components here, don't forget to add them to EntityUtilities::CopyEntity, too!!!!!
+    ecsSystem->RegisterComponent<Elevator>();
+    //When adding new components here, don't forget to add them to ECSHelper::CopyEntity, too!!!!!
 
     playerControllerSystem = ecsSystem->RegisterSystem<PlayerControllerSystem>();
     Engine::Signature  playerControllerSignature;
@@ -59,6 +62,11 @@ void ECSHelper::Initialize()
     Engine::Signature dungeonSignature;
     dungeonSignature.set(ecsSystem->GetComponentType<Dungeon>());
     ecsSystem->SetSystemSignature<DungeonSystem>(dungeonSignature);
+
+    elevatorSystem = ecsSystem->RegisterSystem<ElevatorSystem>();
+    Engine::Signature elevatorSignature;
+    elevatorSignature.set(ecsSystem->GetComponentType<Elevator>());
+    ecsSystem->SetSystemSignature<ElevatorSystem>(elevatorSignature);
 }
 
 Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
@@ -75,6 +83,8 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
     if(ecsSystem->HasComponent<PlayerController>(entity))
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
+    if(ecsSystem->HasComponent<Elevator>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Elevator>(entity));
 
     return newEntity;
 }
@@ -152,6 +162,23 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
     Engine::Systems::animationSystem->PlayAnimation(loot, "Loot_Hovering", true,0, 1);
 
     return loot;
+}
+
+
+Engine::Entity ECSHelper::SpawnElevator(glm::vec3 position, Engine::Entity spawnedEnemy)
+{
+    if(elevatorPrefab == Engine::Entity::INVALID_ENTITY_ID)
+    {
+        elevatorPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Elevator\\Elevator.glb", "Elevator_")[0];
+        ecsSystem->GetComponent<Engine::Transform>(elevatorPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,glm::radians(-90.0f))));
+        ecsSystem->GetComponent<Engine::Transform>(elevatorPrefab).SetScale(glm::vec3(0.0f));
+    }
+    Engine::Entity elevator = CopyEntity(elevatorPrefab, true);
+    ecsSystem->GetComponent<Engine::Transform>(elevator).SetScale(glm::vec3(1.0f));
+    ecsSystem->GetComponent<Engine::Transform>(elevator).SetTranslation(position);
+    ecsSystem->AddComponent<Elevator>(elevator);
+    ecsSystem->GetComponent<Elevator>(elevator).spawnedEnemy = spawnedEnemy;
+    return elevator;
 }
 
 Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)

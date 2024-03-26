@@ -40,6 +40,7 @@ struct EnemyBehaviour
                 200
             };
 
+    bool isActive = false;
     bool isMoving = false;
     Behaviour behaviour = Hubertus;
     float idlerTimer = 0;
