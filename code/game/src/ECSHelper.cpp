@@ -16,8 +16,7 @@ Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity elevatorPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
-Engine::Entity kindredSpiritPrefabMain = Engine::Entity::INVALID_ENTITY_ID;
-Engine::Entity kindredSpiritPrefabSecondary = Engine::Entity::INVALID_ENTITY_ID;
+Engine::Entity kindredSpiritPrefab = Engine::Entity::INVALID_ENTITY_ID;
 
 void ECSHelper::Initialize()
 {
@@ -194,12 +193,13 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
-    EnemyBehaviour& behaviour = ecsSystem->AddComponent<EnemyBehaviour>(enemy);
+    EnemyBehaviour behaviour;
     behaviour.behaviour = EnemyBehaviour::Hubertus;
     behaviour.startPos = startPos;
     behaviour.speed = Defines::Float("Hubertus_Speed");
     behaviour.bulletSpeed = Defines::Float("Hubertus_BulletSpeed");
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Hubertus_Health"), Defines::Int("Hubertus_Health")});
 
     return enemy;
@@ -208,19 +208,14 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
 //This function will spawn one at the given position and one at startPos * -1
 std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pair<int, int> startPos)
 {
-    if(kindredSpiritPrefabMain == Engine::Entity::INVALID_ENTITY_ID)
+    if(kindredSpiritPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        kindredSpiritPrefabMain = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Debug\\Debug.glb")[0];
-        ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefabMain).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
-        ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefabMain).SetScale(glm::vec3(0.0f));
-
-        kindredSpiritPrefabSecondary = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Debug\\Debug.glb")[0];
-        ecsSystem->GetComponent<Engine::MeshRenderer>(kindredSpiritPrefabSecondary).primitiveData.front().material.baseColorFactor = {0.0f,1.0f,1.0f,1.0f};
-        ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefabSecondary).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
-        ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefabSecondary).SetScale(glm::vec3(0.0f));
+        kindredSpiritPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Debug\\Debug.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
+        ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetScale(glm::vec3(0.0f));
     }
 
-    Engine::Entity enemy1 = CopyEntity(kindredSpiritPrefabMain, true);
+    Engine::Entity enemy1 = CopyEntity(kindredSpiritPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy1).SetScale(glm::vec3(1.0f));
 
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy1, Engine::BoxCollider());
@@ -228,17 +223,16 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     coll1.size = glm::vec3(0.5f);
     coll1.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
 
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy1, EnemyBehaviour());
-    EnemyBehaviour& behav1 = ecsSystem->GetComponent<EnemyBehaviour>(enemy1);
+    EnemyBehaviour behav1;
     behav1.behaviour = EnemyBehaviour::KindredSpirit;
     behav1.startPos = startPos;
     behav1.enemyExtra.kindredSpirit.isMainEntity = true;
     behav1.speed = Defines::Float("KindredSpirit_Speed");
     behav1.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy1, behav1);
     ecsSystem->AddComponent<Health>(enemy1, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
-    Engine::Entity enemy2 = CopyEntity(kindredSpiritPrefabSecondary, true);
+    Engine::Entity enemy2 = CopyEntity(kindredSpiritPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy2).SetScale(glm::vec3(1.0f));
 
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy2, Engine::BoxCollider());
@@ -246,14 +240,14 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     coll2.size = glm::vec3(0.5f);
     coll2.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
 
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy2, EnemyBehaviour());
-    EnemyBehaviour& behav2 = ecsSystem->GetComponent<EnemyBehaviour>(enemy2);
+    EnemyBehaviour behav2;
     behav2.behaviour = EnemyBehaviour::KindredSpirit;
-    behav2.startPos = {startPos.first * -1, startPos.second * -1};
-    behav1.speed = Defines::Float("KindredSpirit_Speed");
+    behav2.startPos = startPos; //this value needs to be the same as for the first spirit
+    behav2.speed = Defines::Float("KindredSpirit_Speed");
     behav2.enemyExtra.kindredSpirit.isMainEntity = false;
     behav2.enemyExtra.kindredSpirit.other = enemy1;
     behav2.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy2, behav2);
     ecsSystem->AddComponent<Health>(enemy2, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     behav1.enemyExtra.kindredSpirit.other = enemy2;

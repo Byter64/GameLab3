@@ -31,8 +31,13 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
+    transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos), 0));
+
     if(behaviour.behaviour == EnemyBehaviour::KindredSpirit && behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
+    {
+        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos) * -1.0f, 0));
         return;
+    }
 
     std::vector<std::pair<int,int>> targetNodes;
     auto target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 1, 0);
@@ -48,7 +53,6 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     behaviour.targetNode = target;
     behaviour.targetPos = ToGlobal(behaviour.targetNode);
     behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-    transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos), 0));
     transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
     std::random_device rd;
     std::mt19937 gen(rd());
