@@ -252,5 +252,16 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
 
     behav1.enemyExtra.kindredSpirit.other = enemy2;
 
+
+    glm::vec4 colour = KindredSpiritExtra::colours.front();
+    KindredSpiritExtra::colours.pop();
+    for(Engine::MeshRenderer* renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(enemy1))
+        for(Engine::MeshRenderer::PrimitiveData &primitive : renderer->primitiveData)
+            primitive.material.baseColorFactor = colour;
+    for(Engine::MeshRenderer* renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(enemy2))
+        for(Engine::MeshRenderer::PrimitiveData &primitive : renderer->primitiveData)
+            primitive.material.baseColorFactor = colour;
+
+
     return {enemy1, enemy2};
 }

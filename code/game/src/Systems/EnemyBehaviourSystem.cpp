@@ -24,6 +24,14 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     enemyScoreDecrease = Defines::Float("Enemy_ScoreDecrease");
 
     KindredSpiritExtra::maxTimeDifference = Defines::Float("KindredSpirit_TimeTolerance");
+    KindredSpiritExtra::colours.push({1.00f, 0.68f, 0.21f, 1.0f});
+    KindredSpiritExtra::colours.push({0.27f, 0.17f, 1.00f, 1.0f});
+    KindredSpiritExtra::colours.push({0.88f, 0.13f, 0.29f, 1.0f});
+    KindredSpiritExtra::colours.push({0.28f, 1.00f, 0.98f, 1.0f});
+    KindredSpiritExtra::colours.push({0.63f, 0.28f, 1.00f, 1.0f});
+    KindredSpiritExtra::colours.push({0.58f, 1.00f, 0.28f, 1.0f});
+    KindredSpiritExtra::colours.push({1.00f, 1.00f, 1.00f, 1.0f});
+    KindredSpiritExtra::colours.push({0.00f, 0.00f, 0.00f, 1.0f});
 }
 
 void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
@@ -33,10 +41,13 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 
     transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos), 0));
 
-    if(behaviour.behaviour == EnemyBehaviour::KindredSpirit && behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
+    if(behaviour.behaviour == EnemyBehaviour::KindredSpirit)
     {
-        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos) * -1.0f, 0));
-        return;
+        if(behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
+        {
+            transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos) * -1.0f, 0));
+            return;
+        }
     }
 
     std::vector<std::pair<int,int>> targetNodes;
@@ -65,7 +76,12 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 
 void EnemyBehaviourSystem::EntityRemoved(Engine::Entity entity)
 {
-
+    EnemyBehaviour& enemy = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    if(enemy.behaviour == EnemyBehaviour::KindredSpirit && enemy.enemyExtra.kindredSpirit.isMainEntity)
+    {
+        glm::vec4 colour = Engine::GetComponentsInChildren<Engine::MeshRenderer>(entity)[0]->primitiveData[0].material.baseColorFactor;
+        KindredSpiritExtra::colours.push(colour);
+    }
 }
 
 void EnemyBehaviourSystem::Update(float deltaTime)
