@@ -229,7 +229,6 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     behav1.enemyExtra.kindredSpirit.isMainEntity = true;
     behav1.speed = Defines::Float("KindredSpirit_Speed");
     behav1.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy1, behav1);
     ecsSystem->AddComponent<Health>(enemy1, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     Engine::Entity enemy2 = CopyEntity(kindredSpiritPrefab, true);
@@ -247,10 +246,11 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     behav2.enemyExtra.kindredSpirit.isMainEntity = false;
     behav2.enemyExtra.kindredSpirit.other = enemy1;
     behav2.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy2, behav2);
     ecsSystem->AddComponent<Health>(enemy2, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     behav1.enemyExtra.kindredSpirit.other = enemy2;
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy1, behav1);
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy2, behav2);
 
 
     glm::vec4 colour = KindredSpiritExtra::colours.front();
@@ -261,7 +261,6 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     for(Engine::MeshRenderer* renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(enemy2))
         for(Engine::MeshRenderer::PrimitiveData &primitive : renderer->primitiveData)
             primitive.material.baseColorFactor = colour;
-
 
     return {enemy1, enemy2};
 }

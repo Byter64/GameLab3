@@ -288,6 +288,7 @@ void EnemyBehaviourSystem::Initialize(std::vector<std::vector<bool>>& wallMap)
 void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap)
 {
     this->wallMap = wallMap;
+    graph.clear();
     dungeonSize = std::make_pair(wallMap.size(), wallMap[0].size());
     originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f + 0.5f;
     originOffset.y *= -1.0f;
