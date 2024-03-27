@@ -60,7 +60,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         else if (ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
         {
             //If bullet is shot from player
-            if (ecsSystem->HasComponent<PlayerController>(ecsSystem->GetComponent<Bullet>(other).spawner))
+            if (ecsSystem->HasComponent<PlayerController>(ecsSystem->GetComponent<Bullet>(other).spawner) && controller.stunnedTimer <= 0.0f)
             {
                 controller.stunnedTimer = controller.stunnedTime;
             }
