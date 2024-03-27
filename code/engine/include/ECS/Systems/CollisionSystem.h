@@ -19,6 +19,7 @@ namespace Engine
     public:
         void CheckCollisions();
         bool CheckCollision(BoxCollider const &collider1, BoxCollider const &collider2);
+        BoxCollider& RayCast(glm::vec3 start, glm::vec3 direction, float maxDistance);
         void SetCollisionBetweenLayers(unsigned char layer1, unsigned char layer2, bool canCollide);
     };
 

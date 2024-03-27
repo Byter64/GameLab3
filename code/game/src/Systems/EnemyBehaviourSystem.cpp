@@ -14,14 +14,17 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
 {
     srand(std::chrono::system_clock::now().time_since_epoch().count());
 
-    idleDurationRange.first = Defines::Float("Hubertus_IdleDuration_Min");
-    idleDurationRange.second = Defines::Float("Hubertus_IdleDuration_Max");
-    walkDurationRange.first = Defines::Float("Hubertus_WalkDuration_Min");
-    walkDurationRange.second = Defines::Float("Hubertus_WalkDuration_Max");
-    shootIntervalRange.first = Defines::Float("Hubertus_ShootInterval_Min");
-    shootIntervalRange.second = Defines::Float("Hubertus_ShootInterval_Max");
-
     enemyScoreDecrease = Defines::Float("Enemy_ScoreDecrease");
+
+    idleDurationRanges[EnemyBehaviour::Hubertus].first = Defines::Float("Hubertus_IdleDuration_Min");
+    idleDurationRanges[EnemyBehaviour::Hubertus].second = Defines::Float("Hubertus_IdleDuration_Max");
+    walkDurationRanges[EnemyBehaviour::Hubertus].first = Defines::Float("Hubertus_WalkDuration_Min");
+    walkDurationRanges[EnemyBehaviour::Hubertus].second = Defines::Float("Hubertus_WalkDuration_Max");
+    shootIntervalRanges[EnemyBehaviour::Hubertus].first = Defines::Float("Hubertus_ShootInterval_Min");
+    shootIntervalRanges[EnemyBehaviour::Hubertus].second = Defines::Float("Hubertus_ShootInterval_Max");
+
+    idleDurationRanges[EnemyBehaviour::Assi].first = Defines::Float("Assi_IdleDuration_Min");
+    idleDurationRanges[EnemyBehaviour::Assi].second = Defines::Float("Assi_IdleDuration_Max");
 
     KindredSpiritExtra::maxTimeDifference = Defines::Float("KindredSpirit_TimeTolerance");
     KindredSpiritExtra::colours.push({1.00f, 0.68f, 0.21f, 1.0f});
@@ -67,10 +70,10 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distr(shootIntervalRange.first, shootIntervalRange.second);
+    std::uniform_real_distribution<> distr(shootIntervalRanges[behaviour.behaviour].first, shootIntervalRanges[behaviour.behaviour].second);
     behaviour.shootTimer = distr(gen);
-    distr = std::uniform_real_distribution<>(walkDurationRange.first, walkDurationRange.second);
-    behaviour.idlerTimer = distr(gen);
+    distr = std::uniform_real_distribution<>(walkDurationRanges[behaviour.behaviour].first, walkDurationRanges[behaviour.behaviour].second);
+    behaviour.idleTimer = distr(gen);
     behaviour.isMoving = true;
 }
 
@@ -99,6 +102,8 @@ void EnemyBehaviourSystem::Update(float deltaTime)
             case EnemyBehaviour::KindredSpirit:
                 UpdateKindredSpirit(entity, deltaTime);
                 break;
+            case EnemyBehaviour::Assi:
+                UpdateAssi(entity, deltaTime);
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
         for(auto collision : collider.collisions)
@@ -126,29 +131,30 @@ void EnemyBehaviourSystem::UpdateHubertus(Engine::Entity entity, float deltaTime
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-    if(behaviour.isMoving)
-        MoveEnemy(behaviour, transform, deltaTime);
 
     std::random_device rd;
     std::mt19937 gen(rd());
     if(behaviour.shootTimer <= 0)
     {
         ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(behaviour.movement, 0), behaviour.bulletSpeed);
-        std::uniform_real_distribution<> distr(shootIntervalRange.first, shootIntervalRange.second);
+        std::uniform_real_distribution<> distr(shootIntervalRanges[EnemyBehaviour::Hubertus].first, shootIntervalRanges[EnemyBehaviour::Hubertus].second);
         behaviour.shootTimer = distr(gen);
     }
-    if(behaviour.idlerTimer <= 0)
+    if(behaviour.idleTimer <= 0)
     {
         std::uniform_real_distribution<> distr;
         if(behaviour.isMoving)
-            distr = std::uniform_real_distribution<>(idleDurationRange.first, idleDurationRange.second);
+            distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Hubertus].first, idleDurationRanges[EnemyBehaviour::Hubertus].second);
         else
-            distr = std::uniform_real_distribution<>(walkDurationRange.first, walkDurationRange.second);
+            distr = std::uniform_real_distribution<>(walkDurationRanges[EnemyBehaviour::Hubertus].first, walkDurationRanges[EnemyBehaviour::Hubertus].second);
         behaviour.isMoving = !behaviour.isMoving;
-        behaviour.idlerTimer = distr(gen);
+        behaviour.idleTimer = distr(gen);
     }
-    behaviour.idlerTimer -= deltaTime;
+    behaviour.idleTimer -= deltaTime;
     behaviour.shootTimer -= deltaTime;
+
+    if(behaviour.isMoving)
+        MoveEnemyNormal(behaviour, transform, deltaTime);
 }
 
 void EnemyBehaviourSystem::HandleDamageHubertus(Engine::Entity entity, Engine::Entity other)
@@ -174,7 +180,7 @@ void EnemyBehaviourSystem::UpdateKindredSpirit(Engine::Entity entity, float delt
 
     if(behaviour.enemyExtra.kindredSpirit.isMainEntity)
     {
-        MoveEnemy(behaviour, transform, deltaTime);
+        MoveEnemyNormal(behaviour, transform, deltaTime);
     }
     else
     {
@@ -213,7 +219,36 @@ void EnemyBehaviourSystem::HandleDamageKindredSpirit(Engine::Entity entity, Engi
     }
 }
 
-void EnemyBehaviourSystem::MoveEnemy(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
+void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
+{
+    EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    if(behaviour.idleTimer <= 0)
+    {
+        std::uniform_real_distribution<> distr;
+        if(behaviour.isMoving)
+        {
+            distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
+            behaviour.idleTimer = distr(gen);
+
+            transform.SetTranslation(glm::round(transform.GetTranslation()));
+        }
+        else
+        {
+            behaviour.idleTimer = 1 / behaviour.speed; //How long it takes to move by one unit
+        }
+        behaviour.isMoving = !behaviour.isMoving;
+    }
+    behaviour.idleTimer -= deltaTime;
+
+    if(behaviour.isMoving)
+        MoveEnemyNormal(behaviour, transform, deltaTime);
+}
+
+void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
 {
     transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.speed * deltaTime, 0));
     if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
@@ -235,6 +270,11 @@ void EnemyBehaviourSystem::MoveEnemy(EnemyBehaviour& behaviour, Engine::Transfor
         transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
         transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
     }
+}
+
+void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
+{
+
 }
 
 /// Finds a node by raytracing into a given direction from a given point

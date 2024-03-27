@@ -40,6 +40,7 @@ void OnStartGame(int screenWidth, int screenHeight)
 
     EnemyBehaviour::scores[EnemyBehaviour::Hubertus] = Defines::Int("Hubertus_Score");
     EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit] = Defines::Int("KindredSpirit_Score");
+    EnemyBehaviour::scores[EnemyBehaviour::Assi] = Defines::Int("Assi_Score");
 
     pauseText = ecsSystem->CreateEntity();
     Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);

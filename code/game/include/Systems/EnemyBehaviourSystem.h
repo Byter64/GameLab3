@@ -14,24 +14,33 @@ class EnemyBehaviourSystem : public Engine::System
     glm::vec2 originOffset;
 
     void EntityAdded(Engine::Entity entity);
+
     void EntityRemoved(Engine::Entity entity);
 
     std::pair<int, int> FindNode(int startx, int starty, int dirx, int diry);
-    bool IsNode(std::vector<std::vector<bool>>& wallMap, int x, int y);
+
+    bool IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y);
+
     glm::vec2 ToGlobal(glm::vec2 dungeonPos);
+
     glm::vec2 ToGlobal(std::pair<int, int> dungeonPos);
 
-    //Stuff for Hubertus
-    inline static std::pair<float, float> idleDurationRange = std::make_pair(1.0f, 4.0f);
-    inline static std::pair<float, float> walkDurationRange = std::make_pair(10.0f, 30.0f);
-    inline static std::pair<float, float> shootIntervalRange = std::make_pair(2.0f, 8.0f);
     inline static float enemyScoreDecrease;
+
+    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> idleDurationRanges;
+    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> walkDurationRanges;
+    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> shootIntervalRanges;
 
     void UpdateHubertus(Engine::Entity entity, float deltaTime);
     void HandleDamageHubertus(Engine::Entity entity, Engine::Entity other);
+
     void UpdateKindredSpirit(Engine::Entity entity, float deltaTime);
     void HandleDamageKindredSpirit(Engine::Entity entity, Engine::Entity other);
-    void MoveEnemy(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
+
+    void UpdateAssi(Engine::Entity entity, float deltaTime);
+
+    void MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
+    void MoveAssi(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
 public:
 
     EnemyBehaviourSystem();

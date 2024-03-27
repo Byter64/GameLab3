@@ -13,4 +13,5 @@ public:
     static Engine::Entity SpawnElevator(glm::vec3 position, Engine::Entity spawnedEnemy);
     static Engine::Entity SpawnHubertus(std::pair<int, int> startPos);
     static std::pair<Engine::Entity, Engine::Entity> SpawnKindredSpirit(std::pair<int, int> startPos);
+    static Engine::Entity SpawnAssi(std::pair<int, int> startPos);
 };

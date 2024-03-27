@@ -60,6 +60,7 @@ void DungeonSystem::Update()
                         break;
                     }
                     case EnemyBehaviour::Assi:
+                        enemies.push_back(ECSHelper::SpawnAssi(pair.first));
                         break;
                     case EnemyBehaviour::Cuball:
                         break;
@@ -116,7 +117,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
     } state = Nothing;
 
     float time = 0;
-    EnemyBehaviour::Behaviour behaviour;
+    EnemyBehaviour::Type behaviour;
     std::pair<int, int> pos;
     float timeDelta;
     for (int i = 0; i < file.size(); i++)

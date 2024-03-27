@@ -17,6 +17,7 @@ Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity elevatorPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity kindredSpiritPrefab = Engine::Entity::INVALID_ENTITY_ID;
+Engine::Entity assiPrefab = Engine::Entity::INVALID_ENTITY_ID;
 
 void ECSHelper::Initialize()
 {
@@ -263,4 +264,29 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
             primitive.material.baseColorFactor = colour;
 
     return {enemy1, enemy2};
+}
+
+
+Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
+{
+    if(assiPrefab == Engine::Entity::INVALID_ENTITY_ID)
+    {
+        assiPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi\\Assi.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
+        ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetScale(glm::vec3(0.0f));
+    }
+    Engine::Entity enemy = CopyEntity(assiPrefab, true);
+    ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
+    ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
+    EnemyBehaviour behaviour;
+    behaviour.behaviour = EnemyBehaviour::Assi;
+    behaviour.startPos = startPos;
+    behaviour.speed = Defines::Float("Assi_Speed");
+    behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
+    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Assi_Health"), Defines::Int("Assi_Health")});
+
+    return enemy;
 }

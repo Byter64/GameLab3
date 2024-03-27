@@ -8,27 +8,28 @@
 
 struct EnemyBehaviour
 {
-    enum Behaviour
+    enum Type
     {
         Hubertus,
         KindredSpirit,
         Assi,
         Cuball
     };
-    inline static const std::map<std::string, Behaviour> stringToBehaviour =
+    inline static const std::map<std::string, Type> stringToBehaviour =
             {
                     {"Hubertus", Hubertus},
                     {"KindredSpirit", KindredSpirit},
                     {"hubertus", Hubertus},
-                    {"kindredspirit", KindredSpirit}
+                    {"kindredspirit", KindredSpirit},
+                    {"Assi", Assi},
+                    {"assi", Assi}
     };
 
-    inline static const std::map<Behaviour, std::string> behaviourToString =
+    inline static const std::map<Type, std::string> behaviourToString =
             {
                     {Hubertus, "Hubertus"},
                     {KindredSpirit, "KindredSpirit"},
-                    {Hubertus, "hubertus"},
-                    {KindredSpirit, "kindredspirit"}
+                    {Assi, "Assi"},
             };
 
     //Use the enum Behaviour to access the appropriate scores
@@ -42,8 +43,8 @@ struct EnemyBehaviour
 
     bool isActive = false;
     bool isMoving = false;
-    Behaviour behaviour = Hubertus;
-    float idlerTimer = 0;
+    Type behaviour = Hubertus;
+    float idleTimer = 0;
     float shootTimer = 0;
 
     std::pair<int, int> startPos = {1, 1};

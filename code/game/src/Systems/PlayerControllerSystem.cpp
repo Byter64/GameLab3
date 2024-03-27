@@ -79,12 +79,15 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         //If kindredSpirit was hit
         else if (ecsSystem->HasComponent<EnemyBehaviour>(other) && ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::KindredSpirit)
         {
-            Health &health = ecsSystem->GetComponent<Health>(playerEntity);
-            health.health--;
-            if (health.health <= 0 && controller.respawnTimer <= 0.0f)
+            if(controller.stunnedTimer < 0.0f)
             {
-                health.health = health.maxHealth;
-                DeactivatePlayer(playerEntity);
+                Health &health = ecsSystem->GetComponent<Health>(playerEntity);
+                health.health--;
+                if (health.health <= 0 && controller.respawnTimer <= 0.0f)
+                {
+                    health.health = health.maxHealth;
+                    DeactivatePlayer(playerEntity);
+                }
             }
         }
         else

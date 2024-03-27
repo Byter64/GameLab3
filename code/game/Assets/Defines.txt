@@ -16,7 +16,7 @@ Enemy_ScoreDecrease = 1.0 /*After how many seconds the enemy value decreases by 
 
 Hubertus_Score = 100
 Hubertus_Speed = 1.0
-Hubertus_Health = 3
+Hubertus_Health = 2
 Hubertus_BulletSpeed = 3.0
 Hubertus_IdleDuration_Min = 1.0
 Hubertus_IdleDuration_Max = 4.0
@@ -29,3 +29,9 @@ KindredSpirit_Score = 200
 KindredSpirit_Speed = 3.0
 KindredSpirit_Health = 1
 KindredSpirit_TimeTolerance = 2.0 /*How much time can pass betwenn both being hit */
+
+Assi_Score = 400
+Assi_Speed = 6.0
+Assi_Health = 1
+Assi_IdleDuration_Min = 0.2
+Assi_IdleDuration_Max = 2.0

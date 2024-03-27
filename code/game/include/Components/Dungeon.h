@@ -15,7 +15,7 @@ struct Dungeon
     std::string fileName;
 
     //A map, that maps a position within the dungeon, to a time and an enemy. this enemy is supposed to be spawned at the given time and position
-    std::map<std::pair<int, int>, std::priority_queue<std::pair<float, EnemyBehaviour::Behaviour>, std::vector<std::pair<float, EnemyBehaviour::Behaviour>>, std::greater<>>> enemies;
+    std::map<std::pair<int, int>, std::priority_queue<std::pair<float, EnemyBehaviour::Type>, std::vector<std::pair<float, EnemyBehaviour::Type>>, std::greater<>>> enemies;
     std::map<std::pair<int, int>, Engine::Entity> activeEnemies;
     int activeDungeon = 0;
     float creationTime;
