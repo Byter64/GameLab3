@@ -213,7 +213,7 @@ void PlayerControllerSystem::CheckIfAllPlayerDead()
     {
         PlayerController& controller = ecsSystem->GetComponent<PlayerController>(entity);
         if(controller.isActive)
-            break;
+            return;
     }
 
     std::cout << "You are so good. You all died. Game over now" << std::endl;

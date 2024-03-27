@@ -172,7 +172,8 @@ void Update(float deltaTime)
     elevatorSystem->Update();
     bulletSystem->Update(deltaTime);
 
-    if(dungeon->areAllEnemiesDefeated && ecsSystem->GetNumberOfComponents<Loot>() == 0)
+    //Number of components needs to be 1 because the prefab will always exist
+    if(dungeon->areAllEnemiesDefeated && ecsSystem->GetNumberOfComponents<Loot>() == 1)
         dungeonSystem->UpdateDungeon(ecsSystem->GetEntity(*dungeon));
 }
 

@@ -166,6 +166,7 @@ namespace Engine
                 return glm::mix(x, y, a);
             case Animation::Channel::Interpolation::CubicSpline:
                 return x;
+            default:  return x;
         }
     }
 
@@ -181,6 +182,7 @@ namespace Engine
                 return glm::mix(x, y, a);
             case Animation::Channel::Interpolation::CubicSpline:
                 return x;
+            default: return x;
         }
     }
 } // Engine
