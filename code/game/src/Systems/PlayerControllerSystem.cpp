@@ -184,11 +184,11 @@ glm::vec3 PlayerControllerSystem::RoundToAxis(glm::vec3 vec)
 
 void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)
 {
-    CheckIfAllPlayerDead();
     PlayerController& player = ecsSystem->GetComponent<PlayerController>(entity);
     player.isActive = false;
     player.respawnTimer = player.respawnTime;
     ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, -respawnDistance));
+    CheckIfAllPlayerDead();
 }
 
 void PlayerControllerSystem::ActivatePlayer(Engine::Entity entity)

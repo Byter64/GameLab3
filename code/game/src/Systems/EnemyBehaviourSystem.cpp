@@ -322,7 +322,6 @@ void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap
     }
 }
 
-
 /// Transforms the given point, which is in dungeon coordinates, into global coordinates
 /// \param dungeonPos
 /// \return
