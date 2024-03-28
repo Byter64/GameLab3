@@ -49,13 +49,10 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 
     transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos), 0));
 
-    if(behaviour.behaviour == EnemyBehaviour::KindredSpirit)
+    if(behaviour.behaviour == EnemyBehaviour::KindredSpirit && behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
     {
-        if(behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
-        {
             transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos) * -1.0f, 0));
             return;
-        }
     }
 
     std::vector<std::pair<int,int>> targetNodes = FindNodes(behaviour.startPos.first, behaviour.startPos.second);
@@ -72,15 +69,6 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     distr = std::uniform_real_distribution<>(walkDurationRanges[behaviour.behaviour].first, walkDurationRanges[behaviour.behaviour].second);
     behaviour.idleTimer = distr(gen);
     behaviour.isMoving = true;
-
-    switch (behaviour.behaviour)
-    {
-        case EnemyBehaviour::KindredSpirit:
-            behaviour.enemyExtra.kindredSpirit = KindredSpiritExtra{};
-            break;
-        case EnemyBehaviour::Assi:
-            behaviour.enemyExtra.assi = AssiExtra{};
-    }
 }
 
 void EnemyBehaviourSystem::EntityRemoved(Engine::Entity entity)
@@ -314,7 +302,7 @@ void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entit
     {
         RemoveEntityWithChildren(entity);
         float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
-        int score = EnemyBehaviour::scores[EnemyBehaviour::Hubertus] - (int)(timeAlive * enemyScoreDecrease);
+        int score = EnemyBehaviour::scores[EnemyBehaviour::Assi] - (int)(timeAlive * enemyScoreDecrease);
         score = score < 1 ? 1 : score;
         ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
     }

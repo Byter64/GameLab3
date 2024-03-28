@@ -225,6 +225,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     coll1.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
 
     EnemyBehaviour behav1;
+    behav1.enemyExtra.kindredSpirit = KindredSpiritExtra();
     behav1.behaviour = EnemyBehaviour::KindredSpirit;
     behav1.startPos = startPos;
     behav1.enemyExtra.kindredSpirit.isMainEntity = true;
@@ -241,6 +242,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     coll2.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
 
     EnemyBehaviour behav2;
+    behav2.enemyExtra.kindredSpirit = KindredSpiritExtra();
     behav2.behaviour = EnemyBehaviour::KindredSpirit;
     behav2.startPos = startPos; //this value needs to be the same as for the first spirit
     behav2.speed = Defines::Float("KindredSpirit_Speed");
@@ -281,6 +283,7 @@ Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
+    behaviour.enemyExtra.assi = AssiExtra();
     behaviour.behaviour = EnemyBehaviour::Assi;
     behaviour.startPos = startPos;
     behaviour.speed = Defines::Float("Assi_Speed");
