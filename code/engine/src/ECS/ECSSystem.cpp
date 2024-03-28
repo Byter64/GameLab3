@@ -18,7 +18,7 @@ namespace Engine
     }
 
     /*
-     * You usually dont want to use this, as it immediately destroys the entity.
+     * You usually don't want to use this, as it immediately destroys the entity.
      * You should rather use RemoveEntity, which removes the entity at the end of the frame
      */
     void ECSSystem::DestroyEntity(Entity entity)

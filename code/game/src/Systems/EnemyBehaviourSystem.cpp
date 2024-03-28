@@ -35,6 +35,8 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     KindredSpiritExtra::colours.push({0.58f, 1.00f, 0.28f, 1.0f});
     KindredSpiritExtra::colours.push({1.00f, 1.00f, 1.00f, 1.0f});
     KindredSpiritExtra::colours.push({0.00f, 0.00f, 0.00f, 1.0f});
+
+    AssiExtra::stunnedTime = Defines::Float("Assi_StunnedTime");
 }
 
 void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
@@ -75,6 +77,15 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     distr = std::uniform_real_distribution<>(walkDurationRanges[behaviour.behaviour].first, walkDurationRanges[behaviour.behaviour].second);
     behaviour.idleTimer = distr(gen);
     behaviour.isMoving = true;
+
+    switch (behaviour.behaviour)
+    {
+        case EnemyBehaviour::KindredSpirit:
+            behaviour.enemyExtra.kindredSpirit = KindredSpiritExtra{};
+            break;
+        case EnemyBehaviour::Assi:
+            behaviour.enemyExtra.assi = AssiExtra{};
+    }
 }
 
 void EnemyBehaviourSystem::EntityRemoved(Engine::Entity entity)
@@ -120,6 +131,9 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                         break;
                     case EnemyBehaviour::KindredSpirit:
                         HandleDamageKindredSpirit(entity, other);
+                        break;
+                    case EnemyBehaviour::Assi:
+                        HandleDamageAssi(entity, other);
                         break;
                 }
             }
@@ -224,13 +238,19 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    if(behaviour.enemyExtra.assi.stunnedTimer > 0.0f)
+    {
+        behaviour.enemyExtra.assi.stunnedTimer -= deltaTime;
+        return;
+    }
+
     if(behaviour.idleTimer <= 0)
     {
         std::uniform_real_distribution<> distr;
         if(behaviour.isMoving)
         {
+            std::random_device rd;
+            std::mt19937 gen(rd());
             distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
             behaviour.idleTimer = distr(gen);
 
@@ -247,6 +267,39 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
     if(behaviour.isMoving)
         MoveEnemyNormal(behaviour, transform, deltaTime);
 }
+
+void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entity other)
+{
+    //Bullet is already destroying itself, so no need to do it here
+    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+
+    Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+    Engine::Transform& otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
+    glm::vec2 dir = otherTransform.GetGlobalTranslation() - transform.GetGlobalTranslation();
+    dir = Miscellaneous::RoundToAxis(glm::vec3(dir, 0));
+    glm::quat rot = glm::normalize(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(dir.y, dir.x))));
+    if(behaviour.enemyExtra.assi.stunnedTimer <= 0 || rot == transform.GetRotation())
+    {
+
+        behaviour.enemyExtra.assi.stunnedTimer = AssiExtra::stunnedTime;
+        transform.SetRotation(rot);
+        //Danach: Verhalten einbauen, wenn Spieler in Sichtweite
+
+        return;
+    }
+
+    Health& health = ecsSystem->GetComponent<Health>(entity);
+    health.health--;
+    if(health.health <= 0)
+    {
+        RemoveEntityWithChildren(entity);
+        float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
+        int score = EnemyBehaviour::scores[EnemyBehaviour::Hubertus] - (int)(timeAlive * enemyScoreDecrease);
+        score = score < 1 ? 1 : score;
+        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
+    }
+}
+
 
 void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
 {

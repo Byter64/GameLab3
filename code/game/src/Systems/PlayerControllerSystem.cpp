@@ -3,9 +3,6 @@
 #include "ECSExtension.h"
 #include "Systems/PlayerControllerSystem.h"
 
-
-static const float SQRT_THREE_FOURTH = 0.866025f;
-
 void PlayerControllerSystem::EntityAdded(Engine::Entity entity)
 {
     alivePlayers++;
@@ -101,7 +98,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
 
     if(count != 0)
     {
-        averageDirection = RoundToAxis(averageDirection);
+        averageDirection = Miscellaneous::RoundToAxis(averageDirection);
 
         if (glm::length(controller.movementInput) >= inputDeadzone)
             averageDirection *= glm::length(controller.movementInput) * controller.speed;
@@ -129,7 +126,7 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
         controller.wasFirePushed = false;
         if(controller.activeBullets != controller.maxBullets)
         {
-            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(),RoundToAxis(controller.lookDirection), controller.bulletSpeed);
+            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(),Miscellaneous::RoundToAxis(controller.lookDirection), controller.bulletSpeed);
             controller.activeBullets++;
         }
     }
@@ -167,22 +164,6 @@ void PlayerControllerSystem::UpdateUI(Engine::Entity playerEntity)
         Engine::Text& uiTextAll = ecsSystem->GetComponent<Engine::Text>(scoreUI);
         uiTextAll.SetText(std::to_string(SumUpAllScores()));
     }
-}
-
-glm::vec3 PlayerControllerSystem::RoundToAxis(glm::vec3 vec)
-{
-
-    if(vec != glm::vec3(0))
-        vec = glm::normalize(vec);
-
-    vec *= SQRT_THREE_FOURTH; //Normalize
-    vec.x = roundf(vec.x);
-    vec.y = roundf(vec.y);
-    vec.z = roundf(vec.z);
-
-    if(vec != glm::vec3(0))
-        vec = glm::normalize(vec);
-    return vec;
 }
 
 void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)

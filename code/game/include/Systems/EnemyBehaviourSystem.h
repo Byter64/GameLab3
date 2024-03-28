@@ -38,6 +38,7 @@ class EnemyBehaviourSystem : public Engine::System
     void HandleDamageKindredSpirit(Engine::Entity entity, Engine::Entity other);
 
     void UpdateAssi(Engine::Entity entity, float deltaTime);
+    void HandleDamageAssi(Engine::Entity entity, Engine::Entity other);
 
     void MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
     void MoveAssi(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
