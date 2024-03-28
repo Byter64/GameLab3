@@ -9,6 +9,9 @@
 #include "ECSExtension.h"
 #include <cmath>
 #include "GameDefines.h"
+#include <limits>
+
+extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem;
 
 EnemyBehaviourSystem::EnemyBehaviourSystem()
 {
@@ -55,16 +58,8 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
         }
     }
 
-    std::vector<std::pair<int,int>> targetNodes;
-    auto target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 1, 0);
-    if(target.first != -1) targetNodes.push_back(target);
-    target = FindNode(behaviour.startPos.first, behaviour.startPos.second, -1, 0);
-    if(target.first != -1) targetNodes.push_back(target);
-    target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 0, 1);
-    if(target.first != -1) targetNodes.push_back(target);
-    target = FindNode(behaviour.startPos.first, behaviour.startPos.second, 0, -1);
-    if(target.first != -1) targetNodes.push_back(target);
-    target = targetNodes[rand() % targetNodes.size()];
+    std::vector<std::pair<int,int>> targetNodes = FindNodes(behaviour.startPos.first, behaviour.startPos.second);
+    std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
     behaviour.oldTargetNode = behaviour.startPos;
     behaviour.targetNode = target;
     behaviour.targetPos = ToGlobal(behaviour.targetNode);
@@ -251,7 +246,10 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
         {
             std::random_device rd;
             std::mt19937 gen(rd());
-            distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
+            if(behaviour.enemyExtra.assi.isPlayerInSight)
+                distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].first);
+            else
+                distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
             behaviour.idleTimer = distr(gen);
 
             transform.SetTranslation(glm::round(transform.GetTranslation()));
@@ -265,7 +263,32 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
     behaviour.idleTimer -= deltaTime;
 
     if(behaviour.isMoving)
-        MoveEnemyNormal(behaviour, transform, deltaTime);
+    {
+        Engine::Entity player = FindPlayerInSight(entity, INT_MAX);
+        if(player != Engine::Entity::INVALID_ENTITY_ID)
+        {
+            behaviour.enemyExtra.assi.isPlayerInSight = true;
+            glm::vec3 direction = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - transform.GetGlobalTranslation();
+            MoveAssi(behaviour, transform, direction, deltaTime);
+        }
+        else if (behaviour.enemyExtra.assi.isPlayerInSight)
+        {
+            behaviour.enemyExtra.assi.isPlayerInSight = false;
+
+            std::pair<int, int> pos = ToDungeon(glm::round(transform.GetGlobalTranslation()));
+            std::vector<std::pair<int,int>> targetNodes = FindNodes(pos.first, pos.second);
+            std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
+
+            behaviour.targetNode = target;
+            behaviour.targetPos = ToGlobal(behaviour.targetNode);
+            behaviour.movement = ToGlobal(behaviour.targetNode) - glm::vec2(glm::round(transform.GetGlobalTranslation()));
+            if(behaviour.movement != glm::vec2(0))
+                behaviour.movement = glm::normalize(behaviour.movement);
+            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+        }
+        else
+            MoveEnemyNormal(behaviour, transform, deltaTime);
+    }
 }
 
 void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entity other)
@@ -276,15 +299,12 @@ void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entit
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
     Engine::Transform& otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
     glm::vec2 dir = otherTransform.GetGlobalTranslation() - transform.GetGlobalTranslation();
-    dir = Miscellaneous::RoundToAxis(glm::vec3(dir, 0));
+    dir = Miscellaneous::RoundTo8Directions(glm::vec3(dir, 0));
     glm::quat rot = glm::normalize(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(dir.y, dir.x))));
     if(behaviour.enemyExtra.assi.stunnedTimer <= 0 || rot == transform.GetRotation())
     {
-
         behaviour.enemyExtra.assi.stunnedTimer = AssiExtra::stunnedTime;
         transform.SetRotation(rot);
-        //Danach: Verhalten einbauen, wenn Spieler in Sichtweite
-
         return;
     }
 
@@ -325,9 +345,15 @@ void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Tr
     }
 }
 
-void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
+void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform &transform, glm::vec3 direction, float deltaTime)
 {
+    transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.speed * deltaTime, 0));
 
+    if(direction != glm::vec3(0))
+        direction = glm::normalize(direction);
+
+    behaviour.movement = direction;
+    transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
 }
 
 /// Finds a node by raytracing into a given direction from a given point
@@ -347,6 +373,41 @@ std::pair<int, int> EnemyBehaviourSystem::FindNode(int startx, int starty, int d
         {
             return std::make_pair(startx, starty);
         }
+        startx += dirx;
+        starty += diry;
+    }
+    return {-1, -1};
+}
+
+
+std::vector<std::pair<int, int>> EnemyBehaviourSystem::FindNodes(int startx, int starty)
+{
+    std::vector<std::pair<int, int>> targetNodes;
+    auto target = FindNode(startx, starty, 1, 0);
+    if(target.first != -1) targetNodes.push_back(target);
+    target = FindNode(startx, starty,-1, 0);
+    if(target.first != -1) targetNodes.push_back(target);
+    target = FindNode(startx, starty, 0, 1);
+    if(target.first != -1) targetNodes.push_back(target);
+    target = FindNode(startx, starty, 0, -1);
+    if(target.first != -1) targetNodes.push_back(target);
+
+    return targetNodes;
+}
+
+/// Finds a wall by raytracing into a given direction from a given point
+/// \param startx
+/// \param starty
+/// \param dirx
+/// \param diry
+/// \return
+std::pair<int, int> EnemyBehaviourSystem::FindWall(int startx, int starty, int dirx, int diry)
+{
+    startx += dirx;
+    starty += diry;
+    while(startx < dungeonSize.first && startx >= 0 && starty < dungeonSize.second && starty >= 0)
+    {
+        if(wallMap[startx][starty]) return {startx, starty};
         startx += dirx;
         starty += diry;
     }
@@ -427,4 +488,32 @@ glm::vec2 EnemyBehaviourSystem::ToGlobal(glm::vec2 dungeonPos)
 glm::vec2 EnemyBehaviourSystem::ToGlobal(std::pair<int, int> dungeonPos)
 {
     return glm::vec2(originOffset.x + dungeonPos.first, originOffset.y - dungeonPos.second);
+}
+
+std::pair<int, int> EnemyBehaviourSystem::ToDungeon(glm::vec3 globalPos)
+{
+    return {glm::round(globalPos.x - originOffset.x), glm::round(originOffset.y - globalPos.y)};
+}
+
+Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(Engine::Entity enemy, int maxDistance)
+{
+    Engine::Transform& enemyTransform = ecsSystem->GetComponent<Engine::Transform>(enemy);
+    glm::vec3 enemyPos = enemyTransform.GetGlobalTranslation();
+    std::pair<int, int> enemyPosDungeon = ToDungeon(enemyPos);
+    for(Engine::Entity player : playerControllerSystem->entities)
+    {
+        glm::vec3 distanceToPlayer = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - enemyPos;
+        glm::vec3 direction = Miscellaneous::RoundTo4Directions(glm::normalize(distanceToPlayer));
+
+        if(length(direction - glm::normalize(distanceToPlayer)) > 0.1f) continue;
+
+        std::pair<int, int> wall = FindWall(enemyPosDungeon.first, enemyPosDungeon.second, (int)direction.x, (int)direction.y);
+        glm::vec3 distanceToWall = glm::vec3(ToGlobal(wall), 0) - enemyPos;
+        if(glm::length(distanceToPlayer) < maxDistance && glm::length(distanceToPlayer) < glm::length(distanceToWall))
+        {
+            return player;
+        }
+    }
+
+    return Engine::Entity::INVALID_ENTITY_ID;
 }

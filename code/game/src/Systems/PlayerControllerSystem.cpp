@@ -98,7 +98,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
 
     if(count != 0)
     {
-        averageDirection = Miscellaneous::RoundToAxis(averageDirection);
+        averageDirection = Miscellaneous::RoundTo8Directions(averageDirection);
 
         if (glm::length(controller.movementInput) >= inputDeadzone)
             averageDirection *= glm::length(controller.movementInput) * controller.speed;
@@ -126,7 +126,8 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
         controller.wasFirePushed = false;
         if(controller.activeBullets != controller.maxBullets)
         {
-            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(),Miscellaneous::RoundToAxis(controller.lookDirection), controller.bulletSpeed);
+            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(),
+                                   Miscellaneous::RoundTo8Directions(controller.lookDirection), controller.bulletSpeed);
             controller.activeBullets++;
         }
     }
