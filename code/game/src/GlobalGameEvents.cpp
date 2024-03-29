@@ -22,6 +22,8 @@ static Engine::Entity pauseText;
 static float pauseTextScale = 8;
 static Dungeon* dungeon;
 
+std::pair<Engine::Entity, Engine::Entity> players = {Engine::Entity::INVALID_ENTITY_ID, Engine::Entity::INVALID_ENTITY_ID};
+
 void OnStartGame(int screenWidth, int screenHeight)
 {
     Defines::InitializeDefines();
@@ -55,8 +57,6 @@ void OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->AddComponent(dungeon, Engine::Transform());
     ecsSystem->AddComponent<Dungeon>(dungeon, Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
     ::dungeon = &ecsSystem->GetComponent<Dungeon>(dungeon);
-
-    enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 
     Engine::Entity playersText = ecsSystem->CreateEntity();
     auto& playersUI = ecsSystem->AddComponent<Engine::Text>(playersText);
@@ -110,8 +110,9 @@ void OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
+    players.first = player;
 
-#define PLAYER2
+//#define PLAYER2
 #ifdef PLAYER2
     Engine::Entity player2Text = ecsSystem->CreateEntity();
     auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
@@ -127,8 +128,6 @@ void OnStartGame(int screenWidth, int screenHeight)
 
 
     Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
-    ecsSystem->GetComponent<Engine::Transform>(player2).SetTranslation({1, 0, 0});
-    ecsSystem->GetComponent<Engine::Transform>(player).SetTranslation({-1, 0,  00});
     PlayerController& controller2 = ecsSystem->AddComponent<PlayerController>(player2);
     controller2.uiTextScore = playerUI2;
     controller2.SetMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
@@ -152,12 +151,15 @@ void OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health")});
+    players.second = player2;
 #endif
 
     Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,2,-12));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
 
+    dungeonSystem->InitializeDungeons();
+    enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 }
 
 void OnEndGame()

@@ -8,17 +8,11 @@
 #include <algorithm>
 
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
+extern std::pair<Engine::Entity, Engine::Entity> players;
 
 void DungeonSystem::EntityAdded(Engine::Entity entity)
 {
-    if(entities.size() != 0)
-    {
-        std::string message{ "There is already an entity with a Dungeon component"};
-        throw std::runtime_error(message);
-    }
 
-    ReadInDungeonMap(entity);
-    ReadInEnemies(entity);
 }
 
 void DungeonSystem::EntityRemoved(Engine::Entity entity)
@@ -89,6 +83,8 @@ void DungeonSystem::Update()
 void DungeonSystem::ReadInEnemies(Engine::Entity entity)
 {
     static const std::string WAIT_KEYWORD = "wait";
+    static const std::string SINGLE_KEYWORD = "singleplayer";
+    static const std::string MULTI_KEYWORD = "twoplayers";
 
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
@@ -130,7 +126,23 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
             case Nothing:
                 if(symbol == WAIT_KEYWORD)
                     state = ExpectingTime;
-                if(EnemyBehaviour::stringToBehaviour.count(symbol))
+                else if(symbol == SINGLE_KEYWORD && players.second == Engine::Entity::INVALID_ENTITY_ID)
+                {
+                    Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
+                    std::pair<int, int> pos1 = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
+                }
+                else if(symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
+                {
+                    Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
+                    std::pair<int, int> pos1 = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
+
+                    Engine::Transform& transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
+                    std::pair<int, int> pos2 = {std::stoi(file[i + 3]), std::stoi(file[i + 4])};
+                    transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
+                }
+                else if(EnemyBehaviour::stringToBehaviour.count(symbol))
                 {
                     behaviour = EnemyBehaviour::stringToBehaviour.at(symbol);
                     state = ExpectingXPos;
@@ -232,5 +244,20 @@ void DungeonSystem::UpdateDungeon(Engine::Entity entity)
     catch (std::runtime_error& e)
     {
         exit(-1);
+    }
+}
+
+void DungeonSystem::InitializeDungeons()
+{
+    if(entities.size() != 1)
+    {
+        std::string message{ "There are too many entities with a Dungeon component"};
+        throw std::runtime_error(message);
+    }
+
+    for (Engine::Entity entity :entities)
+    {
+        ReadInDungeonMap(entity);
+        ReadInEnemies(entity);
     }
 }

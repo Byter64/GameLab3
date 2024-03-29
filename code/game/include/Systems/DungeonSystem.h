@@ -11,6 +11,7 @@ class DungeonSystem : public Engine::System
 public:
     std::vector<std::vector<bool>> wallMap;
 
+    void InitializeDungeons();
     void Update();
     void UpdateDungeon(Engine::Entity entity);
 };

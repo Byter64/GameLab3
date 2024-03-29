@@ -10,8 +10,8 @@ class EnemyBehaviourSystem : public Engine::System
 {
     std::vector<std::vector<bool>> wallMap;
     std::map<std::pair<int, int>, std::list<std::pair<int, int>>> graph;
-    std::pair<int, int> dungeonSize;
-    glm::vec2 originOffset;
+    static inline std::pair<int, int> dungeonSize;
+    static inline glm::vec2 originOffset;
 
     void EntityAdded(Engine::Entity entity);
 
@@ -22,10 +22,6 @@ class EnemyBehaviourSystem : public Engine::System
     std::pair<int, int> FindWall(int startx, int starty, int dirx, int diry);
 
     bool IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y);
-
-    glm::vec2 ToGlobal(glm::vec2 dungeonPos);
-    glm::vec2 ToGlobal(std::pair<int, int> dungeonPos);
-    std::pair<int, int> ToDungeon(glm::vec3 globalPos);
 
     inline static float enemyScoreDecrease;
 
@@ -47,9 +43,13 @@ class EnemyBehaviourSystem : public Engine::System
 
     Engine::Entity FindPlayerInSight(Engine::Entity enemy, int maxDistance);
 public:
-
     EnemyBehaviourSystem();
+
     void Initialize(std::vector<std::vector<bool>>& wallMap);
     void ChangeWallMap(std::vector<std::vector<bool>>& wallMap);
     void Update(float deltaTime);
+
+    static glm::vec2 ToGlobal(glm::vec2 dungeonPos);
+    static glm::vec2 ToGlobal(std::pair<int, int> dungeonPos);
+    static std::pair<int, int> ToDungeon(glm::vec3 globalPos);
 };

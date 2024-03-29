@@ -1,3 +1,6 @@
+SinglePlayer 11 8
+TwoPlayers 10 8  12 8
+
 wait 5
 Hubertus 1 1
 
