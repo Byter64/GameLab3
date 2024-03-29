@@ -1,27 +1,25 @@
-Assi 21 8
+wait 5
+Hubertus 1 1
 
-wait 20
-KindredSpirit 7 12
-KindredSpirit 7 15
-Hubertus 19 8
-Hubertus 21 8
+wait 10
+Hubertus 19  5
+Hubertus 19 11
 
-wait 20
-Assi 11 7
-Assi 11 9
-KindredSpirit 1 15
+wait 10 
+Hubertus 10 8
+Hubertus 11 8
+Hubertus 12 8
 
-wait 20
-Assi 9 9
-Hubertus 10 9
-Assi 13 9
-Hubertus 12 9
+wait 15
+Hubertus 11  2
+Hubertus 11 14
 
-wait 20
-Hubertus 4 15
-Hubertus 5 15
-Hubertus 6 15
-Hubertus 7 15
-KindredSpirit 1 3
-Assi 1 2
-Assi 21 14
+wait 10
+Hubertus 1   1
+Hubertus 1  15
+Hubertus 21  1
+Hubertus 21 15
+
+wait 15
+Hubertus 11 8
+Hubertus 11 8

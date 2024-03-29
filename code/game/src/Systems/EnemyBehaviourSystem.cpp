@@ -37,7 +37,7 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     KindredSpiritExtra::colours.push({0.63f, 0.28f, 1.00f, 1.0f});
     KindredSpiritExtra::colours.push({0.58f, 1.00f, 0.28f, 1.0f});
     KindredSpiritExtra::colours.push({1.00f, 1.00f, 1.00f, 1.0f});
-    KindredSpiritExtra::colours.push({0.00f, 0.00f, 0.00f, 1.0f});
+    KindredSpiritExtra::colours.push({0.40f, 0.40f, 0.40f, 1.0f});
 
     AssiExtra::stunnedTime = Defines::Float("Assi_StunnedTime");
 }

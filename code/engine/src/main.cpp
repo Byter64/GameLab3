@@ -36,6 +36,7 @@ int main()
     float passedTimeInSeconds = 1.0f/60;
     glfwSetTime(passedTimeInSeconds);
 
+    std::chrono::high_resolution_clock::time_point gameTime1 = std::chrono::high_resolution_clock::now();
     while (!glfwWindowShouldClose(window)) {
         time1 = std::chrono::high_resolution_clock::now();
 
@@ -69,6 +70,9 @@ int main()
     }
 
     OnEndGame();
+
+    std::cout << "Game Time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - gameTime1).count() / 1000000 << " s" << std::endl;
+
     glfwTerminate();
     return 0;
 }
