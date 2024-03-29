@@ -227,29 +227,6 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
         return;
     }
 
-    if(behaviour.idleTimer <= 0)
-    {
-        std::uniform_real_distribution<> distr;
-        if(behaviour.isMoving)
-        {
-            std::random_device rd;
-            std::mt19937 gen(rd());
-            if(behaviour.enemyExtra.assi.isPlayerInSight)
-                distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].first);
-            else
-                distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
-            behaviour.idleTimer = distr(gen);
-
-            transform.SetTranslation(glm::round(transform.GetTranslation()));
-        }
-        else
-        {
-            behaviour.idleTimer = 1 / behaviour.speed; //How long it takes to move by one unit
-        }
-        behaviour.isMoving = !behaviour.isMoving;
-    }
-    behaviour.idleTimer -= deltaTime;
-
     if(behaviour.isMoving)
     {
         Engine::Entity player = FindPlayerInSight(entity, INT_MAX);
@@ -277,6 +254,31 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
         else
             MoveEnemyNormal(behaviour, transform, deltaTime);
     }
+
+    if(behaviour.idleTimer <= 0)
+    {
+        std::uniform_real_distribution<> distr;
+        if(behaviour.isMoving)
+        {
+            std::random_device rd;
+            std::mt19937 gen(rd());
+            if(behaviour.enemyExtra.assi.isPlayerInSight)
+                distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].first);
+            else
+                distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
+            behaviour.idleTimer = distr(gen);
+
+            auto pos = transform.GetGlobalTranslation();
+            std::cout << pos.x << " " << pos.y << " " << pos.z << std::endl;
+            transform.SetTranslation(glm::round(transform.GetTranslation()));
+        }
+        else
+        {
+            behaviour.idleTimer = 1 / behaviour.speed; //How long it takes to move by one unit
+        }
+        behaviour.isMoving = !behaviour.isMoving;
+    }
+    behaviour.idleTimer -= deltaTime;
 }
 
 void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entity other)
