@@ -234,7 +234,7 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
         {
             behaviour.enemyExtra.assi.isPlayerInSight = true;
             glm::vec3 direction = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - transform.GetGlobalTranslation();
-            MoveAssi(behaviour, transform, direction, 0);
+            MoveAssi(behaviour, transform, direction, deltaTime);
         }
         else if (behaviour.enemyExtra.assi.isPlayerInSight)
         {
@@ -252,7 +252,7 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
         }
         else
-            MoveEnemyNormal(behaviour, transform, 0);
+            MoveEnemyNormal(behaviour, transform, deltaTime);
     }
 
     if(behaviour.idleTimer <= 0)
@@ -499,7 +499,7 @@ Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(Engine::Entity enemy, int
 
         if(length(direction - glm::normalize(distanceToPlayer)) > 0.1f) continue;
 
-        std::pair<int, int> wall = FindWall(enemyPosDungeon.first, enemyPosDungeon.second, (int)direction.x, (int)direction.y);
+        std::pair<int, int> wall = FindWall(enemyPosDungeon.first, enemyPosDungeon.second, (int)direction.x, (int)-direction.y);
         glm::vec3 distanceToWall = glm::vec3(ToGlobal(wall), 0) - enemyPos;
         if(glm::length(distanceToPlayer) < maxDistance && glm::length(distanceToPlayer) < glm::length(distanceToWall))
         {
