@@ -234,7 +234,7 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
         {
             behaviour.enemyExtra.assi.isPlayerInSight = true;
             glm::vec3 direction = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - transform.GetGlobalTranslation();
-            MoveAssi(behaviour, transform, direction, deltaTime);
+            MoveAssi(behaviour, transform, direction, 0);
         }
         else if (behaviour.enemyExtra.assi.isPlayerInSight)
         {
@@ -252,7 +252,7 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
         }
         else
-            MoveEnemyNormal(behaviour, transform, deltaTime);
+            MoveEnemyNormal(behaviour, transform, 0);
     }
 
     if(behaviour.idleTimer <= 0)
@@ -268,8 +268,6 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
                 distr = std::uniform_real_distribution<>(idleDurationRanges[EnemyBehaviour::Assi].first, idleDurationRanges[EnemyBehaviour::Assi].second);
             behaviour.idleTimer = distr(gen);
 
-            auto pos = transform.GetGlobalTranslation();
-            std::cout << pos.x << " " << pos.y << " " << pos.z << std::endl;
             transform.SetTranslation(glm::round(transform.GetTranslation()));
         }
         else
@@ -289,7 +287,7 @@ void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entit
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
     Engine::Transform& otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
     glm::vec2 dir = otherTransform.GetGlobalTranslation() - transform.GetGlobalTranslation();
-    dir = Miscellaneous::RoundTo8Directions(glm::vec3(dir, 0));
+    dir = Miscellaneous::RoundTo4Directions(glm::vec3(dir, 0));
     glm::quat rot = glm::normalize(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(dir.y, dir.x))));
     if(behaviour.enemyExtra.assi.stunnedTimer <= 0 || rot == transform.GetRotation())
     {
@@ -343,7 +341,11 @@ void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform
         direction = glm::normalize(direction);
 
     behaviour.movement = direction;
-    transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+    float angle = glm::atan(behaviour.movement.y, behaviour.movement.x);
+    angle /= glm::radians(90.0f);
+    angle = glm::round(angle);
+    angle *= glm::radians(90.0f);
+    transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, angle)));
 }
 
 /// Finds a node by raytracing into a given direction from a given point

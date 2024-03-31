@@ -18,6 +18,9 @@ glm::vec3 Miscellaneous::RoundTo8Directions(glm::vec3 vec)
     return vec;
 }
 
+/// Rounds the given vector to an axis. The returned vector will never contain -0.0f (only 0.0f)
+/// \param vec
+/// \return
 glm::vec3 Miscellaneous::RoundTo4Directions(glm::vec3 vec)
 {
     float angle = glm::atan(vec.y, vec.x);
@@ -25,5 +28,10 @@ glm::vec3 Miscellaneous::RoundTo4Directions(glm::vec3 vec)
     angle = glm::round(angle);
     angle = angle * (0.5f * glm::pi<float>());
 
-    return glm::vec3(glm::cos(angle), glm::sin(angle), 0);
+    float x = glm::round(glm::cos(angle));
+    float y = glm::round(glm::sin(angle));
+
+    x = -0.0f == x ? 0.0f : x;
+    y = -0.0f == y ? 0.0f : y;
+    return glm::vec3(x, y, 0);
 }
