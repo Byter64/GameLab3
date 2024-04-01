@@ -8,6 +8,7 @@ class DungeonSystem : public Engine::System
 
     void ReadInDungeonMap(Engine::Entity entity);
     void ReadInEnemies(Engine::Entity entity);
+    bool TryLoadTestDungeonAndEnemies(Engine::Entity entity);
 public:
     std::vector<std::vector<bool>> wallMap;
 
