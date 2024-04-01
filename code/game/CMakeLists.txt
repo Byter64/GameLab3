@@ -96,6 +96,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Helpers/AssiExtra.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
+        include/Helpers/CuballExtra.h
 )
 
 set(EXE_FILE Game)

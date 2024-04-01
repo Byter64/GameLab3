@@ -40,10 +40,6 @@ void OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Bullet), false);
     Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Enemy), false);
 
-    EnemyBehaviour::scores[EnemyBehaviour::Hubertus] = Defines::Int("Hubertus_Score");
-    EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit] = Defines::Int("KindredSpirit_Score");
-    EnemyBehaviour::scores[EnemyBehaviour::Assi] = Defines::Int("Assi_Score");
-
     pauseText = ecsSystem->CreateEntity();
     Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);
     pauseTextText.scale = 0;

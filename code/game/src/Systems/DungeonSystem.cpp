@@ -57,6 +57,7 @@ void DungeonSystem::Update()
                         enemies.push_back(ECSHelper::SpawnAssi(pair.first));
                         break;
                     case EnemyBehaviour::Cuball:
+                        enemies.push_back(ECSHelper::SpawnCuball(pair.first));
                         break;
                 }
                 pair.second.pop();
@@ -64,8 +65,15 @@ void DungeonSystem::Update()
 
                 for(Engine::Entity spawnedEntity : enemies)
                 {
-                    Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(), spawnedEntity);
-                    Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
+                    if(ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
+                    {
+                        Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
+                    }
+                    else
+                    {
+                        Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(),spawnedEntity);
+                        Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
+                    }
                 }
             }
         }

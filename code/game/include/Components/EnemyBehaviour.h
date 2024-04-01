@@ -22,7 +22,9 @@ struct EnemyBehaviour
                     {"hubertus", Hubertus},
                     {"kindredspirit", KindredSpirit},
                     {"Assi", Assi},
-                    {"assi", Assi}
+                    {"assi", Assi},
+                    {"Cuball", Cuball},
+                    {"cuball", Cuball}
     };
 
     inline static const std::map<Type, std::string> behaviourToString =
@@ -30,6 +32,7 @@ struct EnemyBehaviour
                     {Hubertus, "Hubertus"},
                     {KindredSpirit, "KindredSpirit"},
                     {Assi, "Assi"},
+                    {Cuball, "Cuball"},
             };
 
     //Use the enum Behaviour to access the appropriate scores
@@ -38,7 +41,7 @@ struct EnemyBehaviour
                 100,
                 200,
                 400,
-                200
+                400
             };
 
     bool isActive = false;

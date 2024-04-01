@@ -36,3 +36,9 @@ Assi_Health = 1
 Assi_StunnedTime = 4.0	/*How long an Assi is vulnerable after being hit once */
 Assi_IdleDuration_Min = 0.2
 Assi_IdleDuration_Max = 2.0
+
+Cuball_Score = 400
+Cuball_Speed = 2.0
+Cuball_Cube_Health = 1
+Cuball_Ball_Health = 1
+Cuball_BulletSpeed = 1.0

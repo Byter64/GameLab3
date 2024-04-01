@@ -43,6 +43,7 @@ namespace Engine
         glm::vec3 GetTranslation();
         glm::vec3 GetGlobalTranslation();
         void SetTranslation(const glm::vec3& translation);
+        void SetGlobalTranslation(const glm::vec3& translation);
         void AddTranslation(const glm::vec3& translation);
 
         glm::vec3 GetScale();

@@ -22,6 +22,14 @@ namespace Engine
         SetIsGlobalTranslationOutdated();
     }
 
+    void Transform::SetGlobalTranslation(const glm::vec3 &translation)
+    {
+        glm::vec3 localTranslation = translation;
+        if(parent != nullptr)
+            localTranslation = translation - parent->GetGlobalTranslation();
+        SetTranslation(localTranslation);
+    }
+
     void Transform::AddTranslation(const glm::vec3 &translation)
     {
         this->translation += translation;

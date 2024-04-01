@@ -38,8 +38,12 @@ class EnemyBehaviourSystem : public Engine::System
     void UpdateAssi(Engine::Entity entity, float deltaTime);
     void HandleDamageAssi(Engine::Entity entity, Engine::Entity other);
 
+    void UpdateCuball(Engine::Entity entity, float deltaTime);
+    void HandleDamageCuball(Engine::Entity entity, Engine::Entity other);
+
     void MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
     void MoveAssi(EnemyBehaviour& behaviour, Engine::Transform& transform, glm::vec3 direction, float deltaTime);
+    void MoveCuball(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
 
     Engine::Entity FindPlayerInSight(Engine::Entity enemy, int maxDistance);
 public:

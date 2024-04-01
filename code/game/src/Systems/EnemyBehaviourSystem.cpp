@@ -17,6 +17,11 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
 {
     srand(std::chrono::system_clock::now().time_since_epoch().count());
 
+    EnemyBehaviour::scores[EnemyBehaviour::Hubertus] = Defines::Int("Hubertus_Score");
+    EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit] = Defines::Int("KindredSpirit_Score");
+    EnemyBehaviour::scores[EnemyBehaviour::Assi] = Defines::Int("Assi_Score");
+    EnemyBehaviour::scores[EnemyBehaviour::Cuball] = Defines::Int("Cuball_Score");
+
     enemyScoreDecrease = Defines::Float("Enemy_ScoreDecrease");
 
     idleDurationRanges[EnemyBehaviour::Hubertus].first = Defines::Float("Hubertus_IdleDuration_Min");
@@ -51,8 +56,8 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 
     if(behaviour.behaviour == EnemyBehaviour::KindredSpirit && behaviour.enemyExtra.kindredSpirit.isMainEntity == false)
     {
-            transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos) * -1.0f, 0));
-            return;
+        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos) * -1.0f, 0));
+        return;
     }
 
     std::vector<std::pair<int,int>> targetNodes = FindNodes(behaviour.startPos.first, behaviour.startPos.second);
@@ -60,7 +65,7 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
     behaviour.oldTargetNode = behaviour.startPos;
     behaviour.targetNode = target;
     behaviour.targetPos = ToGlobal(behaviour.targetNode);
-    behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
+    behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
     transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -86,7 +91,6 @@ void EnemyBehaviourSystem::Update(float deltaTime)
     for (Engine::Entity entity: entities)
     {
         EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-        if(!behaviour.isActive) continue;
         switch (behaviour.behaviour)
         {
             default:
@@ -98,6 +102,8 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                 break;
             case EnemyBehaviour::Assi:
                 UpdateAssi(entity, deltaTime);
+            case EnemyBehaviour::Cuball:
+                UpdateCuball(entity, deltaTime);
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
         for(auto collision : collider.collisions)
@@ -128,6 +134,8 @@ void EnemyBehaviourSystem::UpdateHubertus(Engine::Entity entity, float deltaTime
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    if(!behaviour.isActive) return;
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -175,6 +183,8 @@ void EnemyBehaviourSystem::UpdateKindredSpirit(Engine::Entity entity, float delt
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
+    if(!behaviour.isActive) return;
+
     if(behaviour.enemyExtra.kindredSpirit.isMainEntity)
     {
         MoveEnemyNormal(behaviour, transform, deltaTime);
@@ -220,6 +230,8 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    if(!behaviour.isActive) return;
 
     if(behaviour.enemyExtra.assi.stunnedTimer > 0.0f)
     {
@@ -308,6 +320,16 @@ void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entit
     }
 }
 
+void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
+{
+    EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    if(!ecsSystem->HasComponent<Engine::Animator>(entity)) behaviour.isActive = true;
+    if(!behaviour.isActive) return;
+
+    MoveCuball(behaviour, transform, deltaTime);
+}
 
 void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
 {
@@ -346,6 +368,56 @@ void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform
     angle = glm::round(angle);
     angle *= glm::radians(90.0f);
     transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, angle)));
+}
+
+void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
+{
+    CuballExtra& extra = behaviour.enemyExtra.cuball;
+    extra.progress += deltaTime * behaviour.speed;
+    float easedProgress = extra.progress * extra.progress * extra.progress;
+    if(easedProgress >= 1.0f)
+        easedProgress = 1.0f;
+    ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent).SetRotation(glm::mix(extra.startRotation, extra.targetRotation, easedProgress));
+
+    if(easedProgress >= 1.0f)
+    {
+        Engine::Transform& parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
+        glm::quat rot = transform.GetGlobalRotation();
+        glm::vec3 pos = transform.GetGlobalTranslation();
+        transform.SetParent(nullptr);
+        transform.SetRotation(rot);
+        transform.SetTranslation(pos);
+
+        if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
+        {
+            std::list<std::pair<int, int>> &list = graph[behaviour.targetNode];
+            auto iter = list.end();
+            int i = 0;
+            do
+            {
+                int index = rand() % list.size();
+                iter = list.begin();
+                std::advance(iter, index);
+                i++;
+            } while (i < 5 && *iter == behaviour.oldTargetNode);
+            behaviour.oldTargetNode = behaviour.targetNode;
+            behaviour.targetNode = *iter;
+            behaviour.targetPos = ToGlobal(behaviour.targetNode);
+            behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
+            transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+        }
+
+        parent.SetTranslation(transform.GetTranslation() + glm::vec3(behaviour.movement * 0.5f, -0.5f));
+        parent.SetRotation(glm::identity<glm::quat>());
+        transform.SetParent(&parent);
+        transform.SetTranslation(-glm::vec3(behaviour.movement * 0.5f, -0.5f));
+
+        extra.startRotation = glm::identity<glm::quat>();
+        glm::vec3 euler = {glm::radians(behaviour.movement.y * -90), glm::radians(behaviour.movement.x * 90), 0};
+        extra.targetRotation = glm::quat(euler);
+        extra.progress = 0;
+    }
 }
 
 /// Finds a node by raytracing into a given direction from a given point

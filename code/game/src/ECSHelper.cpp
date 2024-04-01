@@ -18,6 +18,7 @@ Engine::Entity elevatorPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity kindredSpiritPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity assiPrefab = Engine::Entity::INVALID_ENTITY_ID;
+Engine::Entity cuballPrefab = Engine::Entity::INVALID_ENTITY_ID;
 
 void ECSHelper::Initialize()
 {
@@ -293,3 +294,35 @@ Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
 
     return enemy;
 }
+
+
+Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
+{
+    if(cuballPrefab == Engine::Entity::INVALID_ENTITY_ID)
+    {
+        cuballPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Cuball\\Cuball.glb", "Cuball_")[0];
+        ecsSystem->GetComponent<Engine::Transform>(cuballPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
+        ecsSystem->GetComponent<Engine::Transform>(cuballPrefab).SetScale(glm::vec3(0.0f));
+    }
+    Engine::Entity enemy = CopyEntity(cuballPrefab, true);
+    ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
+    ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
+    EnemyBehaviour behaviour;
+    behaviour.behaviour = EnemyBehaviour::Cuball;
+    behaviour.startPos = startPos;
+    behaviour.speed = Defines::Float("Cuball_Speed");
+    behaviour.bulletSpeed = Defines::Float("Cuball_BulletSpeed");
+    behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+    behaviour.enemyExtra.cuball = CuballExtra{};
+    behaviour.enemyExtra.cuball.cubeHealth = Defines::Int("Cuball_Cube_Health");
+    behaviour.enemyExtra.cuball.ballHealth = Defines::Int("Cuball_Ball_Health");
+    behaviour.enemyExtra.cuball.rotationParent = ecsSystem->CreateEntity();
+    ecsSystem->AddComponent<Engine::Transform>(behaviour.enemyExtra.cuball.rotationParent);
+    ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
+    ecsSystem->AddComponent<Health>(enemy, Health{behaviour.enemyExtra.cuball.cubeHealth, behaviour.enemyExtra.cuball.cubeHealth});
+
+    return enemy;
+}
+
