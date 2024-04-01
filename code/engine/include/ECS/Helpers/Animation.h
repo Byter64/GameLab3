@@ -40,8 +40,17 @@ namespace Engine
             static Interpolation StringToInterpolation(std::string interpolation);
         };
 
+        struct Action
+        {
+            std::string name;
+            std::vector<Channel> channels;
+            float startTime = std::numeric_limits<float>::infinity();
+            float endTime;
+            float duration;
+        };
         std::string name;
-        std::vector<Channel> channels;
+
+        std::vector<Action> actions;
         float startTime = std::numeric_limits<float>::infinity();
         float endTime;
         float duration;

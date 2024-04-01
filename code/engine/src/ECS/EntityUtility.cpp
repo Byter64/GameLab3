@@ -14,7 +14,7 @@
 namespace Engine
 {
     Entity GenerateEntities(const tinygltf::Node& root, Transform* parent, std::shared_ptr<tinygltf::Model> model);
-    Animation GenerateAnimation(const tinygltf::Animation& gltfAnimation, std::shared_ptr<tinygltf::Model> model);
+    Animation::Action GenerateAction(const tinygltf::Animation& gltfAnimation, std::shared_ptr<tinygltf::Model> model);
     std::vector<unsigned int> FindHierarchy(const tinygltf::Node& node, std::shared_ptr<tinygltf::Model> model, const tinygltf::Node& currentNode = tinygltf::Node(), std::vector<unsigned int> hierarchy = std::vector<unsigned int>());
 
     /**
@@ -126,12 +126,28 @@ namespace Engine
             entities.push_back(parent);
         }
 
-        //Add all animations in the model to the animation system
+        std::map<std::string, Animation> animations;
+
+        //Add all actions in the model to the animation system. Group them by their prefix (i.e. everything until the first '_')
         for(tinygltf::Animation& gltfAnimation : model->animations)
         {
-            Animation animation = GenerateAnimation(gltfAnimation, model);
-            animation.name = animationPrefix + animation.name;
-            Systems::animationSystem->AddAnimation(animation);
+            Animation::Action action = GenerateAction(gltfAnimation, model);
+            std::string animationName = action.name.substr(0, action.name.find('_'));
+
+            if(animations[animationName].startTime > action.startTime)
+                animations[animationName].startTime = action.startTime;
+
+            if(animations[animationName].endTime < action.endTime)
+                animations[animationName].endTime = action.endTime;
+
+            animations[animationName].actions.push_back(action);
+        }
+
+        for(auto& pair : animations)
+        {
+            pair.second.name = animationPrefix + pair.first;
+            pair.second.duration = pair.second.endTime - pair.second.startTime;
+            Systems::animationSystem->AddAnimation(pair.second);
         }
 
         return entities;
@@ -229,10 +245,10 @@ namespace Engine
         return entity;
     }
 
-    Animation GenerateAnimation(const tinygltf::Animation& gltfAnimation, std::shared_ptr<tinygltf::Model> model)
+    Animation::Action GenerateAction(const tinygltf::Animation& gltfAnimation, std::shared_ptr<tinygltf::Model> model)
     {
-        Animation animation;
-        animation.name = gltfAnimation.name;
+        Animation::Action action;
+        action.name = gltfAnimation.name;
 
         for(int i = 0; i < gltfAnimation.channels.size(); i++)
         {
@@ -285,28 +301,28 @@ namespace Engine
             {
                 auto iter = channel.functionTo4D.end();
                 std::advance(iter, -1);
-                if(iter->first > animation.endTime)
-                    animation.endTime = iter->first;
+                if(iter->first > action.endTime)
+                    action.endTime = iter->first;
 
-                if(channel.functionTo4D.begin()->first < animation.startTime)
-                    animation.startTime = channel.functionTo4D.begin()->first;
+                if(channel.functionTo4D.begin()->first < action.startTime)
+                    action.startTime = channel.functionTo4D.begin()->first;
             }
             else
             {
                 auto iter = channel.functionTo3D.end();
                 std::advance(iter, -1);
-                if(iter->first > animation.endTime)
-                    animation.endTime = iter->first;
+                if(iter->first > action.endTime)
+                    action.endTime = iter->first;
 
-                if(channel.functionTo3D.begin()->first < animation.startTime)
-                    animation.startTime = channel.functionTo3D.begin()->first;
+                if(channel.functionTo3D.begin()->first < action.startTime)
+                    action.startTime = channel.functionTo3D.begin()->first;
             }
 
-            animation.channels.push_back(channel);
+            action.channels.push_back(channel);
         }
 
-        animation.duration = animation.endTime - animation.startTime;
-        return animation;
+        action.duration = action.endTime - action.startTime;
+        return action;
     }
 
     std::vector<unsigned int> FindHierarchy(const tinygltf::Node& node, std::shared_ptr<tinygltf::Model> model, const tinygltf::Node& currentNode, std::vector<unsigned int> hierarchy)

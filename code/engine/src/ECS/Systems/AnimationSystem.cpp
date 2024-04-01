@@ -27,76 +27,82 @@ namespace Engine
     {
         for(Entity entity : entities)
         {
-            Animator& animator = ecsSystem->GetComponent<Animator>(entity);
-            Transform& rootTransform = ecsSystem->GetComponent<Transform>(entity);
-            Animation& animation = animations[animator.animationName];
+            Animator &animator = ecsSystem->GetComponent<Animator>(entity);
+            Transform &rootTransform = ecsSystem->GetComponent<Transform>(entity);
+            Animation &animation = animations[animator.animationName];
 
-            for(Animation::Channel const& channel : animation.channels)
+            for (Animation::Action const &action: animation.actions)
             {
-                Entity effectedEntity = FindEntityInHierarchy(entity, channel.hierarchy);
-                if(effectedEntity == Entity::INVALID_ENTITY_ID) continue;
-                Transform& transform = ecsSystem->GetComponent<Transform>(effectedEntity);
-
-                if(channel.target == Animation::Channel::Target::Rotation)
+                for (Animation::Channel const &channel: action.channels)
                 {
-                    auto iterator = channel.functionTo4D.upper_bound(animator.currentTime);
-                    //if animator.currentTime is beyond the channel's animation
-                    if (iterator == channel.functionTo4D.end())
+                    Entity effectedEntity = FindEntityInHierarchy(entity, channel.hierarchy);
+                    if (effectedEntity == Entity::INVALID_ENTITY_ID) continue;
+                    Transform &transform = ecsSystem->GetComponent<Transform>(effectedEntity);
+
+                    if (channel.target == Animation::Channel::Target::Rotation)
                     {
+                        auto iterator = channel.functionTo4D.upper_bound(animator.currentTime);
+                        //if animator.currentTime is beyond the channel's animation
+                        if (iterator == channel.functionTo4D.end())
+                        {
+                            std::advance(iterator, -1);
+                            SetValue(transform, (*iterator).second, channel.target);
+                            continue;
+                        }
+
+                        //if animator.currentTime is before the channel's animation
+                        if (iterator == channel.functionTo4D.begin())
+                        {
+                            SetValue(transform, (*iterator).second, channel.target);
+                            continue;
+                        }
+
+                        std::pair<float, glm::quat> const &upperBound = *iterator; //always greater than animator.currentTime
                         std::advance(iterator, -1);
-                        SetValue(transform, (*iterator).second, channel.target);
-                        continue;
-                    }
+                        std::pair<float, glm::quat> const &lowerBound = *iterator; // always smaller equal animator.currentTime
+                        float interpolationValue =
+                                (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
+                        glm::quat value = Interpolate(lowerBound.second, upperBound.second, interpolationValue,
+                                                      channel.interpolation);
 
-                    //if animator.currentTime is before the channel's animation
-                    if (iterator == channel.functionTo4D.begin())
+                        SetValue(transform, value, channel.target);
+                    } else
                     {
-                        SetValue(transform, (*iterator).second, channel.target);
-                        continue;
+                        auto iterator = channel.functionTo3D.upper_bound(animator.currentTime);
+                        //if animator.currentTime is beyond the channel's animation
+                        if (iterator == channel.functionTo3D.end())
+                        {
+                            std::advance(iterator, -1);
+                            SetValue(transform, (*iterator).second, channel.target);
+                            continue;
+                        }
+
+                        //if animator.currentTime is before the channel's animation
+                        if (iterator == channel.functionTo3D.begin())
+                        {
+                            SetValue(transform, (*iterator).second, channel.target);
+                            continue;
+                        }
+
+                        std::pair<float, glm::vec3> const &upperBound = *iterator; //always greater than animator.currentTime
+                        std::advance(iterator, -1);
+                        std::pair<float, glm::vec3> const &lowerBound = *iterator; // always smaller equal animator.currentTime
+                        float interpolationValue =
+                                (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
+
+                        SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue,
+                                                        channel.interpolation), channel.target);
                     }
-
-                    std::pair<float, glm::quat> const &upperBound = *iterator; //always greater than animator.currentTime
-                    std::advance(iterator, -1);
-                    std::pair<float, glm::quat> const &lowerBound = *iterator; // always smaller equal animator.currentTime
-                    float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
-                    glm::quat value = Interpolate(lowerBound.second, upperBound.second, interpolationValue, channel.interpolation);
-
-                    SetValue(transform, value, channel.target);
                 }
-                else
+
+                animator.currentTime += deltaTime * animator.speed;
+                if (animator.currentTime >= animation.endTime)
                 {
-                    auto iterator = channel.functionTo3D.upper_bound(animator.currentTime);
-                    //if animator.currentTime is beyond the channel's animation
-                    if (iterator == channel.functionTo3D.end())
-                    {
-                        std::advance(iterator, -1);
-                        SetValue(transform, (*iterator).second, channel.target);
-                        continue;
-                    }
-
-                    //if animator.currentTime is before the channel's animation
-                    if (iterator == channel.functionTo3D.begin())
-                    {
-                        SetValue(transform, (*iterator).second, channel.target);
-                        continue;
-                    }
-
-                    std::pair<float, glm::vec3> const &upperBound = *iterator; //always greater than animator.currentTime
-                    std::advance(iterator, -1);
-                    std::pair<float, glm::vec3> const &lowerBound = *iterator; // always smaller equal animator.currentTime
-                    float interpolationValue = (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
-
-                    SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue, channel.interpolation), channel.target);
+                    if (animator.isLooping)
+                        animator.currentTime -= animation.duration;
+                    else
+                        finishedAnimations.push_back(entity);
                 }
-            }
-
-            animator.currentTime += deltaTime * animator.speed;
-            if(animator.currentTime >= animation.endTime)
-            {
-                if(animator.isLooping)
-                    animator.currentTime -= animation.duration;
-                else
-                    finishedAnimations.push_back(entity);
             }
         }
 

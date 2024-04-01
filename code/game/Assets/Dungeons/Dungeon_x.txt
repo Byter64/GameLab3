@@ -1,4 +1,4 @@
-SinglePlayer 11 8
+SinglePlayer 10 8
 TwoPlayers 10 8  12 8
 
 wait 5
