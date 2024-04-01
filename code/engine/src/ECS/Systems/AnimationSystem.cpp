@@ -183,7 +183,7 @@ namespace Engine
             case Animation::Channel::Interpolation::Step:
                 return x;
             case Animation::Channel::Interpolation::Linear:
-                if(x.w < 0.03f)
+                if(x.w < 0.1f)
                     return x;
                 return glm::mix(x, y, a);
             case Animation::Channel::Interpolation::CubicSpline:
