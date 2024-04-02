@@ -28,7 +28,6 @@ namespace Engine
         for(Entity entity : entities)
         {
             Animator &animator = ecsSystem->GetComponent<Animator>(entity);
-            Transform &rootTransform = ecsSystem->GetComponent<Transform>(entity);
             Animation &animation = animations[animator.animationName];
 
             for (Animation::Action const &action: animation.actions)
@@ -66,7 +65,8 @@ namespace Engine
                                                       channel.interpolation);
 
                         SetValue(transform, value, channel.target);
-                    } else
+                    }
+                    else
                     {
                         auto iterator = channel.functionTo3D.upper_bound(animator.currentTime);
                         //if animator.currentTime is beyond the channel's animation
@@ -90,13 +90,12 @@ namespace Engine
                         float interpolationValue =
                                 (animator.currentTime - lowerBound.first) / (upperBound.first - lowerBound.first);
 
-                        SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue,
-                                                        channel.interpolation), channel.target);
+                        SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue,channel.interpolation), channel.target);
                     }
                 }
 
                 animator.currentTime += deltaTime * animator.speed;
-                if (animator.currentTime >= animation.endTime)
+                if ((animator.speed >= 0 && animator.currentTime >= animation.endTime) || (animator.speed < 0 && animator.currentTime <= animation.startTime))
                 {
                     if (animator.isLooping)
                         animator.currentTime -= animation.duration;
