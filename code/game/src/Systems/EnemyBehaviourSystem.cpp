@@ -102,8 +102,10 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                 break;
             case EnemyBehaviour::Assi:
                 UpdateAssi(entity, deltaTime);
+                break;
             case EnemyBehaviour::Cuball:
                 UpdateCuball(entity, deltaTime);
+                break;
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
         for(auto collision : collider.collisions)
@@ -123,6 +125,9 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                         break;
                     case EnemyBehaviour::Assi:
                         HandleDamageAssi(entity, other);
+                        break;
+                    case EnemyBehaviour::Cuball:
+                        HandleDamageCuball(entity, other);
                         break;
                 }
             }
@@ -167,6 +172,9 @@ void EnemyBehaviourSystem::HandleDamageHubertus(Engine::Entity entity, Engine::E
     //Bullet is already destroying itself, so no need to do it here
     Health& health = ecsSystem->GetComponent<Health>(entity);
     EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+
+    if(!behaviour.isActive) return;
+
     health.health--;
     if(health.health <= 0)
     {
@@ -204,6 +212,8 @@ void EnemyBehaviourSystem::HandleDamageKindredSpirit(Engine::Entity entity, Engi
 {
     EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     EnemyBehaviour& otherSpiritBehaviour = ecsSystem->GetComponent<EnemyBehaviour>(behaviour.enemyExtra.kindredSpirit.other);
+
+    if(!behaviour.isActive) return;
 
     behaviour.enemyExtra.kindredSpirit.timeWhenLastHit = std::chrono::system_clock::now();
     std::chrono::duration<float> timeDifference = (behaviour.enemyExtra.kindredSpirit.timeWhenLastHit - otherSpiritBehaviour.enemyExtra.kindredSpirit.timeWhenLastHit);
@@ -295,9 +305,11 @@ void EnemyBehaviourSystem::HandleDamageAssi(Engine::Entity entity, Engine::Entit
 {
     //Bullet is already destroying itself, so no need to do it here
     EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
     Engine::Transform& otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
+
+    if(!behaviour.isActive) return;
+
     glm::vec2 dir = otherTransform.GetGlobalTranslation() - transform.GetGlobalTranslation();
     dir = Miscellaneous::RoundTo4Directions(glm::vec3(dir, 0));
     glm::quat rot = glm::normalize(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(dir.y, dir.x))));
@@ -329,6 +341,12 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
     if(!behaviour.isActive) return;
 
     MoveCuball(behaviour, transform, deltaTime);
+}
+
+
+void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Entity other)
+{
+    //sgoänoänägf
 }
 
 void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
