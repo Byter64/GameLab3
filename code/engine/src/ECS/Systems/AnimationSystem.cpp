@@ -93,15 +93,14 @@ namespace Engine
                         SetValue(transform, Interpolate(lowerBound.second, upperBound.second, interpolationValue,channel.interpolation), channel.target);
                     }
                 }
-
-                animator.currentTime += deltaTime * animator.speed;
-                if ((animator.speed >= 0 && animator.currentTime >= animation.endTime) || (animator.speed < 0 && animator.currentTime <= animation.startTime))
-                {
-                    if (animator.isLooping)
-                        animator.currentTime -= animation.duration;
-                    else
-                        finishedAnimations.push_back(entity);
-                }
+            }
+            animator.currentTime += deltaTime * animator.speed;
+            if ((animator.speed >= 0 && animator.currentTime >= animation.endTime) || (animator.speed < 0 && animator.currentTime <= animation.startTime))
+            {
+                if (animator.isLooping)
+                    animator.currentTime -= animation.duration;
+                else
+                    finishedAnimations.push_back(entity);
             }
         }
 
