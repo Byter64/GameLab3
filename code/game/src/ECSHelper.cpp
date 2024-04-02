@@ -316,16 +316,14 @@ Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
     EnemyBehaviour behaviour;
     behaviour.behaviour = EnemyBehaviour::Cuball;
     behaviour.startPos = startPos;
-    behaviour.speed = Defines::Float("Cuball_Speed");
-    behaviour.bulletSpeed = Defines::Float("Cuball_BulletSpeed");
+    behaviour.speed = Defines::Float("Cuball_Cube_Speed");
+    behaviour.bulletSpeed = Defines::Float("Cuball_Cube_BulletSpeed");
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     behaviour.enemyExtra.cuball = CuballExtra{};
-    behaviour.enemyExtra.cuball.cubeHealth = Defines::Int("Cuball_Cube_Health");
-    behaviour.enemyExtra.cuball.ballHealth = Defines::Int("Cuball_Ball_Health");
     behaviour.enemyExtra.cuball.rotationParent = ecsSystem->CreateEntity();
     ecsSystem->AddComponent<Engine::Transform>(behaviour.enemyExtra.cuball.rotationParent);
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
-    ecsSystem->AddComponent<Health>(enemy, Health{behaviour.enemyExtra.cuball.cubeHealth, behaviour.enemyExtra.cuball.cubeHealth});
+    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Cuball_Cube_Health"), Defines::Int("Cuball_Cube_Health")});
 
     return enemy;
 }

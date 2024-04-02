@@ -38,7 +38,9 @@ Assi_IdleDuration_Min = 0.2
 Assi_IdleDuration_Max = 2.0
 
 Cuball_Score = 600
-Cuball_Speed = 2.0
-Cuball_Cube_Health = 1
+Cuball_Cube_Speed = 3.0
+Cuball_Cube_Health = 4
+Cuball_Cube_BulletSpeed = 2.0
+Cuball_Ball_Speed = 1.0
 Cuball_Ball_Health = 4
-Cuball_BulletSpeed = 1.0
+Cuball_Ball_BulletSpeed = 4.0

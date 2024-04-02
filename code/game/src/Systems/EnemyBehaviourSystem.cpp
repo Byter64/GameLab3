@@ -409,8 +409,10 @@ void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Ent
         if(extra.phase == CuballExtra::Cube)
         {
             behaviour.isActive = false;
-            health.health = extra.ballHealth;
-            health.maxHealth = extra.ballHealth;
+            health.health = Defines::Int("Cuball_Ball_Health");
+            health.maxHealth = Defines::Int("Cuball_Ball_Health");
+            behaviour.bulletSpeed = Defines::Float("Cuball_Ball_BulletSpeed");
+            behaviour.speed = Defines::Float("Cuball_Ball_Speed");
 
             Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
             Engine::Transform& parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
@@ -480,6 +482,7 @@ void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform
 void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
 {
     CuballExtra& extra = behaviour.enemyExtra.cuball;
+    std::pair<int, int> targetNode = behaviour.targetNode;
     if(extra.phase == CuballExtra::Cube)
     {
         extra.progress += deltaTime * behaviour.speed;
@@ -498,8 +501,7 @@ void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transfo
             transform.SetRotation(rot);
             transform.SetTranslation(pos);
 
-            if (glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) <
-                behaviour.speed * deltaTime * 2)
+            if (glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
             {
                 std::list<std::pair<int, int>> &list = graph[behaviour.targetNode];
                 auto iter = list.end();
@@ -516,8 +518,7 @@ void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transfo
                 behaviour.targetPos = ToGlobal(behaviour.targetNode);
                 behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
                 transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-                transform.SetRotation(glm::quat(
-                        glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
             }
 
             parent.SetTranslation(transform.GetTranslation() + glm::vec3(behaviour.movement * 0.5f, -0.5f));
@@ -541,6 +542,15 @@ void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transfo
         glm::vec3 axis = glm::normalize(glm::cross(glm::vec3(0, 0, -1), distance));
         glm::quat rotation = glm::quat(axis * glm::length(distance)) * transform.GetRotation();
         transform.SetRotation(rotation);
+    }
+
+    if(targetNode != behaviour.targetNode)
+    {
+        for(std::pair<int, int> node : graph[targetNode])
+        {
+            glm::vec3 direction = glm::vec3(ToGlobal(node), 0) - transform.GetGlobalTranslation();
+            ECSHelper::SpawnBullet(ecsSystem->GetEntity(transform), transform.GetGlobalTranslation(), direction, behaviour.bulletSpeed);
+        }
     }
 }
 

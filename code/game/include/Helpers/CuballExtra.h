@@ -18,6 +18,4 @@ struct CuballExtra
         Ball
     };
     Phase phase = Cube;
-    int cubeHealth;
-    int ballHealth;
 };
