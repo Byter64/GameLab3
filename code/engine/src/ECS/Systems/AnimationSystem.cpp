@@ -136,7 +136,7 @@ namespace Engine
             if(transform->GetChildren().size() < i)
                 return Entity::INVALID_ENTITY_ID;
 
-            transform = transform->GetChild(i);
+            transform = transform->GetChild(hierarchy[i]);
         }
 
         return ecsSystem->GetEntity(*transform);
