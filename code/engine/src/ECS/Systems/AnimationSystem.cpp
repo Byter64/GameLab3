@@ -133,7 +133,7 @@ namespace Engine
 
         for(int i = 0; i < hierarchy.size(); i++)
         {
-            if(transform->GetChildren().size() < i)
+            if(transform->GetChildren().size() < hierarchy[i])
                 return Entity::INVALID_ENTITY_ID;
 
             transform = transform->GetChild(hierarchy[i]);
