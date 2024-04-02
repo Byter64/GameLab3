@@ -15,7 +15,7 @@ namespace Engine
         for(Entity entity : entities)
         {
             MeshRenderer& meshRenderer = ecsSystem->GetComponent<MeshRenderer>(entity);
-            if(meshRenderer.renderLayer == WORLD)
+            if(meshRenderer.renderLayer == WORLD && meshRenderer.isActive)
                 Render(entity);
         }
 
@@ -23,7 +23,7 @@ namespace Engine
         for(Entity entity : entities)
         {
             MeshRenderer& meshRenderer = ecsSystem->GetComponent<MeshRenderer>(entity);
-            if(meshRenderer.renderLayer == UI)
+            if(meshRenderer.renderLayer == UI && meshRenderer.isActive)
                 Render(entity);
         }
     }

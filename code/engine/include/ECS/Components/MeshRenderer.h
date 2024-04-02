@@ -10,6 +10,7 @@ namespace Engine
     struct MeshRenderer
     {
         struct PrimitiveData;
+        bool isActive = true;
         RenderLayer renderLayer = WORLD;
         tinygltf::Mesh* mesh;
         std::shared_ptr<tinygltf::Model> model;
