@@ -301,8 +301,12 @@ Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
     if(cuballPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
         cuballPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Cuball\\Cuball.glb", "Cuball_")[0];
-        ecsSystem->GetComponent<Engine::Transform>(cuballPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
-        ecsSystem->GetComponent<Engine::Transform>(cuballPrefab).SetScale(glm::vec3(0.0f));
+        Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(cuballPrefab);
+        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
+        transform.SetScale(glm::vec3(0.0f));
+        ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(0))).isActive = false;
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
+            renderer->isActive = false;
     }
     Engine::Entity enemy = CopyEntity(cuballPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));

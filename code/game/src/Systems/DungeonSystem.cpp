@@ -93,6 +93,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
     static const std::string WAIT_KEYWORD = "wait";
     static const std::string SINGLE_KEYWORD = "singleplayer";
     static const std::string MULTI_KEYWORD = "twoplayers";
+    static const std::string MIRROR_KEYWORD = "mirror";
 
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
@@ -149,6 +150,11 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
                     Engine::Transform& transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
                     std::pair<int, int> pos2 = {std::stoi(file[i + 3]), std::stoi(file[i + 4])};
                     transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
+                }
+                else if(symbol == MIRROR_KEYWORD)
+                {
+                    std::pair<int, int> mirrors{std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    CuballExtra::mirrorDirection = mirrors;
                 }
                 else if(EnemyBehaviour::stringToBehaviour.count(symbol))
                 {
@@ -284,6 +290,7 @@ bool DungeonSystem::TryLoadTestDungeonAndEnemies(Engine::Entity entity)
     static const std::string WAIT_KEYWORD = "wait";
     static const std::string SINGLE_KEYWORD = "singleplayer";
     static const std::string MULTI_KEYWORD = "twoplayers";
+    static const std::string MIRROR_KEYWORD = "mirror";
 
     std::vector<std::string> file;
     bool noDungeon = false;
@@ -337,6 +344,11 @@ bool DungeonSystem::TryLoadTestDungeonAndEnemies(Engine::Entity entity)
                     Engine::Transform& transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
                     std::pair<int, int> pos2 = {std::stoi(file[i + 3]), std::stoi(file[i + 4])};
                     transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
+                }
+                else if(symbol == MIRROR_KEYWORD)
+                {
+                    std::pair<int, int> mirrors{std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    CuballExtra::mirrorDirection = mirrors;
                 }
                 else if(EnemyBehaviour::stringToBehaviour.count(symbol))
                 {

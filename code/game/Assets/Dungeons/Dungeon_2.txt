@@ -1,5 +1,6 @@
 SinglePlayer 11 7
 TwoPlayers 11 7  11 9
+Mirror 1 0
 
 Assi 21 8
 

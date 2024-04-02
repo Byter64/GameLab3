@@ -338,6 +338,48 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
     if(!ecsSystem->HasComponent<Engine::Animator>(entity)) behaviour.isActive = true;
+    if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::MoveToNewPosition)
+    {
+        behaviour.isActive = false;
+
+        std::pair<int, int> pos{-1, -1};
+        while(IsWall(pos))
+        {
+            std::pair<int, int> dungeonPos = ToDungeon(transform.GetTranslation());
+            int maxX = CuballExtra::mirrorDirection.first == 1 ? wallMap.size() / 2 : wallMap.size();
+            int maxY = CuballExtra::mirrorDirection.second == 1 ? wallMap[0].size() / 2 : wallMap[0].size();
+            int offsetX = dungeonPos.first < maxX && CuballExtra::mirrorDirection.first == 1 ? maxX : 0;
+            int offsetY = dungeonPos.second < maxY && CuballExtra::mirrorDirection.second == 1 ? maxY : 0;
+
+            pos = {rand() % maxX, rand() % maxY};
+            pos.first += offsetX;
+            pos.second += offsetY;
+        }
+        transform.SetTranslation(glm::vec3(ToGlobal(pos), 0));
+        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning");
+        behaviour.enemyExtra.cuball.phase = CuballExtra::BecomeBall;
+    }
+    else if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::BecomeBall)
+    {
+        behaviour.isActive = false;
+
+        ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(0))).isActive = true;
+        ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(1))).isActive = false;
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
+            renderer->isActive = true;
+
+        behaviour.isActive = false;
+        transform.SetRotation(glm::identity<glm::quat>());
+        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_CubeToBall");
+        behaviour.enemyExtra.cuball.phase = CuballExtra::DisableMeshes;
+    }
+    else if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::DisableMeshes)
+    {
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
+            renderer->isActive = false;
+        behaviour.enemyExtra.cuball.phase = CuballExtra::Ball;
+    }
+
     if(!behaviour.isActive) return;
 
     MoveCuball(behaviour, transform, deltaTime);
@@ -346,7 +388,42 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
 
 void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Entity other)
 {
-    //sgoänoänägf
+    //Bullet is already destroying itself, so no need to do it here
+    Health& health = ecsSystem->GetComponent<Health>(entity);
+    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    CuballExtra& extra = behaviour.enemyExtra.cuball;
+
+    if(!behaviour.isActive) return;
+
+    health.health--;
+    if(health.health <= 0)
+    {
+        if(extra.phase == CuballExtra::Cube)
+        {
+            behaviour.isActive = false;
+            health.health = extra.ballHealth;
+            health.maxHealth = extra.ballHealth;
+
+            Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+            Engine::Transform& parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
+            glm::vec3 pos = transform.GetGlobalTranslation();
+            transform.SetParent(nullptr);
+            transform.SetRotation(glm::quat({glm::radians(90.0f), 0, 0}));
+            transform.SetTranslation(pos);
+
+            Engine::Animation& cuballSpawning = Engine::Systems::animationSystem->GetAnimation("Cuball_Spawning");
+            Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning", false, cuballSpawning.endTime, -1);
+
+            extra.phase = CuballExtra::MoveToNewPosition;
+            return;
+        }
+
+        RemoveEntityWithChildren(entity);
+        float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
+        int score = EnemyBehaviour::scores[EnemyBehaviour::Hubertus] - (int)(timeAlive * enemyScoreDecrease);
+        score = score < 1 ? 1 : score;
+        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
+    }
 }
 
 void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
@@ -512,6 +589,13 @@ bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> &wallMap, int x
     if((!wallMap[x + 1][y] && !wallMap[x - 1][y]) || (!wallMap[x][y + 1] && !wallMap[x][y - 1])) return false;
     //position is a corner
     return true;
+}
+
+bool EnemyBehaviourSystem::IsWall(std::pair<int, int> pos)
+{
+    if(pos.first < 0 || pos.second < 0 || pos.first >= wallMap.size() || pos.second >= wallMap[0].size())
+        return true;
+    return wallMap[pos.first][pos.second];
 }
 
 /// This needs to be called before the first call to Update

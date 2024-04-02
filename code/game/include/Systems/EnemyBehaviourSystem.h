@@ -14,13 +14,13 @@ class EnemyBehaviourSystem : public Engine::System
     static inline glm::vec2 originOffset;
 
     void EntityAdded(Engine::Entity entity);
-
     void EntityRemoved(Engine::Entity entity);
 
     std::pair<int, int> FindNode(int startx, int starty, int dirx, int diry);
     std::vector<std::pair<int, int>> FindNodes(int startx, int starty);
     std::pair<int, int> FindWall(int startx, int starty, int dirx, int diry);
 
+    bool IsWall(std::pair<int, int> pos);
     bool IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y);
 
     inline static float enemyScoreDecrease;
