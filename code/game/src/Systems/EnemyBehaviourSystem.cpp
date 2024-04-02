@@ -369,7 +369,6 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
             renderer->isActive = true;
 
         behaviour.isActive = false;
-        transform.SetRotation(glm::identity<glm::quat>());
         Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_CubeToBall");
         behaviour.enemyExtra.cuball.phase = CuballExtra::DisableMeshes;
     }
@@ -377,6 +376,15 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
     {
         for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
             renderer->isActive = false;
+
+        std::pair<int, int> dungeonPos = ToDungeon(transform.GetGlobalTranslation());
+        std::vector<std::pair<int,int>> targetNodes = FindNodes(dungeonPos.first, dungeonPos.second);
+        std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
+        behaviour.oldTargetNode = dungeonPos;
+        behaviour.targetNode = target;
+        behaviour.targetPos = ToGlobal(behaviour.targetNode);
+        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
+
         behaviour.enemyExtra.cuball.phase = CuballExtra::Ball;
     }
 
@@ -411,6 +419,9 @@ void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Ent
             transform.SetRotation(glm::quat({glm::radians(90.0f), 0, 0}));
             transform.SetTranslation(pos);
 
+            ecsSystem->RemoveEntity(extra.rotationParent);
+            extra.rotationParent = Engine::Entity::INVALID_ENTITY_ID;
+
             Engine::Animation& cuballSpawning = Engine::Systems::animationSystem->GetAnimation("Cuball_Spawning");
             Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning", false, cuballSpawning.endTime, -1);
 
@@ -426,7 +437,7 @@ void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Ent
     }
 }
 
-void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime)
+void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime, bool setRotation)
 {
     transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.speed * deltaTime, 0));
     if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
@@ -446,7 +457,8 @@ void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Tr
         behaviour.targetPos = ToGlobal(behaviour.targetNode);
         behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
         transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+        if(setRotation)
+            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
     }
 }
 
@@ -468,50 +480,67 @@ void EnemyBehaviourSystem::MoveAssi(EnemyBehaviour &behaviour, Engine::Transform
 void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
 {
     CuballExtra& extra = behaviour.enemyExtra.cuball;
-    extra.progress += deltaTime * behaviour.speed;
-    float easedProgress = extra.progress * extra.progress * extra.progress;
-    if(easedProgress >= 1.0f)
-        easedProgress = 1.0f;
-    ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent).SetRotation(glm::mix(extra.startRotation, extra.targetRotation, easedProgress));
-
-    if(easedProgress >= 1.0f)
+    if(extra.phase == CuballExtra::Cube)
     {
-        Engine::Transform& parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
-        glm::quat rot = transform.GetGlobalRotation();
-        glm::vec3 pos = transform.GetGlobalTranslation();
-        transform.SetParent(nullptr);
-        transform.SetRotation(rot);
-        transform.SetTranslation(pos);
+        extra.progress += deltaTime * behaviour.speed;
+        float easedProgress = extra.progress * extra.progress * extra.progress;
+        if (easedProgress >= 1.0f)
+            easedProgress = 1.0f;
+        ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent).SetRotation(
+                glm::mix(extra.startRotation, extra.targetRotation, easedProgress));
 
-        if(glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
+        if (easedProgress >= 1.0f)
         {
-            std::list<std::pair<int, int>> &list = graph[behaviour.targetNode];
-            auto iter = list.end();
-            int i = 0;
-            do
+            Engine::Transform &parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
+            glm::quat rot = transform.GetGlobalRotation();
+            glm::vec3 pos = transform.GetGlobalTranslation();
+            transform.SetParent(nullptr);
+            transform.SetRotation(rot);
+            transform.SetTranslation(pos);
+
+            if (glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) <
+                behaviour.speed * deltaTime * 2)
             {
-                int index = rand() % list.size();
-                iter = list.begin();
-                std::advance(iter, index);
-                i++;
-            } while (i < 5 && *iter == behaviour.oldTargetNode);
-            behaviour.oldTargetNode = behaviour.targetNode;
-            behaviour.targetNode = *iter;
-            behaviour.targetPos = ToGlobal(behaviour.targetNode);
-            behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
-            transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                std::list<std::pair<int, int>> &list = graph[behaviour.targetNode];
+                auto iter = list.end();
+                int i = 0;
+                do
+                {
+                    int index = rand() % list.size();
+                    iter = list.begin();
+                    std::advance(iter, index);
+                    i++;
+                } while (i < 5 && *iter == behaviour.oldTargetNode);
+                behaviour.oldTargetNode = behaviour.targetNode;
+                behaviour.targetNode = *iter;
+                behaviour.targetPos = ToGlobal(behaviour.targetNode);
+                behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
+                transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+                transform.SetRotation(glm::quat(
+                        glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+            }
+
+            parent.SetTranslation(transform.GetTranslation() + glm::vec3(behaviour.movement * 0.5f, -0.5f));
+            parent.SetRotation(glm::identity<glm::quat>());
+            transform.SetParent(&parent);
+            transform.SetTranslation(-glm::vec3(behaviour.movement * 0.5f, -0.5f));
+
+            extra.startRotation = glm::identity<glm::quat>();
+            glm::vec3 euler = {glm::radians(behaviour.movement.y * -90), glm::radians(behaviour.movement.x * 90), 0};
+            extra.targetRotation = glm::quat(euler);
+            extra.progress = 0;
         }
-
-        parent.SetTranslation(transform.GetTranslation() + glm::vec3(behaviour.movement * 0.5f, -0.5f));
-        parent.SetRotation(glm::identity<glm::quat>());
-        transform.SetParent(&parent);
-        transform.SetTranslation(-glm::vec3(behaviour.movement * 0.5f, -0.5f));
-
-        extra.startRotation = glm::identity<glm::quat>();
-        glm::vec3 euler = {glm::radians(behaviour.movement.y * -90), glm::radians(behaviour.movement.x * 90), 0};
-        extra.targetRotation = glm::quat(euler);
-        extra.progress = 0;
+    }
+    else if (extra.phase == CuballExtra::Ball)
+    {
+        glm::vec3 distance = transform.GetGlobalTranslation();
+        MoveEnemyNormal(behaviour, transform, deltaTime, false);
+        distance = transform.GetGlobalTranslation() - distance;
+        //distance in radiance = (distance * 2 * pi) / circumference
+        distance = distance * -2.0f * glm::pi<float>() / glm::pi<float>();
+        glm::vec3 axis = glm::normalize(glm::cross(glm::vec3(0, 0, -1), distance));
+        glm::quat rotation = glm::quat(axis * glm::length(distance)) * transform.GetRotation();
+        transform.SetRotation(rotation);
     }
 }
 
