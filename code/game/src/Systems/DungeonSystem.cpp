@@ -6,6 +6,7 @@
 #include "ECSExtension.h"
 #include <cstring>
 #include <algorithm>
+#include "CollisionLayer.h"
 
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
 extern std::pair<Engine::Entity, Engine::Entity> players;
@@ -243,6 +244,11 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
     }
     enemyBehaviourSystem->ChangeWallMap(wallMap);
 
+    Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
+    collider.map = wallMap;
+    collider.layer = (unsigned char)CollisionLayer::Dungeon;
+    collider.position = {wallMap.size() * -0.5f, wallMap[0].size() * -0.5f, 0};
+
 }
 
 bool DungeonSystem::TryLoadTestDungeonAndEnemies(Engine::Entity entity)
@@ -286,6 +292,12 @@ bool DungeonSystem::TryLoadTestDungeonAndEnemies(Engine::Entity entity)
         }
     }
     enemyBehaviourSystem->ChangeWallMap(wallMap);
+
+    Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
+    collider.map = wallMap;
+    collider.layer = (unsigned char)CollisionLayer::Dungeon;
+    collider.position = {wallMap.size() / 2, wallMap[0].size() / 2, 0};
+    collider.position *= -1;
 
     static const std::string WAIT_KEYWORD = "wait";
     static const std::string SINGLE_KEYWORD = "singleplayer";

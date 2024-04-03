@@ -163,6 +163,8 @@ namespace Engine
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<MeshRenderer>(entity));
         if(ecsSystem->HasComponent<BoxCollider>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<BoxCollider>(entity));
+        if(ecsSystem->HasComponent<TilemapCollider>(entity))
+            ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<TilemapCollider>(entity));
         if(ecsSystem->HasComponent<Text>(entity))
             ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Text>(entity));
 

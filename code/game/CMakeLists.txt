@@ -97,6 +97,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/Miscellaneous.cpp
         include/Miscellaneous.h
         include/Helpers/CuballExtra.h
+        ../engine/include/ECS/Components/TilemapCollider.h
 )
 
 set(EXE_FILE Game)

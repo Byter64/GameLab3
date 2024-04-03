@@ -12,6 +12,7 @@
 #include "ECS/Components/Transform.h"
 #include "ECS/Components/MeshRenderer.h"
 #include "ECS/Components/BoxCollider.h"
+#include "ECS/Components/TilemapCollider.h"
 #include "ECS/Components/Text.h"
 #include "ECS/Components/Animator.h"
 #include "ECS/Systems/TransformParentSystem.h"

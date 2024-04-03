@@ -5,15 +5,58 @@
 
 namespace Engine
 {
-    void CollisionSystem::CheckCollision(Entity entity1, Entity entity2)
+    void CollisionSystem::CheckCollisions()
     {
-        BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(entity1);
-        BoxCollider& collider2 = ecsSystem->GetComponent<BoxCollider>(entity2);
+        for(Entity entity : entitiesWithBoxColliders)
+        {
+            BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
+            CleanEnterCollision(collider);
+            CleanExitCollision(collider);
+        }
 
-        bool areColliding = CheckCollision(collider1, collider2);
+        for(Entity entity : entitiesWithTilemapColliders)
+        {
+            TilemapCollider& collider = ecsSystem->GetComponent<TilemapCollider>(entity);
+            CleanEnterCollision(collider);
+            CleanExitCollision(collider);
+        }
 
-        Collision collision1 = {entity1, entity2};
-        Collision collision2 = {entity2, entity1};
+        for(auto entity1: entitiesWithBoxColliders)
+        {
+            BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(entity1);
+            if(ecsSystem->GetComponent<BoxCollider>(entity1).isStatic) continue;
+
+            for(auto entity2: entitiesWithBoxColliders)
+            {
+                BoxCollider& collider2 = ecsSystem->GetComponent<BoxCollider>(entity2);
+                if(ignoredLayers[collider1.layer].count(collider2.layer)) continue;
+                if(entity1 == entity2) continue;
+
+                bool areColliding = CheckCollision(collider1, collider2);
+                UpdateCollision(collider1, collider2, areColliding);
+            }
+        }
+
+        for(auto entity1: entitiesWithBoxColliders)
+        {
+            BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(entity1);
+            if(ecsSystem->GetComponent<BoxCollider>(entity1).isStatic) continue;
+
+            for(auto entity2: entitiesWithTilemapColliders)
+            {
+                TilemapCollider& collider2 = ecsSystem->GetComponent<TilemapCollider>(entity2);
+                if(ignoredLayers[collider1.layer].count(collider2.layer)) continue;
+
+                bool areColliding = CheckCollision(collider2, collider1);
+                UpdateCollision(collider2, collider1, areColliding);
+            }
+        }
+    }
+
+    void CollisionSystem::UpdateCollision(BoxCollider &collider1, BoxCollider &collider2, bool areColliding)
+    {
+        Collision collision1 = {ecsSystem->GetEntity(collider1), ecsSystem->GetEntity(collider2)};
+        Collision collision2 = {ecsSystem->GetEntity(collider2), ecsSystem->GetEntity(collider1)};
 
         if(!areColliding && collider1.collisions.find(collision1) != collider1.collisions.end())
         {
@@ -29,27 +72,22 @@ namespace Engine
         }
     }
 
-    void CollisionSystem::CheckCollisions()
+    void CollisionSystem::UpdateCollision(TilemapCollider &collider1, BoxCollider &collider2, bool areColliding)
     {
-        for(Entity entity : entities)
+        Collision collision1 = {ecsSystem->GetEntity(collider1), ecsSystem->GetEntity(collider2)};
+        Collision collision2 = {ecsSystem->GetEntity(collider2), ecsSystem->GetEntity(collider1)};
+
+        if(!areColliding && collider1.collisions.find(collision1) != collider1.collisions.end())
         {
-            CleanEnterCollision(entity);
-            CleanExitCollision(entity);
+            //End collision
+            collider1.collisions[collision1] = Collision::State::EXIT;
+            collider2.collisions[collision2] = Collision::State::EXIT;
         }
-
-        for(auto entity1 = entities.begin(); entity1 != entities.end(); entity1++)
+        else if (areColliding && collider1.collisions.find(collision1) == collider1.collisions.end())
         {
-            BoxCollider& collider1 = ecsSystem->GetComponent<BoxCollider>(*entity1);
-            if(ecsSystem->GetComponent<BoxCollider>(*entity1).isStatic) continue;
-
-            for(auto entity2 = entities.begin(); entity2 != entities.end(); entity2++)
-            {
-                BoxCollider& collider2 = ecsSystem->GetComponent<BoxCollider>(*entity2);
-                if(ignoredLayers[collider1.layer].count(collider2.layer)) continue;
-                if(entity1 == entity2) continue;
-
-                CheckCollision(*entity1, *entity2);
-            }
+            //Start collision
+            collider1.collisions[collision1] = Collision::State::ENTER;
+            collider2.collisions[collision2] = Collision::State::ENTER;
         }
     }
 
@@ -80,50 +118,107 @@ namespace Engine
         return areColliding;
     }
 
-    void CollisionSystem::CleanExitCollision(Entity entity)
+    bool CollisionSystem::CheckCollision(const TilemapCollider &collider1, const BoxCollider &collider2)
     {
-        BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
+        Transform& transform1 = ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider1));
+        Transform& transform2 = ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2));
 
-        for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
-        {
-            if(iter->second == Collision::State::EXIT)
+        transform1.AddTranslation(collider1.position);
+        transform2.AddTranslation(collider2.position);
+        glm::vec3 position1 = transform1.GetGlobalTranslation();
+        glm::vec3 position2 = transform2.GetGlobalTranslation();
+        transform1.AddTranslation(-collider1.position);
+        transform2.AddTranslation(-collider2.position);
+
+        glm::vec3 distance = position2 - position1;
+        std::pair<int, int> origin = {(int)std::round(distance.x), (int)std::round(distance.y)};
+        int xtol = 3;
+        int ytol = 3;
+        int x = origin.first - xtol < 0 ? 0 : origin.first - xtol;
+        int y = origin.second - ytol < 0 ? 0 : origin.second - ytol;
+
+        for(x = origin.first - xtol < 0 ? 0 : origin.first - xtol; x < origin.first + xtol && x < collider1.map.size(); x++)
+            for(y = origin.second - ytol < 0 ? 0 : origin.second - ytol; y < origin.second + ytol && y < collider1.map[0].size(); y++)
             {
-                iter = collider.collisions.erase(iter);
+                if(!collider1.map[x][y]) continue;
+
+                glm::vec3 size1 = glm::vec3(0.5f); //a box of a tilemap always has a radius of 0.5f
+                glm::vec3 size2 = collider2.size * transform2.GetGlobalScale() * 0.5f;
+                glm::vec3 tilePosition = position1 + glm::vec3(x, y, 0);
+
+                bool areColliding = true;
+                if ( std::abs(tilePosition[0] - position2[0]) > (size1[0] + size2[0]) ) areColliding = false;
+                if ( std::abs(tilePosition[1] - position2[1]) > (size1[1] + size2[1]) ) areColliding = false;
+                if ( std::abs(tilePosition[2] - position2[2]) > (size1[2] + size2[2]) ) areColliding = false;
+
+                if(areColliding)
+                    return true;
             }
-            else
-            {
-                iter++;
-            }
-        }
+        return false;
     }
 
-    void CollisionSystem::CleanEnterCollision(Entity entity)
+    void CollisionSystem::CleanExitCollision(BoxCollider &collider)
     {
-        BoxCollider& collider = ecsSystem->GetComponent<BoxCollider>(entity);
+        for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
+            if(iter->second == Collision::State::EXIT)
+                iter = collider.collisions.erase(iter);
+            else
+                iter++;
+    }
 
+    void CollisionSystem::CleanExitCollision(TilemapCollider &collider)
+    {
+        for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
+            if(iter->second == Collision::State::EXIT)
+                iter = collider.collisions.erase(iter);
+            else
+                iter++;
+    }
+
+    void CollisionSystem::CleanEnterCollision(BoxCollider& collider)
+    {
         for(auto pair : collider.collisions)
-        {
             if(pair.second == Collision::State::ENTER)
-            {
                 pair.second = Collision::State::STAY;
-            }
-        }
+    }
+
+    void CollisionSystem::CleanEnterCollision(TilemapCollider& collider)
+    {
+        for(auto pair : collider.collisions)
+            if(pair.second == Collision::State::ENTER)
+                pair.second = Collision::State::STAY;
     }
 
     void CollisionSystem::EntityAdded(Entity entity)
     {
-
+        if(ecsSystem->HasComponent<BoxCollider>(entity))
+            entitiesWithBoxColliders.insert(entity);
+        else if(ecsSystem->HasComponent<TilemapCollider>(entity))
+            entitiesWithTilemapColliders.insert(entity);
     }
 
     void CollisionSystem::EntityRemoved(Entity entity)
     {
-        BoxCollider &collider = ecsSystem->GetComponent<BoxCollider>(entity);
-        for (auto collision: collider.collisions)
+        std::map<Collision, Collision::State> const &collisions = entitiesWithBoxColliders.count(entity) ?
+                ecsSystem->GetComponent<BoxCollider>(entity).collisions : ecsSystem->GetComponent<TilemapCollider>(entity).collisions;
+
+        entitiesWithBoxColliders.erase(entity);
+        entitiesWithTilemapColliders.erase(entity);
+
+        for (auto collision: collisions)
         {
             Entity other = collision.first.other;
             Collision col = {other, entity};
-            BoxCollider &otherCollider = ecsSystem->GetComponent<Engine::BoxCollider>(other);
-            otherCollider.collisions.erase(col);
+            if (ecsSystem->HasComponent<BoxCollider>(other))
+            {
+                BoxCollider &otherCollider = ecsSystem->GetComponent<BoxCollider>(other);
+                otherCollider.collisions.erase(col);
+            }
+            else if (ecsSystem->HasComponent<TilemapCollider>(other))
+            {
+                TilemapCollider &otherCollider = ecsSystem->GetComponent<TilemapCollider>(other);
+                otherCollider.collisions.erase(col);
+            }
         }
     }
 
@@ -140,5 +235,4 @@ namespace Engine
             ignoredLayers[layer2].insert(layer1);
         }
     }
-
 } // Engine

@@ -115,6 +115,7 @@ void InitializeECS()
     ecsSystem->RegisterComponent<Engine::Transform>();
     ecsSystem->RegisterComponent<Engine::MeshRenderer>();
     ecsSystem->RegisterComponent<Engine::BoxCollider>();
+    ecsSystem->RegisterComponent<Engine::TilemapCollider>();
     ecsSystem->RegisterComponent<Engine::Text>();
     ecsSystem->RegisterComponent<Engine::Animator>();
 
@@ -126,24 +127,28 @@ void InitializeECS()
     Engine::Signature renderSignature;
     renderSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     renderSignature.set(ecsSystem->GetComponentType<Engine::MeshRenderer>());
-    ecsSystem->SetSystemSignature<Engine::RenderSystem>(renderSignature);
+    ecsSystem->AddSystemSignature<Engine::RenderSystem>(renderSignature);
 
     Engine::Systems::collisionSystem = ecsSystem->RegisterSystem<Engine::CollisionSystem>();
     Engine::Signature collisionSignature;
     collisionSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     collisionSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    ecsSystem->SetSystemSignature<Engine::CollisionSystem>(collisionSignature);
+    ecsSystem->AddSystemSignature<Engine::CollisionSystem>(collisionSignature);
+
+    collisionSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>(), false);
+    collisionSignature.set(ecsSystem->GetComponentType<Engine::TilemapCollider>());
+    ecsSystem->AddSystemSignature<Engine::CollisionSystem>(collisionSignature);
 
     Engine::Systems::textRenderSystem = ecsSystem->RegisterSystem<Engine::TextRenderSystem>();
     Engine::Signature textRenderSignature;
     textRenderSignature.set(ecsSystem->GetComponentType<Engine::Text>());
-    ecsSystem->SetSystemSignature<Engine::TextRenderSystem>(textRenderSignature);
+    ecsSystem->AddSystemSignature<Engine::TextRenderSystem>(textRenderSignature);
 
     Engine::Systems::animationSystem = ecsSystem->RegisterSystem<Engine::AnimationSystem>();
     Engine::Signature animationSignature;
     animationSignature.set(ecsSystem->GetComponentType<Engine::Animator>());
     animationSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
-    ecsSystem->SetSystemSignature<Engine::AnimationSystem>(animationSignature);
+    ecsSystem->AddSystemSignature<Engine::AnimationSystem>(animationSignature);
 }
 
 
