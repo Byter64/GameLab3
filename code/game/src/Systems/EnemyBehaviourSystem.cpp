@@ -433,7 +433,7 @@ void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Ent
 
         RemoveEntityWithChildren(entity);
         float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
-        int score = EnemyBehaviour::scores[EnemyBehaviour::Hubertus] - (int)(timeAlive * enemyScoreDecrease);
+        int score = EnemyBehaviour::scores[EnemyBehaviour::Cuball] - (int)(timeAlive * enemyScoreDecrease);
         score = score < 1 ? 1 : score;
         ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
     }
