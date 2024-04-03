@@ -247,7 +247,8 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
     Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
     collider.map = wallMap;
     collider.layer = (unsigned char)CollisionLayer::Dungeon;
-    collider.position = {wallMap.size() * -0.5f, wallMap[0].size() * -0.5f, 0};
+    collider.position = {wallMap.size() / 2, wallMap[0].size() / 2, 0};
+    collider.position *= -1;
 
 }
 

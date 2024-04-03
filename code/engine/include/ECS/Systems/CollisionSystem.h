@@ -24,12 +24,12 @@ namespace Engine
         void CleanEnterCollision(TilemapCollider& collider);
 
         void UpdateCollision(BoxCollider &collider1, BoxCollider &collider2, bool areColliding);
-        void UpdateCollision(TilemapCollider &collider1, BoxCollider &collider2, bool areColliding);
+        void UpdateCollision(TilemapCollider &collider1, BoxCollider &collider2, bool areColliding, glm::vec3 tilePos);
 
     public:
         void CheckCollisions();
         bool CheckCollision(BoxCollider const &collider1, BoxCollider const &collider2);
-        bool CheckCollision(TilemapCollider const &collider1, BoxCollider const &collider2);
+        std::pair<bool, glm::vec3> CheckCollision(TilemapCollider const &collider1, BoxCollider const &collider2);
         void SetCollisionBetweenLayers(unsigned char layer1, unsigned char layer2, bool canCollide);
     };
 

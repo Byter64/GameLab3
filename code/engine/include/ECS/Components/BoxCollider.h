@@ -16,6 +16,6 @@ namespace Engine
          */
         glm::vec3 size{1};
 
-        std::map<Collision, Collision::State> collisions;
+        std::vector<Collision> collisions;
     };
 } // Engine

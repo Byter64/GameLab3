@@ -108,9 +108,9 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                 break;
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
-        for(auto collision : collider.collisions)
+        for(auto& collision : collider.collisions)
         {
-            Engine::Entity other = collision.first.other;
+            Engine::Entity other = collision.other;
             //If is a bullet and was not shot from an enemy
             if(ecsSystem->HasComponent<Bullet>(other) && !ecsSystem->HasComponent<EnemyBehaviour>(ecsSystem->GetComponent<Bullet>(other).spawner))
             {

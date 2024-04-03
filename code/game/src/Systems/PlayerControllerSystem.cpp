@@ -45,9 +45,9 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
 
     glm::vec3 averageDirection{0};
     int count = 0;
-    for(auto pair : boxCollider.collisions)
+    for(auto& collision : boxCollider.collisions)
     {
-        Engine::Entity other = pair.first.other;
+        Engine::Entity other = collision.other;
         if(ecsSystem->HasComponent<Loot>(other))
         {
             controller.AddScore(ecsSystem->GetComponent<Loot>(other).score);
@@ -73,9 +73,10 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
                 }
             }
         }
-        //If kindredSpirit or Assi was hit
+        //If kindredSpirit or Assi or Cuball was hit
         else if (ecsSystem->HasComponent<EnemyBehaviour>(other) && (ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::KindredSpirit ||
-                                                                            ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::Assi))
+                                                                            ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::Assi ||
+                                                                            ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::Cuball))
         {
             if(controller.stunnedTimer < 0.0f)
             {
@@ -90,8 +91,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         }
         else
         {
-            Engine::Transform &otherTransform = ecsSystem->GetComponent<Engine::Transform>(other);
-            glm::vec2 distance = transform.GetGlobalTranslation() - otherTransform.GetGlobalTranslation();
+            glm::vec2 distance = collision.entityPos - collision.otherPos;
             averageDirection += glm::vec3(distance, 0);
             count++;
         }

@@ -47,47 +47,77 @@ namespace Engine
                 TilemapCollider& collider2 = ecsSystem->GetComponent<TilemapCollider>(entity2);
                 if(ignoredLayers[collider1.layer].count(collider2.layer)) continue;
 
-                bool areColliding = CheckCollision(collider2, collider1);
-                UpdateCollision(collider2, collider1, areColliding);
+                std::pair<bool, glm::vec3> result = CheckCollision(collider2, collider1);
+                UpdateCollision(collider2, collider1, result.first, result.second);
             }
         }
     }
 
     void CollisionSystem::UpdateCollision(BoxCollider &collider1, BoxCollider &collider2, bool areColliding)
     {
-        Collision collision1 = {ecsSystem->GetEntity(collider1), ecsSystem->GetEntity(collider2)};
-        Collision collision2 = {ecsSystem->GetEntity(collider2), ecsSystem->GetEntity(collider1)};
+        Collision collision1 = {ecsSystem->GetEntity(collider1), ecsSystem->GetEntity(collider2),
+                                ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider1)).GetGlobalTranslation(),
+                                ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2)).GetGlobalTranslation()};
+        Collision collision2 = {ecsSystem->GetEntity(collider2), ecsSystem->GetEntity(collider1),
+                                ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2)).GetGlobalTranslation(),
+                                ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider1)).GetGlobalTranslation()};
 
-        if(!areColliding && collider1.collisions.find(collision1) != collider1.collisions.end())
+        if(!areColliding)
         {
-            //End collision
-            collider1.collisions[collision1] = Collision::State::EXIT;
-            collider2.collisions[collision2] = Collision::State::EXIT;
+            auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision1);
+            if(iter1 != collider1.collisions.end())
+            {
+                //End collision
+                iter1->state = Collision::State::EXIT;
+                iter2->state = Collision::State::EXIT;
+            }
         }
-        else if (areColliding && collider1.collisions.find(collision1) == collider1.collisions.end())
+        else if (areColliding)
         {
-            //Start collision
-            collider1.collisions[collision1] = Collision::State::ENTER;
-            collider2.collisions[collision2] = Collision::State::ENTER;
+            auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision1);
+            if(iter1 == collider1.collisions.end())
+            {
+                //Start collision
+                iter1->state = Collision::State::ENTER;
+                iter2->state = Collision::State::ENTER;
+            }
         }
     }
 
-    void CollisionSystem::UpdateCollision(TilemapCollider &collider1, BoxCollider &collider2, bool areColliding)
+    void CollisionSystem::UpdateCollision(TilemapCollider &collider1, BoxCollider &collider2, bool areColliding, glm::vec3 tilePos)
     {
-        Collision collision1 = {ecsSystem->GetEntity(collider1), ecsSystem->GetEntity(collider2)};
-        Collision collision2 = {ecsSystem->GetEntity(collider2), ecsSystem->GetEntity(collider1)};
+        Collision collision1 = {ecsSystem->GetEntity(collider1), ecsSystem->GetEntity(collider2),
+                                tilePos,
+                                ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2)).GetGlobalTranslation()};
+        Collision collision2 = {ecsSystem->GetEntity(collider2), ecsSystem->GetEntity(collider1),
+                                ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2)).GetGlobalTranslation(),
+                                tilePos};
 
-        if(!areColliding && collider1.collisions.find(collision1) != collider1.collisions.end())
+        if(!areColliding)
         {
-            //End collision
-            collider1.collisions[collision1] = Collision::State::EXIT;
-            collider2.collisions[collision2] = Collision::State::EXIT;
+            auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision2);
+            if(iter1 != collider1.collisions.end())
+            {
+                //End collision
+                iter1->state = Collision::State::EXIT;
+                iter2->state = Collision::State::EXIT;
+            }
         }
-        else if (areColliding && collider1.collisions.find(collision1) == collider1.collisions.end())
+        else if (areColliding)
         {
-            //Start collision
-            collider1.collisions[collision1] = Collision::State::ENTER;
-            collider2.collisions[collision2] = Collision::State::ENTER;
+            auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision1);
+            if(iter1 == collider1.collisions.end())
+            {
+                //Start collision
+                collision1.state = Collision::ENTER;
+                collision2.state = Collision::ENTER;
+                collider1.collisions.push_back(collision1);
+                collider2.collisions.push_back(collision2);
+            }
         }
     }
 
@@ -118,7 +148,7 @@ namespace Engine
         return areColliding;
     }
 
-    bool CollisionSystem::CheckCollision(const TilemapCollider &collider1, const BoxCollider &collider2)
+    std::pair<bool, glm::vec3> CollisionSystem::CheckCollision(const TilemapCollider &collider1, const BoxCollider &collider2)
     {
         Transform& transform1 = ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider1));
         Transform& transform2 = ecsSystem->GetComponent<Transform>(ecsSystem->GetEntity(collider2));
@@ -134,11 +164,9 @@ namespace Engine
         std::pair<int, int> origin = {(int)std::round(distance.x), (int)std::round(distance.y)};
         int xtol = 3;
         int ytol = 3;
-        int x = origin.first - xtol < 0 ? 0 : origin.first - xtol;
-        int y = origin.second - ytol < 0 ? 0 : origin.second - ytol;
 
-        for(x = origin.first - xtol < 0 ? 0 : origin.first - xtol; x < origin.first + xtol && x < collider1.map.size(); x++)
-            for(y = origin.second - ytol < 0 ? 0 : origin.second - ytol; y < origin.second + ytol && y < collider1.map[0].size(); y++)
+        for(int x = origin.first - xtol < 0 ? 0 : origin.first - xtol; x < origin.first + xtol && x < collider1.map.size(); x++)
+            for(int y = origin.second - ytol < 0 ? 0 : origin.second - ytol; y < origin.second + ytol && y < collider1.map[0].size(); y++)
             {
                 if(!collider1.map[x][y]) continue;
 
@@ -152,15 +180,15 @@ namespace Engine
                 if ( std::abs(tilePosition[2] - position2[2]) > (size1[2] + size2[2]) ) areColliding = false;
 
                 if(areColliding)
-                    return true;
+                    return {true,tilePosition};
             }
-        return false;
+        return {false, glm::vec3(0)};
     }
 
     void CollisionSystem::CleanExitCollision(BoxCollider &collider)
     {
         for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
-            if(iter->second == Collision::State::EXIT)
+            if(iter->state == Collision::State::EXIT)
                 iter = collider.collisions.erase(iter);
             else
                 iter++;
@@ -169,7 +197,7 @@ namespace Engine
     void CollisionSystem::CleanExitCollision(TilemapCollider &collider)
     {
         for(auto iter = collider.collisions.begin(); iter != collider.collisions.end();)
-            if(iter->second == Collision::State::EXIT)
+            if(iter->state == Collision::State::EXIT)
                 iter = collider.collisions.erase(iter);
             else
                 iter++;
@@ -177,16 +205,16 @@ namespace Engine
 
     void CollisionSystem::CleanEnterCollision(BoxCollider& collider)
     {
-        for(auto pair : collider.collisions)
-            if(pair.second == Collision::State::ENTER)
-                pair.second = Collision::State::STAY;
+        for(auto& collision : collider.collisions)
+            if(collision.state == Collision::State::ENTER)
+                collision.state = Collision::State::STAY;
     }
 
     void CollisionSystem::CleanEnterCollision(TilemapCollider& collider)
     {
-        for(auto pair : collider.collisions)
-            if(pair.second == Collision::State::ENTER)
-                pair.second = Collision::State::STAY;
+        for(auto& collision : collider.collisions)
+            if(collision.state == Collision::State::ENTER)
+                collision.state = Collision::State::STAY;
     }
 
     void CollisionSystem::EntityAdded(Entity entity)
@@ -199,25 +227,27 @@ namespace Engine
 
     void CollisionSystem::EntityRemoved(Entity entity)
     {
-        std::map<Collision, Collision::State> const &collisions = entitiesWithBoxColliders.count(entity) ?
+        std::vector<Collision> const &collisions = entitiesWithBoxColliders.count(entity) ?
                 ecsSystem->GetComponent<BoxCollider>(entity).collisions : ecsSystem->GetComponent<TilemapCollider>(entity).collisions;
 
         entitiesWithBoxColliders.erase(entity);
         entitiesWithTilemapColliders.erase(entity);
 
-        for (auto collision: collisions)
+        for (auto& collision: collisions)
         {
-            Entity other = collision.first.other;
+            Entity other = collision.other;
             Collision col = {other, entity};
             if (ecsSystem->HasComponent<BoxCollider>(other))
             {
                 BoxCollider &otherCollider = ecsSystem->GetComponent<BoxCollider>(other);
-                otherCollider.collisions.erase(col);
+                auto iter = std::find(otherCollider.collisions.begin(), otherCollider.collisions.end(), col);
+                otherCollider.collisions.erase(iter);
             }
             else if (ecsSystem->HasComponent<TilemapCollider>(other))
             {
                 TilemapCollider &otherCollider = ecsSystem->GetComponent<TilemapCollider>(other);
-                otherCollider.collisions.erase(col);
+                auto iter = std::find(otherCollider.collisions.begin(), otherCollider.collisions.end(), col);
+                otherCollider.collisions.erase(iter);
             }
         }
     }

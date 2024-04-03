@@ -20,9 +20,8 @@ void BulletSystem::Update(float deltaTime)
         Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
 
-        for(auto pair : collider.collisions)
+        for(auto& collision : collider.collisions)
         {
-            const Engine::Collision& collision = pair.first;
             if(collision.other != bullet.spawner)
             {
                 Engine::RemoveEntityWithChildren(entity);
