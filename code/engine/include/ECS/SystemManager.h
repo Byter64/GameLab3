@@ -10,7 +10,7 @@ namespace Engine
 
     class SystemManager
     {
-        std::unordered_map<const char*, Signature> signatures;
+        std::unordered_map<const char*, std::list<Signature>> signatures;
         std::unordered_map<const char*, std::shared_ptr<System>> systems;
 
     public:
@@ -33,7 +33,7 @@ namespace Engine
         }
 
         template<typename T>
-        void SetSignature(Signature signature)
+        void AddSignature(Signature signature)
         {
             const char* typeName = typeid(T).name();
 
@@ -45,7 +45,7 @@ namespace Engine
                 throw std::runtime_error(message);
             }
 
-            signatures.insert({typeName, signature});
+            signatures[typeName].push_back(signature);
         }
 
     void EntityDestroyed(Entity entity);

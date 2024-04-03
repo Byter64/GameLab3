@@ -107,10 +107,11 @@ namespace Engine
             return systemManager->RegisterSystem<T>();
         }
 
+        //Adds a signature to the system. All entities having this signature will now be available for the system
         template<typename T>
-        void SetSystemSignature(Signature signature)
+        void AddSystemSignature(Signature signature)
         {
-                systemManager->SetSignature<T>(signature);
+            systemManager->AddSignature<T>(signature);
         }
     };
 

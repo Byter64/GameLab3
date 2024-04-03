@@ -1,4 +1,5 @@
 #include "ECS/SystemManager.h"
+#include <algorithm>
 
 namespace Engine
 {
@@ -22,7 +23,8 @@ namespace Engine
             auto const& system = pair.second;
             auto const& systemSignature = signatures[type];
 
-            if((systemSignature &signature) == systemSignature)
+            bool doesSignatureFit = std::any_of(systemSignature.cbegin(), systemSignature.cend(), [&](Signature const& systemSignature){return (systemSignature & signature) == systemSignature; });
+            if(doesSignatureFit)
             {
                 if(system->entities.find(entity) == system->entities.end())
                     system->EntityAdded(entity);

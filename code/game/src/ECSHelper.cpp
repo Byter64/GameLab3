@@ -37,14 +37,14 @@ void ECSHelper::Initialize()
     playerControllerSignature.set(ecsSystem->GetComponentType<PlayerController>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     playerControllerSignature.set(ecsSystem->GetComponentType<Health>());
-    ecsSystem->SetSystemSignature<PlayerControllerSystem>(playerControllerSignature);
+    ecsSystem->AddSystemSignature<PlayerControllerSystem>(playerControllerSignature);
 
     bulletSystem = ecsSystem->RegisterSystem<BulletSystem>();
     Engine::Signature bulletSignature;
     bulletSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     bulletSignature.set(ecsSystem->GetComponentType<Bullet>());
     bulletSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    ecsSystem->SetSystemSignature<BulletSystem>(bulletSignature);
+    ecsSystem->AddSystemSignature<BulletSystem>(bulletSignature);
 
     enemyBehaviourSystem = ecsSystem->RegisterSystem<EnemyBehaviourSystem>();
     Engine::Signature enemyBehaviourSignature;
@@ -52,22 +52,22 @@ void ECSHelper::Initialize()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Health>());
-    ecsSystem->SetSystemSignature<EnemyBehaviourSystem>(enemyBehaviourSignature);
+    ecsSystem->AddSystemSignature<EnemyBehaviourSystem>(enemyBehaviourSignature);
 
     dungeonEnemySystem = ecsSystem->RegisterSystem<DungeonEnemySystem>();
     Engine::Signature dungeonEnemySignature;
     dungeonEnemySignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
-    ecsSystem->SetSystemSignature<DungeonEnemySystem>(dungeonEnemySignature);
+    ecsSystem->AddSystemSignature<DungeonEnemySystem>(dungeonEnemySignature);
 
     dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
     Engine::Signature dungeonSignature;
     dungeonSignature.set(ecsSystem->GetComponentType<Dungeon>());
-    ecsSystem->SetSystemSignature<DungeonSystem>(dungeonSignature);
+    ecsSystem->AddSystemSignature<DungeonSystem>(dungeonSignature);
 
     elevatorSystem = ecsSystem->RegisterSystem<ElevatorSystem>();
     Engine::Signature elevatorSignature;
     elevatorSignature.set(ecsSystem->GetComponentType<Elevator>());
-    ecsSystem->SetSystemSignature<ElevatorSystem>(elevatorSignature);
+    ecsSystem->AddSystemSignature<ElevatorSystem>(elevatorSignature);
 }
 
 Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
