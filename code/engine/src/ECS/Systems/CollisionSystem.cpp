@@ -166,18 +166,22 @@ namespace Engine
         transform1.AddTranslation(-collider1.position);
         transform2.AddTranslation(-collider2.position);
 
+        glm::vec3 size1 = glm::vec3(0.5f); //a box of a tilemap always has a radius of 0.5f
+        glm::vec3 size2 = collider2.size * transform2.GetGlobalScale() * 0.5f;
+
         glm::vec3 distance = position2 - position1;
         std::pair<int, int> origin = {(int)std::round(distance.x), (int)std::round(distance.y)};
-        int xtol = 3;
-        int ytol = 3;
+        int xtol = 2 * (size1.x + size2.x) + 1;
+        int ytol = 2 * (size1.y + size2.y) + 1;
+
+        glm::vec3 colPos = glm::vec3(0);
+        int count = 0;
 
         for(int x = origin.first - xtol < 0 ? 0 : origin.first - xtol; x < origin.first + xtol && x < collider1.map.size(); x++)
             for(int y = origin.second - ytol < 0 ? 0 : origin.second - ytol; y < origin.second + ytol && y < collider1.map[0].size(); y++)
             {
                 if(!collider1.map[x][y]) continue;
 
-                glm::vec3 size1 = glm::vec3(0.5f); //a box of a tilemap always has a radius of 0.5f
-                glm::vec3 size2 = collider2.size * transform2.GetGlobalScale() * 0.5f;
                 glm::vec3 tilePosition = position1 + glm::vec3(x, y, 0);
 
                 bool areColliding = true;
@@ -186,9 +190,15 @@ namespace Engine
                 if ( std::abs(tilePosition[2] - position2[2]) > (size1[2] + size2[2]) ) areColliding = false;
 
                 if(areColliding)
-                    return {true,tilePosition};
+                {
+                    colPos += tilePosition;
+                    count++;
+                }
             }
-        return {false, glm::vec3(0)};
+        if(count == 0)
+            return {false, glm::vec3(0)};
+        else
+            return {true, colPos / (float)count};
     }
 
     void CollisionSystem::CleanExitCollision(BoxCollider &collider)
