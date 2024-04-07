@@ -1,5 +1,4 @@
-SinglePlayer 10 8
-TwoPlayers 10 8  12 8
+SinglePlayer 1 8
+TwoPlayers 1 7  1 9
 
-wait 300
 Cuball 1 1

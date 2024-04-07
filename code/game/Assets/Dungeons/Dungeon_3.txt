@@ -1,0 +1,4 @@
+SinglePlayer 10 8
+TwoPlayers 10 8  12 8
+
+Cuball 1 1
