@@ -649,7 +649,10 @@ void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap
     this->wallMap = wallMap;
     graph.clear();
     dungeonSize = std::make_pair(wallMap.size(), wallMap[0].size());
-    originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f + 0.5f;
+    originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f;
+    originOffset.x = glm::ceil(originOffset.x);
+    originOffset.y = glm::ceil(originOffset.y);
+
     originOffset.y *= -1.0f;
     //Generate all nodes
     for (int y = 0; y < wallMap[0].size(); y++)
