@@ -80,8 +80,10 @@ namespace Engine
             if(iter1 == collider1.collisions.end())
             {
                 //Start collision
-                iter1->state = Collision::State::ENTER;
-                iter2->state = Collision::State::ENTER;
+                collision1.state = Collision::ENTER;
+                collision2.state = Collision::ENTER;
+                collider1.collisions.push_back(collision1);
+                collider2.collisions.push_back(collision2);
             }
         }
     }
