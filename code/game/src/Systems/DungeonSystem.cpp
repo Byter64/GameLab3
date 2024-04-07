@@ -86,6 +86,9 @@ void DungeonSystem::Update()
                     case EnemyBehaviour::Cuball:
                         enemies.push_back(ECSHelper::SpawnCuball(pair.first));
                         break;
+                    case EnemyBehaviour::Duke:
+                        enemies.push_back(ECSHelper::SpawnDuke(pair.first));
+                        break;
                 }
                 pair.second.pop();
                 dungeon.activeEnemies[pair.first] = enemies.back();

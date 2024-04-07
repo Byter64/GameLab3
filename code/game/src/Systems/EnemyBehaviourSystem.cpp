@@ -106,6 +106,9 @@ void EnemyBehaviourSystem::Update(float deltaTime)
             case EnemyBehaviour::Cuball:
                 UpdateCuball(entity, deltaTime);
                 break;
+            case EnemyBehaviour::Duke:
+                UpdateDuke(entity, deltaTime);
+                break;
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
         for(auto& collision : collider.collisions)
@@ -128,6 +131,9 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                         break;
                     case EnemyBehaviour::Cuball:
                         HandleDamageCuball(entity, other);
+                        break;
+                    case EnemyBehaviour::Duke:
+                        HandleDamageDuke(entity, other);
                         break;
                 }
             }
@@ -437,6 +443,16 @@ void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Ent
         score = score < 1 ? 1 : score;
         ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
     }
+}
+
+void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
+{
+
+}
+
+void EnemyBehaviourSystem::HandleDamageDuke(Engine::Entity entity, Engine::Entity other)
+{
+
 }
 
 void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime, bool setRotation)
