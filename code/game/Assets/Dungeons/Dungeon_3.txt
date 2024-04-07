@@ -1,0 +1,38 @@
+SinglePlayer 10 8
+TwoPlayers 10 8  12 8
+
+Cuball 1 1
+
+wait 20
+Cuball 5 8
+Cuball 17 8
+Hubertus 3 14
+Hubertus 5 14
+Hubertus 7 14
+Hubertus 15 14
+Hubertus 17 14
+Hubertus 19 14
+
+wait 35
+Assi 5 14
+Assi 17 14
+KindredSpirit 10 8
+Hubertus 3 2
+Hubertus 5 2
+Hubertus 7 2
+Hubertus 15 2
+Hubertus 17 2
+Hubertus 19 2
+
+wait 30
+Hubertus 10 8
+Hubertus 12 8
+Hubertus 10 8
+Hubertus 12 8
+Hubertus 10 8
+Hubertus 12 8
+Hubertus 10 8
+Hubertus 12 8
+Hubertus 10 8
+Hubertus 12 8
+KindredSpirit 10 8
