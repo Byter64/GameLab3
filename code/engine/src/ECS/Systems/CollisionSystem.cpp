@@ -65,7 +65,7 @@ namespace Engine
         if(!areColliding)
         {
             auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
-            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision2);
             if(iter1 != collider1.collisions.end())
             {
                 //End collision
@@ -73,10 +73,10 @@ namespace Engine
                 iter2->state = Collision::State::EXIT;
             }
         }
-        else if (areColliding)
+        else
         {
             auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
-            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision2);
             if(iter1 == collider1.collisions.end())
             {
                 //Start collision
@@ -108,7 +108,7 @@ namespace Engine
                 iter2->state = Collision::State::EXIT;
             }
         }
-        else if (areColliding)
+        else
         {
             auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
             auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision2);
@@ -173,8 +173,8 @@ namespace Engine
 
         glm::vec3 distance = position2 - position1;
         std::pair<int, int> origin = {(int)std::round(distance.x), (int)std::round(distance.y)};
-        int xtol = 2 * (size1.x + size2.x) + 1;
-        int ytol = 2 * (size1.y + size2.y) + 1;
+        int xtol = glm::floor(2 * (size1.x + size2.x) + 1);
+        int ytol = glm::floor(2 * (size1.y + size2.y) + 1);
 
         glm::vec3 colPos = glm::vec3(0);
         int count = 0;
