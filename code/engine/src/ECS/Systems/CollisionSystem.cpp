@@ -109,7 +109,7 @@ namespace Engine
         else if (areColliding)
         {
             auto iter1 = std::find(collider1.collisions.begin(), collider1.collisions.end(), collision1);
-            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision1);
+            auto iter2 = std::find(collider2.collisions.begin(), collider2.collisions.end(), collision2);
             if(iter1 == collider1.collisions.end())
             {
                 //Start collision
@@ -117,6 +117,12 @@ namespace Engine
                 collision2.state = Collision::ENTER;
                 collider1.collisions.push_back(collision1);
                 collider2.collisions.push_back(collision2);
+            }
+            else
+            {
+                //continue collision with updated position
+                iter1->entityPos = tilePos;
+                iter2->otherPos = tilePos;
             }
         }
     }

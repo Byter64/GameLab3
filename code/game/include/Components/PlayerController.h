@@ -31,12 +31,13 @@ struct PlayerController
     PlayerController& operator= (PlayerController& other) = default;
     PlayerController& operator= (PlayerController&& other);
 
-    void SetMovementInput(int leftKey, int rightKey, int upKey, int downKey);
-    void SetMovementInput(unsigned char joystickID, unsigned char leftButton, unsigned char rightButton, unsigned char upButton, unsigned char downButton);
-    void SetMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis);
-    void SetFireInput(int key);
-    void SetFireInput(Engine::GamepadInputID button);
-    void SetReviveInput(Engine::GamepadInputID button);
+    void AddMovementInput(int leftKey, int rightKey, int upKey, int downKey);
+    void AddMovementInput(unsigned char joystickID, unsigned char leftButton, unsigned char rightButton, unsigned char upButton, unsigned char downButton);
+    void AddMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis);
+    void AddFireInput(int key);
+    void AddFireInput(Engine::GamepadInputID button);
+    void AddReviveInput(int button);
+    void AddReviveInput(Engine::GamepadInputID button);
     void AddScore(int points);
 
 private:
