@@ -122,6 +122,7 @@ void InitializeECS()
     ecsSystem->RegisterSystem<Engine::TransformParentSystem>();
     Engine::Signature transformSignature;
     transformSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    ecsSystem->AddSystemSignature<Engine::TransformParentSystem>(transformSignature);
 
     Engine::Systems::renderSystem = ecsSystem->RegisterSystem<Engine::RenderSystem>();
     Engine::Signature renderSignature;
