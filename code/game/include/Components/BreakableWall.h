@@ -1,7 +1,7 @@
 #pragma once
 
 
-struct Destroyable
+struct BreakableWall
 {
 
 };

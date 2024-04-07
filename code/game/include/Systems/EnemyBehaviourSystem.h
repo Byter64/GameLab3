@@ -49,8 +49,8 @@ class EnemyBehaviourSystem : public Engine::System
 public:
     EnemyBehaviourSystem();
 
-    void Initialize(std::vector<std::vector<bool>>& wallMap);
     void ChangeWallMap(std::vector<std::vector<bool>>& wallMap);
+    void ChangeWall(int x, int y, bool isWall);
     void Update(float deltaTime);
 
     static glm::vec2 ToGlobal(glm::vec2 dungeonPos);

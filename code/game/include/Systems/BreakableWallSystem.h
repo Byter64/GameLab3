@@ -1,7 +1,7 @@
 #pragma once
 #include "Engine.h"
 
-class DestroyerSystem : public Engine::System
+class BreakableWallSystem : public Engine::System
 {
     void EntityAdded(Engine::Entity entity) override;
     void EntityRemoved(Engine::Entity entity) override;

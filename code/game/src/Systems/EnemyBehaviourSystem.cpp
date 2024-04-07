@@ -637,13 +637,8 @@ bool EnemyBehaviourSystem::IsWall(std::pair<int, int> pos)
     return wallMap[pos.first][pos.second];
 }
 
-/// This needs to be called before the first call to Update
+/// This needs to be called (at least) once before the first call to Update
 /// \param wallMap a bool map of the dungeon, where true marks a wall, a false marks free space
-void EnemyBehaviourSystem::Initialize(std::vector<std::vector<bool>>& wallMap)
-{
-    ChangeWallMap(wallMap);
-}
-
 void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap)
 {
     this->wallMap = wallMap;
@@ -682,6 +677,13 @@ void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap
         if(right.first != -1)
             pair.second.push_back(right);
     }
+}
+
+
+void EnemyBehaviourSystem::ChangeWall(int x, int y, bool isWall)
+{
+    wallMap[x][y] = isWall;
+    ChangeWallMap(wallMap);
 }
 
 /// Transforms the given point, which is in dungeon coordinates, into global coordinates

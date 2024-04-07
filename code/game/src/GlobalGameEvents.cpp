@@ -12,7 +12,7 @@ extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, a
 extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<ElevatorSystem> elevatorSystem;
-extern std::shared_ptr<DestroyerSystem> destroyerSystem;
+extern std::shared_ptr<BreakableWallSystem> destroyerSystem;
 extern GLFWwindow *window;
 
 static std::shared_ptr<Engine::InputActionButton> pause;
@@ -162,7 +162,6 @@ void OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
     dungeonSystem->InitializeDungeons();
-    enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
 }
 
 void OnEndGame()

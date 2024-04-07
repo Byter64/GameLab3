@@ -1,17 +1,19 @@
-#include "Systems/DestroyerSystem.h"
+#include "Systems/BreakableWallSystem.h"
 #include "ECSExtension.h"
 
-void DestroyerSystem::EntityAdded(Engine::Entity entity)
+extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
+
+void BreakableWallSystem::EntityAdded(Engine::Entity entity)
 {
 
 }
 
-void DestroyerSystem::EntityRemoved(Engine::Entity entity)
+void BreakableWallSystem::EntityRemoved(Engine::Entity entity)
 {
 
 }
 
-void DestroyerSystem::Update()
+void BreakableWallSystem::Update()
 {
     for(Engine::Entity entity : entities)
     {
@@ -22,6 +24,11 @@ void DestroyerSystem::Update()
 
         health.health -= count;
         if(health.health <= 0)
+        {
+            Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+            std::pair<int, int> dungeonPos = EnemyBehaviourSystem::ToDungeon(transform.GetGlobalTranslation());
+            enemyBehaviourSystem->ChangeWall(dungeonPos.first, dungeonPos.second, false);
             Engine::RemoveEntityWithChildren(entity);
+        }
     }
 }

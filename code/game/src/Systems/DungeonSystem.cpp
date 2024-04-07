@@ -242,9 +242,11 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
     }
 
     wallMap.clear();
+    std::vector<std::vector<bool>> enemyWallMap;
     for(int x = 0; x < width; x++)
     {
         wallMap.push_back(std::vector<bool>());
+        enemyWallMap.push_back(std::vector<bool>());
         for(int y = 0; y < height; y++)
         {
             unsigned char red, green, blue, alpha;
@@ -256,6 +258,7 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
             Type type1 = ToType(red, green, blue, alpha);
 
             wallMap[x].push_back(type1 == Type::Wall);
+            enemyWallMap[x].push_back((type1 == Type::Wall || type1 == Type::BreakableWall));
             if(type1 == Type::Empty) continue;
 
             std::string name;
@@ -280,7 +283,7 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
             ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));
         }
     }
-    enemyBehaviourSystem->ChangeWallMap(wallMap);
+    enemyBehaviourSystem->ChangeWallMap(enemyWallMap);
 
     Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
     collider.map = wallMap;

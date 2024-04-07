@@ -10,7 +10,7 @@ std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<ElevatorSystem> elevatorSystem;
-std::shared_ptr<DestroyerSystem> destroyerSystem;
+std::shared_ptr<BreakableWallSystem> destroyerSystem;
 
 Engine::Entity wallPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity breakableWallPrefab = Engine::Entity::INVALID_ENTITY_ID;
@@ -31,7 +31,7 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
     ecsSystem->RegisterComponent<Elevator>();
-    ecsSystem->RegisterComponent<Destroyable>();
+    ecsSystem->RegisterComponent<BreakableWall>();
     //When adding new components here, don't forget to add them to ECSHelper::CopyEntity, too!!!!!
 
     playerControllerSystem = ecsSystem->RegisterSystem<PlayerControllerSystem>();
@@ -72,12 +72,12 @@ void ECSHelper::Initialize()
     elevatorSignature.set(ecsSystem->GetComponentType<Elevator>());
     ecsSystem->AddSystemSignature<ElevatorSystem>(elevatorSignature);
 
-    destroyerSystem = ecsSystem->RegisterSystem<DestroyerSystem>();
+    destroyerSystem = ecsSystem->RegisterSystem<BreakableWallSystem>();
     Engine::Signature destroyerSignature;
     destroyerSignature.set(ecsSystem->GetComponentType<Health>());
-    destroyerSignature.set(ecsSystem->GetComponentType<Destroyable>());
+    destroyerSignature.set(ecsSystem->GetComponentType<BreakableWall>());
     destroyerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
-    ecsSystem->AddSystemSignature<DestroyerSystem>(destroyerSignature);
+    ecsSystem->AddSystemSignature<BreakableWallSystem>(destroyerSignature);
 }
 
 Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
@@ -131,7 +131,7 @@ Engine::Entity ECSHelper::SpawnBreakableWall(glm::vec3 position)
 
     ecsSystem->GetComponent<Engine::Transform>(wall).SetTranslation(position);
     ecsSystem->GetComponent<Engine::Transform>(wall).SetScale(glm::vec3(1.0f));
-    ecsSystem->AddComponent<Destroyable>(wall);
+    ecsSystem->AddComponent<BreakableWall>(wall);
 
     Engine::BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(wall);
     collider.isStatic = true;
