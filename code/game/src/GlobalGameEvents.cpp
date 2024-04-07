@@ -156,9 +156,9 @@ void OnStartGame(int screenWidth, int screenHeight)
     players.second = player2;
 #endif
 
-    Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,2,-12));
+    Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,1,-14));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
-    Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-15.0f),0,0));
+    Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
     dungeonSystem->InitializeDungeons();
     enemyBehaviourSystem->Initialize(dungeonSystem->wallMap);
