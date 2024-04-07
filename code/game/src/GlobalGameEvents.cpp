@@ -82,7 +82,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     textUI.horizontalAlignment = Engine::Text::Center;
 
 
-    Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
+    Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     //Controller
     controller.uiTextScore = playerUI;
@@ -115,47 +115,47 @@ void OnStartGame(int screenWidth, int screenHeight)
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
     players.first = player;
 
-#define PLAYER2
-#ifdef PLAYER2
-    Engine::Entity player2Text = ecsSystem->CreateEntity();
-    auto& player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
-    player2UI.scale = 4;
-    player2UI.position = {1400, 0};
-    player2UI.SetText("Player 2");
+    if(glfwJoystickPresent(GLFW_JOYSTICK_2))
+    {
+        Engine::Entity player2Text = ecsSystem->CreateEntity();
+        auto &player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
+        player2UI.scale = 4;
+        player2UI.position = {1400, 0};
+        player2UI.SetText("Player 2");
 
-    Engine::Entity playerUI2 = ecsSystem->CreateEntity();
-    auto& textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
-    textUI2.scale = 4;
-    textUI2.position = {1530, 80};
-    textUI2.horizontalAlignment = Engine::Text::Center;
+        Engine::Entity playerUI2 = ecsSystem->CreateEntity();
+        auto &textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
+        textUI2.scale = 4;
+        textUI2.position = {1530, 80};
+        textUI2.horizontalAlignment = Engine::Text::Center;
 
 
-    Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player\\Player.glb")[0];
-    PlayerController& controller2 = ecsSystem->AddComponent<PlayerController>(player2);
-    controller2.uiTextScore = playerUI2;
-    controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
-    controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
-    controller2.AddFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
-    controller2.AddFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
-    controller2.AddReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
-    controller2.AddReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
-    controller2.speed = Defines::Float("Player2_Speed");
-    controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
-    controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
-    controller2.maxBullets = Defines::Int("Player2_MaxBullets");
-    controller2.respawnTime = Defines::Float("Player2_RespawnTime");
+        Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
+        PlayerController &controller2 = ecsSystem->AddComponent<PlayerController>(player2);
+        controller2.uiTextScore = playerUI2;
+        controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
+        controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT,GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
+        controller2.AddFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
+        controller2.AddFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+        controller2.AddReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
+        controller2.AddReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
+        controller2.speed = Defines::Float("Player2_Speed");
+        controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
+        controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
+        controller2.maxBullets = Defines::Int("Player2_MaxBullets");
+        controller2.respawnTime = Defines::Float("Player2_RespawnTime");
 
-    pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
-    pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
-    Engine::Systems::inputSystem->Remove(pause);
-    Engine::Systems::inputSystem->Add(pause);
+        pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
+        pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
+        Engine::Systems::inputSystem->Remove(pause);
+        Engine::Systems::inputSystem->Add(pause);
 
-    ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
-    ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
-    ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health")});
-    players.second = player2;
-#endif
+        ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
+        ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
+        ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
+        ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health")});
+        players.second = player2;
+    }
 
     Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,1,-14));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));

@@ -106,7 +106,7 @@ Engine::Entity ECSHelper::SpawnWall(glm::vec3 position)
 {
     if(wallPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall\\Wall.glb")[0];
+        wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(wallPrefab).SetScale(glm::vec3(0.0f));
     }
 
@@ -122,7 +122,7 @@ Engine::Entity ECSHelper::SpawnBreakableWall(glm::vec3 position)
 {
     if(breakableWallPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        breakableWallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\breakableWall\\breakableWall.glb")[0];
+        breakableWallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\breakableWall.glb")[0];
         ecsSystem->AddComponent<Health>(breakableWallPrefab, {10, 10});
         ecsSystem->GetComponent<Engine::Transform>(breakableWallPrefab).SetScale(glm::vec3(0.0f));
     }
@@ -145,7 +145,7 @@ Engine::Entity ECSHelper::SpawnBullet(Engine::Entity spawner, glm::vec3 position
 {
     if(bulletPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        bulletPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet\\Bullet.glb")[0];
+        bulletPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(bulletPrefab).SetScale(glm::vec3(0.0f));
     }
 
@@ -171,7 +171,7 @@ Engine::Entity ECSHelper::SpawnLoot(glm::vec3 position, int points)
 {
     if(lootPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel\\Jewel.glb", "Loot_")[0];
+        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel.glb", "Loot_")[0];
         ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetScale(glm::vec3(0));
         ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f),0,0)));
         ecsSystem->AddComponent<Loot>(lootPrefab, {0});
@@ -199,7 +199,7 @@ Engine::Entity ECSHelper::SpawnElevator(glm::vec3 position, Engine::Entity spawn
 {
     if(elevatorPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        elevatorPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Elevator\\Elevator.glb", "Elevator_")[0];
+        elevatorPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Elevator.glb", "Elevator_")[0];
         ecsSystem->GetComponent<Engine::Transform>(elevatorPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,glm::radians(-90.0f))));
         ecsSystem->GetComponent<Engine::Transform>(elevatorPrefab).SetScale(glm::vec3(0.0f));
     }
@@ -215,7 +215,7 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
 {
     if(hubertusPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        hubertusPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus\\Hubertus.glb")[0];
+        hubertusPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
     }
@@ -241,7 +241,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
 {
     if(kindredSpiritPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        kindredSpiritPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Debug\\Debug.glb")[0];
+        kindredSpiritPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Debug.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
         ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetScale(glm::vec3(0.0f));
     }
@@ -303,7 +303,7 @@ Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
 {
     if(assiPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        assiPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi\\Assi.glb")[0];
+        assiPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetScale(glm::vec3(0.0f));
     }
@@ -329,7 +329,7 @@ Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
 {
     if(cuballPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
-        cuballPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Cuball\\Cuball.glb", "Cuball_")[0];
+        cuballPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Cuball.glb", "Cuball_")[0];
         Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(cuballPrefab);
         transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         transform.SetScale(glm::vec3(0.0f));
