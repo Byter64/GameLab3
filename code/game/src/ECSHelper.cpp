@@ -10,8 +10,10 @@ std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<ElevatorSystem> elevatorSystem;
+std::shared_ptr<DestroyerSystem> destroyerSystem;
 
 Engine::Entity wallPrefab = Engine::Entity::INVALID_ENTITY_ID;
+Engine::Entity breakableWallPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity elevatorPrefab = Engine::Entity::INVALID_ENTITY_ID;
@@ -29,6 +31,7 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
     ecsSystem->RegisterComponent<Elevator>();
+    ecsSystem->RegisterComponent<Destroyable>();
     //When adding new components here, don't forget to add them to ECSHelper::CopyEntity, too!!!!!
 
     playerControllerSystem = ecsSystem->RegisterSystem<PlayerControllerSystem>();
@@ -68,6 +71,13 @@ void ECSHelper::Initialize()
     Engine::Signature elevatorSignature;
     elevatorSignature.set(ecsSystem->GetComponentType<Elevator>());
     ecsSystem->AddSystemSignature<ElevatorSystem>(elevatorSignature);
+
+    destroyerSystem = ecsSystem->RegisterSystem<DestroyerSystem>();
+    Engine::Signature destroyerSignature;
+    destroyerSignature.set(ecsSystem->GetComponentType<Health>());
+    destroyerSignature.set(ecsSystem->GetComponentType<Destroyable>());
+    destroyerSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    ecsSystem->AddSystemSignature<DestroyerSystem>(destroyerSignature);
 }
 
 Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
@@ -86,6 +96,8 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<PlayerController>(entity));
     if(ecsSystem->HasComponent<Elevator>(entity))
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Elevator>(entity));
+    if(ecsSystem->HasComponent<Dungeon>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
 
     return newEntity;
 }
@@ -102,6 +114,29 @@ Engine::Entity ECSHelper::SpawnWall(glm::vec3 position)
 
     ecsSystem->GetComponent<Engine::Transform>(wall).SetTranslation(position);
     ecsSystem->GetComponent<Engine::Transform>(wall).SetScale(glm::vec3(1.0f));
+
+    return wall;
+}
+
+Engine::Entity ECSHelper::SpawnBreakableWall(glm::vec3 position)
+{
+    if(breakableWallPrefab == Engine::Entity::INVALID_ENTITY_ID)
+    {
+        breakableWallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\breakableWall\\breakableWall.glb")[0];
+        ecsSystem->AddComponent<Health>(breakableWallPrefab, {10, 10});
+        ecsSystem->GetComponent<Engine::Transform>(breakableWallPrefab).SetScale(glm::vec3(0.0f));
+    }
+
+    Engine::Entity wall = CopyEntity(breakableWallPrefab);
+
+    ecsSystem->GetComponent<Engine::Transform>(wall).SetTranslation(position);
+    ecsSystem->GetComponent<Engine::Transform>(wall).SetScale(glm::vec3(1.0f));
+    ecsSystem->AddComponent<Destroyable>(wall);
+
+    Engine::BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(wall);
+    collider.isStatic = true;
+    collider.size = glm::vec3(1);
+    collider.layer = (int)CollisionLayer::Dungeon;
 
     return wall;
 }
@@ -321,4 +356,3 @@ Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
 
     return enemy;
 }
-

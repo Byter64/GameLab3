@@ -98,6 +98,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Miscellaneous.h
         include/Helpers/CuballExtra.h
         ../engine/include/ECS/Components/TilemapCollider.h
+        include/Components/Destroyable.h
+        src/Systems/DestroyerSystem.cpp
+        include/Systems/DestroyerSystem.h
 )
 
 set(EXE_FILE Game)

@@ -12,6 +12,7 @@ extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, a
 extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<ElevatorSystem> elevatorSystem;
+extern std::shared_ptr<DestroyerSystem> destroyerSystem;
 extern GLFWwindow *window;
 
 static std::shared_ptr<Engine::InputActionButton> pause;
@@ -176,6 +177,7 @@ void Update(float deltaTime)
     dungeonSystem->Update();
     elevatorSystem->Update();
     bulletSystem->Update(deltaTime);
+    destroyerSystem->Update();
 
     //Number of components needs to be 1 because the prefab will always exist
     if(dungeon->areAllEnemiesDefeated && ecsSystem->GetNumberOfComponents<Loot>() == 1)

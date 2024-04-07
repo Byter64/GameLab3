@@ -7,6 +7,7 @@
 #include <cstring>
 #include <algorithm>
 #include "CollisionLayer.h"
+#include <stdarg.h>
 
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
 extern std::pair<Engine::Entity, Engine::Entity> players;
@@ -20,6 +21,31 @@ void DungeonSystem::EntityRemoved(Engine::Entity entity)
 {
 
 }
+
+void DungeonSystem::InitializeDungeons()
+{
+    if(entities.size() != 1)
+    {
+        std::string message{ "There are too many entities with a Dungeon component"};
+        throw std::runtime_error(message);
+    }
+
+    for (Engine::Entity entity : entities)
+    {
+        Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+        std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + "x" + ".txt");
+        std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + "x" + ".png");
+
+        if(!(std::filesystem::exists(enemyFile) && std::filesystem::exists(dungeonFile)))
+        {
+            enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
+            dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
+        }
+        ReadInDungeonMap(dungeon, dungeonFile.string());
+        ReadInEnemies(dungeon, enemyFile.string());
+    }
+}
+
 
 void DungeonSystem::Update()
 {
@@ -89,20 +115,18 @@ void DungeonSystem::Update()
     }
 }
 
-void DungeonSystem::ReadInEnemies(Engine::Entity entity)
+void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
 {
     static const std::string WAIT_KEYWORD = "wait";
     static const std::string SINGLE_KEYWORD = "singleplayer";
     static const std::string MULTI_KEYWORD = "twoplayers";
     static const std::string MIRROR_KEYWORD = "mirror";
 
-    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
-
-    std::vector<std::string> file;
+    std::vector<std::string> filecontent;
     bool noDungeon = false;
     try
     {
-        file = Engine::Files::ParseFile(dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt"));
+        filecontent = Engine::Files::ParseFile(file);
     }
     catch (std::runtime_error& bla)
     {
@@ -126,9 +150,9 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
     EnemyBehaviour::Type behaviour;
     std::pair<int, int> pos;
     float timeDelta;
-    for (int i = 0; i < file.size(); i++)
+    for (int i = 0; i < filecontent.size(); i++)
     {
-        std::string& symbol = file[i];
+        std::string& symbol = filecontent[i];
         std::transform(symbol.begin(), symbol.end(), symbol.begin(), tolower);
 
         switch (state)
@@ -139,22 +163,22 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
                 else if(symbol == SINGLE_KEYWORD && players.second == Engine::Entity::INVALID_ENTITY_ID)
                 {
                     Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
-                    std::pair<int, int> pos1 = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
                     transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
                 }
                 else if(symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
                 {
                     Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
-                    std::pair<int, int> pos1 = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
                     transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
 
                     Engine::Transform& transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
-                    std::pair<int, int> pos2 = {std::stoi(file[i + 3]), std::stoi(file[i + 4])};
+                    std::pair<int, int> pos2 = {std::stoi(filecontent[i + 3]), std::stoi(filecontent[i + 4])};
                     transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
                 }
                 else if(symbol == MIRROR_KEYWORD)
                 {
-                    std::pair<int, int> mirrors{std::stoi(file[i + 1]), std::stoi(file[i + 2])};
+                    std::pair<int, int> mirrors{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
                     CuballExtra::mirrorDirection = mirrors;
                 }
                 else if(EnemyBehaviour::stringToBehaviour.count(symbol))
@@ -167,7 +191,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
                 try { timeDelta = std::stof(symbol); }
                 catch (std::invalid_argument exception)
                 {
-                    std::cout << "a time value was expected but none was given. Problematic symbol: " << file[i] << std::endl;
+                    std::cout << "a time value was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
                     exit(-1);
                 }
                 time += timeDelta;
@@ -178,7 +202,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
                 try { pos.first = std::stoi(symbol); }
                 catch (std::invalid_argument exception)
                 {
-                    std::cout << "a value for x position was expected but none was given. Problematic symbol: " << file[i] << std::endl;
+                    std::cout << "a value for x position was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
                     exit(-1);
                 }
                 state = ExpectingYPos;
@@ -187,7 +211,7 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
                 try { pos.second = std::stoi(symbol); }
                 catch (std::invalid_argument exception)
                 {
-                    std::cout << "a value for y position was expected but none was given. Problematic symbol: " << file[i] << std::endl;
+                    std::cout << "a value for y position was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
                     exit(-1);
                 }
                 dungeon.enemies[pos].push({time, behaviour});
@@ -197,14 +221,15 @@ void DungeonSystem::ReadInEnemies(Engine::Entity entity)
     }
 }
 
-void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
+void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
 {
-    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    Engine::Entity entity = ecsSystem->GetEntity(dungeon);
+
     dungeon.creationTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     RemoveEntityWithChildren(entity, false);
 
     int width, height, channels;
-    std::string path = (dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png")).string();
+    std::string path = file;
     unsigned char* image = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
     if(image == nullptr)
     {
@@ -222,21 +247,34 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
         wallMap.push_back(std::vector<bool>());
         for(int y = 0; y < height; y++)
         {
-            unsigned char alpha;
+            unsigned char red, green, blue, alpha;
             int pos = (((height - y - 1) * width) + x) * 4;
+            red =   *(image + pos + 0);
+            green = *(image + pos + 1);
+            blue =  *(image + pos + 2);
             alpha = *(image + pos + 3);
+            Type type1 = ToType(red, green, blue, alpha);
 
-            bool isWall = alpha >= 128;
-            wallMap[x].push_back(isWall);
-            if(!isWall) continue;
+            wallMap[x].push_back(type1 == Type::Wall);
+            if(type1 == Type::Empty) continue;
 
-            std::string name = "Wall(";
+            std::string name;
+            if(type1 == Type::Wall)
+                name = "Wall(";
+            else if (type1 == Type::BreakableWall)
+                name = "Breakable Wall(";
+
             name += std::to_string(x);
             name += "|";
             name += std::to_string(y);
             name += ")";
 
-            Engine::Entity wall = ECSHelper::SpawnWall(glm::vec3(x - width / 2, y - height / 2,0));
+            Engine::Entity wall;
+            glm::vec3 spawnPos = glm::vec3(x - width / 2, y - height / 2,0);
+            if(type1 == Type::Wall)
+                wall = ECSHelper::SpawnWall(spawnPos);
+            else if(type1 == Type::BreakableWall)
+                wall = ECSHelper::SpawnBreakableWall(spawnPos);
 
             ecsSystem->GetComponent<Engine::Name>(wall) = name;
             ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));
@@ -250,160 +288,6 @@ void DungeonSystem::ReadInDungeonMap(Engine::Entity entity)
     collider.position = {wallMap.size() / 2, wallMap[0].size() / 2, 0};
     collider.position *= -1;
 
-}
-
-bool DungeonSystem::TryLoadTestDungeonAndEnemies(Engine::Entity entity)
-{
-    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
-    dungeon.creationTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    RemoveEntityWithChildren(entity, false);
-
-    int width, height, channels;
-    std::string path = (dungeon.pathToDungeons / (dungeon.fileName + "x" + ".png")).string();
-    unsigned char* image = stbi_load(path.c_str(), &width, &height, &channels, STBI_rgb_alpha);
-    if(image == nullptr)
-    {
-        return false;
-    }
-
-    wallMap.clear();
-    for(int x = 0; x < width; x++)
-    {
-        wallMap.push_back(std::vector<bool>());
-        for(int y = 0; y < height; y++)
-        {
-            unsigned char alpha;
-            int pos = (((height - y - 1) * width) + x) * 4;
-            alpha = *(image + pos + 3);
-
-            bool isWall = alpha >= 128;
-            wallMap[x].push_back(isWall);
-            if(!isWall) continue;
-
-            std::string name = "Wall(";
-            name += std::to_string(x);
-            name += "|";
-            name += std::to_string(y);
-            name += ")";
-
-            Engine::Entity wall = ECSHelper::SpawnWall(glm::vec3(x - width / 2, y - height / 2,0));
-
-            ecsSystem->GetComponent<Engine::Name>(wall) = name;
-            ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));
-        }
-    }
-    enemyBehaviourSystem->ChangeWallMap(wallMap);
-
-    Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
-    collider.map = wallMap;
-    collider.layer = (unsigned char)CollisionLayer::Dungeon;
-    collider.position = {wallMap.size() / 2, wallMap[0].size() / 2, 0};
-    collider.position *= -1;
-
-    static const std::string WAIT_KEYWORD = "wait";
-    static const std::string SINGLE_KEYWORD = "singleplayer";
-    static const std::string MULTI_KEYWORD = "twoplayers";
-    static const std::string MIRROR_KEYWORD = "mirror";
-
-    std::vector<std::string> file;
-    bool noDungeon = false;
-    try
-    {
-        file = Engine::Files::ParseFile(dungeon.pathToDungeons / (dungeon.fileName + "x" + ".txt"));
-    }
-    catch (std::runtime_error& bla)
-    {
-        noDungeon = true;
-    }
-    if(noDungeon)
-    {
-        return false;
-    }
-
-    enum
-    {
-        Nothing,
-        ExpectingTime,
-        ExpectingXPos,
-        ExpectingYPos
-    } state = Nothing;
-
-    float time = 0;
-    EnemyBehaviour::Type behaviour;
-    std::pair<int, int> pos;
-    float timeDelta;
-    for (int i = 0; i < file.size(); i++)
-    {
-        std::string& symbol = file[i];
-        std::transform(symbol.begin(), symbol.end(), symbol.begin(), tolower);
-
-        switch (state)
-        {
-            case Nothing:
-                if(symbol == WAIT_KEYWORD)
-                    state = ExpectingTime;
-                else if(symbol == SINGLE_KEYWORD && players.second == Engine::Entity::INVALID_ENTITY_ID)
-                {
-                    Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
-                    std::pair<int, int> pos1 = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
-                    transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
-                }
-                else if(symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
-                {
-                    Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
-                    std::pair<int, int> pos1 = {std::stoi(file[i + 1]), std::stoi(file[i + 2])};
-                    transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
-
-                    Engine::Transform& transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
-                    std::pair<int, int> pos2 = {std::stoi(file[i + 3]), std::stoi(file[i + 4])};
-                    transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
-                }
-                else if(symbol == MIRROR_KEYWORD)
-                {
-                    std::pair<int, int> mirrors{std::stoi(file[i + 1]), std::stoi(file[i + 2])};
-                    CuballExtra::mirrorDirection = mirrors;
-                }
-                else if(EnemyBehaviour::stringToBehaviour.count(symbol))
-                {
-                    behaviour = EnemyBehaviour::stringToBehaviour.at(symbol);
-                    state = ExpectingXPos;
-                }
-                break;
-            case ExpectingTime:
-                try { timeDelta = std::stof(symbol); }
-                catch (std::invalid_argument exception)
-                {
-                    std::cout << "a time value was expected but none was given. Problematic symbol: " << file[i] << std::endl;
-                    exit(-1);
-                }
-                time += timeDelta;
-                state = Nothing;
-                break;
-
-            case ExpectingXPos:
-                try { pos.first = std::stoi(symbol); }
-                catch (std::invalid_argument exception)
-                {
-                    std::cout << "a value for x position was expected but none was given. Problematic symbol: " << file[i] << std::endl;
-                    exit(-1);
-                }
-                state = ExpectingYPos;
-                break;
-            case ExpectingYPos:
-                try { pos.second = std::stoi(symbol); }
-                catch (std::invalid_argument exception)
-                {
-                    std::cout << "a value for y position was expected but none was given. Problematic symbol: " << file[i] << std::endl;
-                    exit(-1);
-                }
-                dungeon.enemies[pos].push({time, behaviour});
-                state = Nothing;
-                break;
-        }
-    }
-
-    dungeon.activeDungeon--;
-    return true;
 }
 
 void DungeonSystem::UpdateDungeon(Engine::Entity entity)
@@ -411,10 +295,13 @@ void DungeonSystem::UpdateDungeon(Engine::Entity entity)
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeDungeon++;
     dungeon.areAllEnemiesDefeated = false;
+
+    std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
+    std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
     try
     {
-        ReadInDungeonMap(entity);
-        ReadInEnemies(entity);
+        ReadInDungeonMap(dungeon, dungeonFile.string());
+        ReadInEnemies(dungeon, enemyFile.string());
     }
     catch (std::runtime_error& e)
     {
@@ -422,20 +309,31 @@ void DungeonSystem::UpdateDungeon(Engine::Entity entity)
     }
 }
 
-void DungeonSystem::InitializeDungeons()
+DungeonSystem::Type DungeonSystem::ToType(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)
 {
-    if(entities.size() != 1)
+    static glm::vec4 wall{0, 0, 0, 1};
+    static glm::vec4 breakableWall{0, 0, 1, 1};
+    static glm::vec4 empty{0, 0, 0, 0};
+
+    glm::vec4 colour = {red, green, blue, alpha};
+    colour /= 255.0f;
+
+    Type type1 = Type::Empty;
+    float shortestDist = glm::length(empty - colour);
+
+    glm::vec4 dist = wall - colour;
+    if(glm::length(dist) < shortestDist)
     {
-        std::string message{ "There are too many entities with a Dungeon component"};
-        throw std::runtime_error(message);
+        type1 = Type::Wall;
+        shortestDist = glm::length(dist);
     }
 
-    for (Engine::Entity entity :entities)
+    dist = breakableWall - colour;
+    if(glm::length(dist) < shortestDist)
     {
-        if(!TryLoadTestDungeonAndEnemies(entity))
-        {
-            ReadInDungeonMap(entity);
-            ReadInEnemies(entity);
-        }
+        type1 = Type::BreakableWall;
+        shortestDist = glm::length(dist);
     }
+
+    return type1;
 }
