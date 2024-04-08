@@ -7,6 +7,7 @@ namespace Engine
 
     class InputActionVec2 : public InputAction
     {
+        inline static const glm::vec2 deadzone{0.15f, 0.15f};
         typedef void (*CallbackVec2)(void*, glm::vec2 input);
         struct DirectionMap;
         struct Axis;

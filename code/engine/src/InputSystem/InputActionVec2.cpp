@@ -205,6 +205,9 @@ namespace Engine
 
     void InputActionVec2::Update(glm::vec2 value)
     {
+        value.x = glm::abs(value.x) < deadzone.x ? 0.0f : value.x;
+        value.y = glm::abs(value.y) < deadzone.y ? 0.0f : value.y;
+
         //Check for end of input
         if(value == glm::vec2(0,0) && oldInput != glm::vec2 (0,0))
         {

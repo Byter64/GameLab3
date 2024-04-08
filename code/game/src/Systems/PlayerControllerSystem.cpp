@@ -92,6 +92,9 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
         else
         {
             glm::vec2 distance = collision.entityPos - collision.otherPos;
+            if(distance != glm::vec2(0))
+                distance = glm::normalize(distance);
+
             averageDirection += glm::vec3(distance, 0);
             count++;
         }
