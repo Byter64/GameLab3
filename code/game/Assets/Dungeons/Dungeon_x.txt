@@ -1,6 +1,10 @@
 SinglePlayer 1 8
 TwoPlayers 1 7  1 9
 
+PrepPos 30 2
+PrepPos 30 14
+PrepPos 21 11
+
 Duke 24 5
 Duke 27 8
 Duke 24 11

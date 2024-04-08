@@ -5,9 +5,11 @@
 #include <queue>
 #include <list>
 #include <map>
+#include "AStar.hpp"
 
 class EnemyBehaviourSystem : public Engine::System
 {
+    AStar::Generator generator;
     std::vector<std::vector<bool>> wallMap;
     std::map<std::pair<int, int>, std::list<std::pair<int, int>>> graph;
     static inline std::pair<int, int> dungeonSize;
@@ -47,8 +49,12 @@ class EnemyBehaviourSystem : public Engine::System
     void MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime, bool setRotation = true);
     void MoveAssi(EnemyBehaviour& behaviour, Engine::Transform& transform, glm::vec3 direction, float deltaTime);
     void MoveCuball(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
+    void MoveDuke(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
 
     Engine::Entity FindPlayerInSight(Engine::Entity enemy, int maxDistance);
+    std::vector<std::pair<int, int>> GeneratePath(std::pair<int, int> start, std::pair<int, int> end);
+    Engine::Entity FindClosestPlayer(Engine::Entity enemy);
+
 public:
     EnemyBehaviourSystem();
 

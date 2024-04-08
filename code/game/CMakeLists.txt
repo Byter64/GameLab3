@@ -101,12 +101,16 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/BreakableWall.h
         src/Systems/BreakableWallSystem.cpp
         include/Systems/BreakableWallSystem.h
+        include/Helpers/DukeExtra.h
+        ../extern/a-star-master/include/AStar.hpp
+        ../extern/a-star-master/source/AStar.cpp
 )
 
 set(EXE_FILE Game)
 add_executable(${EXE_FILE} ${SOURCE_FILES})
 
 include_directories(../engine/include)
+include_directories(../extern/a-star-master/include)
 include_directories(include)
 add_custom_command(
         TARGET ${EXE_FILE} POST_BUILD

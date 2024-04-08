@@ -63,6 +63,7 @@ struct EnemyBehaviour
     float speed = 1.0f;
     float bulletSpeed = 3.0f;
     float spawnTime;
+    std::vector<std::pair<int, int>> path{};
 
     //The type is determined by behaviour
     //You could call it a tagged union ヾ(⌐■_■)ノ♪

@@ -124,6 +124,9 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
     static const std::string SINGLE_KEYWORD = "singleplayer";
     static const std::string MULTI_KEYWORD = "twoplayers";
     static const std::string MIRROR_KEYWORD = "mirror";
+    static const std::string PREPPOS_KEYWORD = "preppos";
+
+    DukeExtra::preparationPositions.clear();
 
     std::vector<std::string> filecontent;
     bool noDungeon = false;
@@ -183,6 +186,11 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
                 {
                     std::pair<int, int> mirrors{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
                     CuballExtra::mirrorDirection = mirrors;
+                }
+                else if(symbol == PREPPOS_KEYWORD)
+                {
+                    std::pair<int, int> prepPos{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
+                    DukeExtra::preparationPositions.push_back(prepPos);
                 }
                 else if(EnemyBehaviour::stringToBehaviour.count(symbol))
                 {
