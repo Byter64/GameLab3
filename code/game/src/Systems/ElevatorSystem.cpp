@@ -19,6 +19,7 @@ void ElevatorSystem::Update()
 
         if(!ecsSystem->HasComponent<Engine::Animator>(entity))
         {
+            ecsSystem->GetComponent<Engine::BoxCollider>(elevator.spawnedEnemy).layer = (int)CollisionLayer::Enemy;
             EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(elevator.spawnedEnemy);
             behaviour.isActive = true;
             Engine::RemoveEntityWithChildren(entity);

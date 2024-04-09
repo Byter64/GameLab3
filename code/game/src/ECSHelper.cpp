@@ -374,11 +374,11 @@ Engine::Entity ECSHelper::SpawnDuke(std::pair<int, int> startPos)
     EnemyBehaviour behaviour;
     behaviour.behaviour = EnemyBehaviour::Duke;
     behaviour.startPos = startPos;
-    behaviour.speed = Defines::Float("Hubertus_Speed");
-    behaviour.bulletSpeed = Defines::Float("Hubertus_BulletSpeed");
+    behaviour.speed = Defines::Float("Duke_Speed");
+    behaviour.bulletSpeed = Defines::Float("Duke_BulletSpeed");
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
-    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Hubertus_Health"), Defines::Int("Hubertus_Health")});
+    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Duke_Health"), Defines::Int("Duke_Health")});
 
     return enemy;
 }

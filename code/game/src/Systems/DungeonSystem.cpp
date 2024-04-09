@@ -95,6 +95,7 @@ void DungeonSystem::Update()
 
                 for(Engine::Entity spawnedEntity : enemies)
                 {
+                    ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int)CollisionLayer::Ignore;
                     if(ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
                     {
                         Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");

@@ -17,3 +17,5 @@
 
 #include "ECSHelper.h"
 #include "Miscellaneous.h"
+
+#include "CollisionLayer.h"

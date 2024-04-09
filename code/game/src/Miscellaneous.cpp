@@ -18,7 +18,7 @@ glm::vec3 Miscellaneous::RoundTo8Directions(glm::vec3 vec)
     return vec;
 }
 
-/// Rounds the given vector to an axis. The returned vector will never contain -0.0f (only 0.0f)
+/// Rounds the given direction to an axis and returns the direction to it. The returned vector will never contain -0.0f (only 0.0f)
 /// \param vec
 /// \return
 glm::vec3 Miscellaneous::RoundTo4Directions(glm::vec3 vec)

@@ -44,3 +44,11 @@ Cuball_Cube_BulletSpeed = 2.0
 Cuball_Ball_Speed = 1.0
 Cuball_Ball_Health = 4
 Cuball_Ball_BulletSpeed = 4.0
+
+Duke_Score = 5
+Duke_Speed = 4.0
+Duke_Health = 20
+Duke_BulletSpeed = 6.0
+Duke_DetectionRadius = 8.0
+Duke_PrefPlayerDistance = 6.0
+Duke_MinPlayerDistance = 2.0

@@ -22,6 +22,7 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit] = Defines::Int("KindredSpirit_Score");
     EnemyBehaviour::scores[EnemyBehaviour::Assi] = Defines::Int("Assi_Score");
     EnemyBehaviour::scores[EnemyBehaviour::Cuball] = Defines::Int("Cuball_Score");
+    EnemyBehaviour::scores[EnemyBehaviour::Duke] = Defines::Int("Duke_Score");
 
     enemyScoreDecrease = Defines::Float("Enemy_ScoreDecrease");
 
@@ -46,6 +47,9 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
     KindredSpiritExtra::colours.push({0.40f, 0.40f, 0.40f, 1.0f});
 
     AssiExtra::stunnedTime = Defines::Float("Assi_StunnedTime");
+    DukeExtra::detectionRadius = Defines::Float("Duke_DetectionRadius");
+    DukeExtra::minPlayerDistance = Defines::Float("Duke_MinPlayerDistance");
+    DukeExtra::prefPlayerDistance = Defines::Float("Duke_PrefPlayerDistance");
 
     generator.setHeuristic(AStar::Heuristic::euclidean);
     generator.setDiagonalMovement(false);
@@ -347,10 +351,15 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
-    if(!ecsSystem->HasComponent<Engine::Animator>(entity)) behaviour.isActive = true;
+    if(!ecsSystem->HasComponent<Engine::Animator>(entity))
+    {
+        behaviour.isActive = true;
+        ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int)CollisionLayer::Enemy;
+    }
     if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::MoveToNewPosition)
     {
         behaviour.isActive = false;
+        ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int)CollisionLayer::Ignore;
 
         std::pair<int, int> pos{-1, -1};
         while(IsWall(pos))
@@ -372,6 +381,7 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
     else if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::BecomeBall)
     {
         behaviour.isActive = false;
+        ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int)CollisionLayer::Ignore;
 
         ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(0))).isActive = true;
         ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(1))).isActive = false;
@@ -402,7 +412,6 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
 
     MoveCuball(behaviour, transform, deltaTime);
 }
-
 
 void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Entity other)
 {
@@ -505,7 +514,145 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
             }
             break;
         case DukeExtra::BigPhase::Fighting:
+            switch (dukeExtra.phase)
+            {
+                case DukeExtra::Phase::Waiting:
+                {
+                    Engine::Entity player = FindClosestPlayer(entity);
+                    Engine::Transform &playerTransform = ecsSystem->GetComponent<Engine::Transform>(player);
+                    if (glm::length(playerTransform.GetGlobalTranslation() - transform.GetGlobalTranslation()) < DukeExtra::detectionRadius)
+                    {
+                        dukeExtra.target = player;
+                        dukeExtra.phase = DukeExtra::Phase::Duelling;
+                    }
+                    break;
+                }
+                case DukeExtra::Phase::Duelling:
+                {
+                    Engine::Transform &playerTransform = ecsSystem->GetComponent<Engine::Transform>(dukeExtra.target);
+                    glm::vec3 enemyToPlayer = playerTransform.GetGlobalTranslation() - transform.GetGlobalTranslation();
+                    float distance = glm::length(enemyToPlayer);
+                    if (distance > DukeExtra::detectionRadius && false)
+                    {
+                        std::pair<int, int> pos = ToDungeon(transform.GetGlobalTranslation());
+                        std::pair<int, int> target = DukeExtra::preparationPositions.back();
+                        DukeExtra::preparationPositions.pop_back();
+                        behaviour.path = GeneratePath(pos, target);
+                        behaviour.path.pop_back(); //the last node is the one where the duke is already standing so we remove it
+                        dukeExtra.bigPhase = DukeExtra::BigPhase::Preparing;
+                        dukeExtra.phase = DukeExtra::Phase::Waiting;
 
+                        behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
+                        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
+                        behaviour.targetPos = ToGlobal(behaviour.targetNode);
+                        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
+                        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+                        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                        behaviour.path.pop_back();
+                    }
+                    else if (distance < DukeExtra::minPlayerDistance)
+                        dukeExtra.phase = DukeExtra::Phase::Retreating;
+                    else if (behaviour.targetNode == std::make_pair(-1, -1))
+                    {
+                        glm::vec3 dir = Miscellaneous::RoundTo4Directions(transform.GetGlobalTranslation() - playerTransform.GetGlobalTranslation());
+                        std::pair<int, int> targetPosD = ToDungeon(playerTransform.GetGlobalTranslation() + DukeExtra::prefPlayerDistance * dir);
+
+                        while(IsWall(targetPosD))
+                        {
+                            if(targetPosD.first > wallMap.size() - 2)
+                                targetPosD.first = wallMap.size() - 2;
+                            if(targetPosD.second > wallMap[0].size() - 2)
+                                targetPosD.second = wallMap[0].size() - 2;
+                            if(dir.x == 0)
+                            {
+                                targetPosD.first += 1;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.first -= 2;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.first += 1;
+                            }
+                            else
+                            {
+                                targetPosD.second += 1;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.second -= 2;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.second += 1;
+                            }
+                            targetPosD.first += dir.x;
+                            targetPosD.second += dir.y;
+                        }
+
+                        behaviour.path = GeneratePath(ToDungeon(transform.GetGlobalTranslation()), targetPosD);
+                        behaviour.path.pop_back();
+                        if(behaviour.path.empty()) return;
+                        behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
+                        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
+                        behaviour.targetPos = ToGlobal(behaviour.targetNode);
+                        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
+                        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+                        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                        behaviour.path.pop_back();
+                    }
+                    else
+                    {
+                        MoveDuke(behaviour, transform, deltaTime);
+                    }
+                    break;
+                }
+                case DukeExtra::Phase::Retreating:
+                {
+                    Engine::Transform &playerTransform = ecsSystem->GetComponent<Engine::Transform>(dukeExtra.target);
+                    float distance = glm::length(playerTransform.GetGlobalTranslation() - transform.GetGlobalTranslation());
+                    if(distance > DukeExtra::minPlayerDistance)
+                        dukeExtra.phase = DukeExtra::Phase::Duelling;
+                    else if (behaviour.targetNode == std::make_pair(-1, -1))
+                    {
+                        glm::vec3 dir = transform.GetGlobalTranslation() - playerTransform.GetGlobalTranslation();
+                        std::pair<int, int> targetPosD = ToDungeon(transform.GetGlobalTranslation() + 2.0f * glm::normalize(dir));
+                        while(IsWall(targetPosD))
+                        {
+                            if(targetPosD.first > wallMap.size() - 2)
+                                targetPosD.first = wallMap.size() - 2;
+                            if(targetPosD.second > wallMap[0].size() - 2)
+                                targetPosD.second = wallMap[0].size() - 2;
+                            if(dir.x == 0)
+                            {
+                                targetPosD.first += 1;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.first -= 2;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.first += 1;
+                            }
+                            else
+                            {
+                                targetPosD.second += 1;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.second -= 2;
+                                if(!IsWall(targetPosD)) break;
+                                targetPosD.second += 1;
+                            }
+                            targetPosD.first += dir.x;
+                            targetPosD.second += dir.y;
+                        }
+                        behaviour.path = GeneratePath(ToDungeon(transform.GetGlobalTranslation()), targetPosD);
+                        behaviour.path.pop_back();
+                        if(behaviour.path.empty()) return;
+                        behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
+                        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
+                        behaviour.targetPos = ToGlobal(behaviour.targetNode);
+                        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
+                        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+                        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                        behaviour.path.pop_back();
+                    }
+                    else
+                    {
+                        MoveDuke(behaviour, transform, deltaTime);
+                    }
+                    break;
+                }
+            }
             break;
     }
 }
@@ -633,10 +780,11 @@ void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transfo
 
 void EnemyBehaviourSystem::MoveDuke(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
 {
-    glm::vec3 movement = glm::vec3(behaviour.movement * behaviour.speed * deltaTime, 0);
+    float speed = behaviour.enemyExtra.dukeExtra.bigPhase == DukeExtra::BigPhase::Preparing ? 1 : behaviour.speed;
+    glm::vec3 movement = glm::vec3(behaviour.movement * speed * deltaTime, 0);
     transform.AddTranslation(movement);
 
-    bool isCloseToTarget = glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2;
+    bool isCloseToTarget = glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < speed * deltaTime * 2;
     if(isCloseToTarget)
     {
         if(behaviour.path.empty())

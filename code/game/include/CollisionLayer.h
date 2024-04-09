@@ -7,5 +7,6 @@ enum class CollisionLayer : unsigned char
     Enemy,
     Dungeon,
     Bullet,
-    Collectible
+    Collectible,
+    Ignore
 };
