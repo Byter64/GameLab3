@@ -3,7 +3,6 @@ TwoPlayers 10 8  12 8
 
 wait 5
 Hubertus 1 1
-Assi 11 8
 
 wait 10
 Hubertus 19  5
