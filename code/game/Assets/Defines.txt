@@ -28,7 +28,7 @@ Hubertus_ShootInterval_Max = 6.0
 KindredSpirit_Score = 200
 KindredSpirit_Speed = 3.0
 KindredSpirit_Health = 1
-KindredSpirit_TimeTolerance = 2.0 /*How much time can pass betwenn both being hit */
+KindredSpirit_TimeTolerance = 1.0 /*How much time can pass betwenn both being hit */
 
 Assi_Score = 400
 Assi_Speed = 6.0
