@@ -53,7 +53,6 @@ void DungeonSystem::Update()
     {
         Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
-        ecsSystem->GetComponent<Health>(entity);
         if(dungeon.enemies.empty() && dungeon.activeEnemies.empty())
         {
             dungeon.areAllEnemiesDefeated = true;
