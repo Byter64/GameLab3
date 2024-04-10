@@ -106,9 +106,12 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../extern/a-star-master/source/AStar.cpp
         ../engine/src/CrashHandler.cpp
         ../engine/include/CrashHandler.h
-        ../engine/src/BaseException.cpp
-        ../engine/include/BaseException.h
+        ../engine/src/EngineException.cpp
+        ../engine/include/EngineException.h
         ../extern/StackWalker-master/Main/StackWalker/StackWalker.cpp
+        ../engine/src/ECSException.cpp
+        ../engine/include/ECSException.h
+        ../engine/src/ECS/ComponentManager.cpp
 )
 
 set(EXE_FILE Game)

@@ -45,4 +45,23 @@ namespace Engine
     {
         entityManager->RemoveEntity(entity);
     }
+
+    ComponentType ECSSystem::GetNumberOfRegisteredComponents()
+    {
+        return componentManager->GetNumberOfRegisteredComponents();
+    }
+
+    const char *ECSSystem::GetComponentTypeName(ComponentType componentType)
+    {
+        return componentManager->GetTypeName(componentType);
+    }
+
+    /// Runtime component check. ONLY USE IT IF YOU KNOW WHAT YOU ARE DOING
+    /// \param entity
+    /// \return
+    bool ECSSystem::HasComponent(Entity entity, ComponentType componentType)
+    {
+        Signature signature = entityManager->GetSignature(entity);
+        return signature[componentType];
+    }
 } // Engine

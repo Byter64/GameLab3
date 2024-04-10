@@ -4,6 +4,7 @@
 #include "Entity.h"
 #include <memory>
 #include <stdexcept>
+#include "EngineException.h"
 
 namespace Engine
 {
@@ -21,10 +22,10 @@ namespace Engine
 
             if(systems.find(typeName) != systems.end())
             {
-                std::string errorMessage{"System \""};
-                errorMessage += typeName;
-                errorMessage += "\" has already been registered";
-                throw std::runtime_error(errorMessage);
+                std::string message{"System \""};
+                message += typeName;
+                message += "\" has already been registered";
+                throw EngineException("SYSTEM ALREADY REGISTERED", message);
             }
 
             auto system = std::make_shared<T>();
@@ -42,7 +43,7 @@ namespace Engine
                 std::string message{"System \""};
                 message += typeName;
                 message += "\" has not been registered yet";
-                throw std::runtime_error(message);
+                throw EngineException("SYSTEM NOT REGISTERED", message);
             }
 
             signatures[typeName].push_back(signature);

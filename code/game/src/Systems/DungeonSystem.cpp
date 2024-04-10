@@ -45,7 +45,7 @@ void DungeonSystem::InitializeDungeons()
         ReadInEnemies(dungeon, enemyFile.string());
     }
 }
-#include "BaseException.h"
+#include "EngineException.h"
 
 void DungeonSystem::Update()
 {
@@ -53,8 +53,7 @@ void DungeonSystem::Update()
     {
         Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
-        throw Engine::BaseException("TEST_EXCEPTION", "This is a test");
-
+        ecsSystem->GetComponent<Health>(entity);
         if(dungeon.enemies.empty() && dungeon.activeEnemies.empty())
         {
             dungeon.areAllEnemiesDefeated = true;

@@ -86,6 +86,10 @@ namespace Engine
             return componentManager->GetNumberOfComponents<T>();
         }
 
+        ComponentType GetNumberOfRegisteredComponents();
+        const char *GetComponentTypeName(ComponentType componentType);
+        bool HasComponent(Entity entity, ComponentType componentType);
+
         Signature GetSignature(Entity entity);
 
         template<typename T>

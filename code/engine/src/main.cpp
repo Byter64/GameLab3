@@ -7,7 +7,7 @@
 #include "CrashHandler.h"
 #include <fstream>
 #include <string>
-#include "BaseException.h"
+#include "EngineException.h"
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
@@ -82,9 +82,10 @@ int main()
 
         glfwTerminate();
     }
-    catch (Engine::BaseException& baseException)
+    catch (Engine::EngineException& baseException)
     {
         std::cout << std::endl;
+        std::cout << "ERROR: " << std::endl;
         std::cout << baseException.errorName << std::endl;
         std::cout << baseException.errorDescription << std::endl;
         std::cout << "Stacktrace:\n" << baseException.stackTrace << std::endl;

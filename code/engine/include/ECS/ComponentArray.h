@@ -6,6 +6,7 @@
 #include <string>
 #include "Entity.h"
 #include <iostream>
+#include "ECSException.h"
 
 namespace Engine
 {
@@ -25,10 +26,10 @@ namespace Engine
             {
                 std::string message{"A component of type \""};
                 message += typeid(T).name();
-                message += "has already been added to entity ";
+                message += "\" has already been added to entity ";
                 message += std::to_string(entity.id);
 
-                throw std::runtime_error(message);
+                throw ECSException("COMPONENT ALREADY EXISTS", message, entity);
             }
 
             size_t index = size;
@@ -46,10 +47,10 @@ namespace Engine
             {
                 std::string message{"A component of type \""};
                 message += typeid(T).name();
-                message += "has already been added to entity ";
+                message += "\" has already been added to entity ";
                 message += std::to_string(entity.id);
 
-                throw std::runtime_error(message);
+                throw ECSException("COMPONENT ALREADY EXISTS", message, entity);
             }
             size_t index = size;
             entityToIndex[entity.id] = index;
@@ -68,7 +69,7 @@ namespace Engine
                 message += typeid(T).name();
                 message += "\"";
 
-                throw std::runtime_error(message);
+                throw ECSException("COMPONENT NOT FOUND", message, entity);
             }
             size_t entityIndex = entityToIndex[entity.id];
             size_t lastIndex = size - 1;
@@ -94,7 +95,7 @@ namespace Engine
                 message += typeid(T).name();
                 message += "\"";
 
-                throw std::runtime_error(message);
+                throw ECSException("COMPONENT NOT FOUND", message, entity);
             }
 
             return components[entityToIndex[entity.id]];

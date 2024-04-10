@@ -16,7 +16,7 @@ namespace Engine::CrashHandler
         if (!std::filesystem::exists(Engine::Files::LOGS))
             std::filesystem::create_directory(Engine::Files::LOGS);
         logStream = std::make_unique<std::ofstream>(Engine::Files::LOG);
-        *logStream << "LOG: (Hopefully nothing bad happens ): " << std::endl;
+        *logStream << "Oh no, you are here. That means something bad has happened :(\nAnyway...\n\n" << std::endl;
         std::cout.rdbuf(logStream->rdbuf());
 
 #ifdef _WIN32
