@@ -65,7 +65,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             {
                 //Bullet is already destroying itself, so no need to do it here
                 Health &health = ecsSystem->GetComponent<Health>(playerEntity);
-                //health.health--;
+                health.health--;
                 if (health.health <= 0 && controller.respawnTimer <= 0.0f)
                 {
                     health.health = health.maxHealth;
@@ -81,7 +81,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             if(controller.stunnedTimer < 0.0f)
             {
                 Health &health = ecsSystem->GetComponent<Health>(playerEntity);
-                //health.health--;
+                health.health--;
                 if (health.health <= 0 && controller.respawnTimer <= 0.0f)
                 {
                     health.health = health.maxHealth;
