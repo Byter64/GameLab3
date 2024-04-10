@@ -7,6 +7,7 @@
 #include "CrashHandler.h"
 #include <fstream>
 #include <string>
+#include "BaseException.h"
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
@@ -35,50 +36,59 @@ int main()
     InitializeECS();
     Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
 
-    OnStartGame(screenWidth, screenHeight);
-    float passedTimeInSeconds = 1.0f / 60;
-    glfwSetTime(passedTimeInSeconds);
-
-    std::chrono::high_resolution_clock::time_point gameTime1 = std::chrono::high_resolution_clock::now();
-    std::cout << "Engine initialization took " << Engine::Systems::timeManager->GetTimeSinceStartup() << " s" << std::endl;
-    while (!glfwWindowShouldClose(window))
+    try
     {
-        time1 = std::chrono::high_resolution_clock::now();
+        OnStartGame(screenWidth, screenHeight);
+        float passedTimeInSeconds = 1.0f / 60;
+        glfwSetTime(passedTimeInSeconds);
 
-        glfwPollEvents();
-        Engine::Systems::inputSystem->Update();
-
-        UpdateWithoutPause();
-        if (!Engine::isGamePaused)
+        std::chrono::high_resolution_clock::time_point gameTime1 = std::chrono::high_resolution_clock::now();
+        std::cout << "Engine initialization took " << Engine::Systems::timeManager->GetTimeSinceStartup() << " s" << std::endl;
+        while (!glfwWindowShouldClose(window))
         {
-            Update(passedTimeInSeconds);
-            Engine::Systems::collisionSystem->CheckCollisions();
-            ecsSystem->DeletePurgatory();
+            time1 = std::chrono::high_resolution_clock::now();
+
+            glfwPollEvents();
+            Engine::Systems::inputSystem->Update();
+
+            UpdateWithoutPause();
+            if (!Engine::isGamePaused)
+            {
+                Update(passedTimeInSeconds);
+                Engine::Systems::collisionSystem->CheckCollisions();
+                ecsSystem->DeletePurgatory();
+            }
+
+            Engine::Systems::renderSystem->Render();
+            Engine::Systems::textRenderSystem->Render();
+            if (!Engine::areAnimationsPaused)
+                Engine::Systems::animationSystem->Update(passedTimeInSeconds);
+
+            glfwSwapBuffers(window);
+
+            auto time2 = std::chrono::high_resolution_clock::now();
+            while (std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
+                time2 = std::chrono::high_resolution_clock::now();
+
+            auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
+            passedTimeInSeconds = ((float) delta.count());
+            passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 14 ? FRAMETIME144FPS * 14 : passedTimeInSeconds;
+            passedTimeInSeconds /= 1000000;
+
         }
 
-        Engine::Systems::renderSystem->Render();
-        Engine::Systems::textRenderSystem->Render();
-        if (!Engine::areAnimationsPaused)
-            Engine::Systems::animationSystem->Update(passedTimeInSeconds);
+        OnEndGame();
+        std::cout << "Game Time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - gameTime1).count() / 1000000 << " s" << std::endl;
 
-        glfwSwapBuffers(window);
-
-        auto time2 = std::chrono::high_resolution_clock::now();
-        while (std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
-            time2 = std::chrono::high_resolution_clock::now();
-
-        auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
-        passedTimeInSeconds = ((float) delta.count());
-        passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 14 ? FRAMETIME144FPS * 14 : passedTimeInSeconds;
-        passedTimeInSeconds /= 1000000;
-
+        glfwTerminate();
     }
-
-    OnEndGame();
-
-    std::cout << "Game Time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - gameTime1).count() / 1000000 << " s" << std::endl;
-
-    glfwTerminate();
+    catch (Engine::BaseException& baseException)
+    {
+        std::cout << std::endl;
+        std::cout << baseException.errorName << std::endl;
+        std::cout << baseException.errorDescription << std::endl;
+        std::cout << "Stacktrace:\n" << baseException.stackTrace << std::endl;
+    }
     return 0;
 }
 

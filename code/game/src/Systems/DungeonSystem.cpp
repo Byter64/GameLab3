@@ -45,13 +45,15 @@ void DungeonSystem::InitializeDungeons()
         ReadInEnemies(dungeon, enemyFile.string());
     }
 }
-
+#include "BaseException.h"
 
 void DungeonSystem::Update()
 {
     for(Engine::Entity entity : entities)
     {
         Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+
+        throw Engine::BaseException("TEST_EXCEPTION", "This is a test");
 
         if(dungeon.enemies.empty() && dungeon.activeEnemies.empty())
         {
