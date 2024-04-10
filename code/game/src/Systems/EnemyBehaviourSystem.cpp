@@ -70,11 +70,8 @@ void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 
     std::vector<std::pair<int,int>> targetNodes = FindNodes(behaviour.startPos.first, behaviour.startPos.second);
     std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
-    behaviour.oldTargetNode = behaviour.startPos;
-    behaviour.targetNode = target;
-    behaviour.targetPos = ToGlobal(behaviour.targetNode);
-    behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
-    transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+    SetTarget(behaviour, transform, behaviour.startPos, target, true);
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> distr(shootIntervalRanges[behaviour.behaviour].first, shootIntervalRanges[behaviour.behaviour].second);
@@ -102,21 +99,11 @@ void EnemyBehaviourSystem::Update(float deltaTime)
         switch (behaviour.behaviour)
         {
             default:
-            case EnemyBehaviour::Hubertus:
-                UpdateHubertus(entity, deltaTime);
-                break;
-            case EnemyBehaviour::KindredSpirit:
-                UpdateKindredSpirit(entity, deltaTime);
-                break;
-            case EnemyBehaviour::Assi:
-                UpdateAssi(entity, deltaTime);
-                break;
-            case EnemyBehaviour::Cuball:
-                UpdateCuball(entity, deltaTime);
-                break;
-            case EnemyBehaviour::Duke:
-                UpdateDuke(entity, deltaTime);
-                break;
+            case EnemyBehaviour::Hubertus:      UpdateHubertus(entity, deltaTime); break;
+            case EnemyBehaviour::KindredSpirit: UpdateKindredSpirit(entity, deltaTime); break;
+            case EnemyBehaviour::Assi:          UpdateAssi(entity, deltaTime); break;
+            case EnemyBehaviour::Cuball:        UpdateCuball(entity, deltaTime); break;
+            case EnemyBehaviour::Duke:          UpdateDuke(entity, deltaTime); break;
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
         for(auto& collision : collider.collisions)
@@ -128,21 +115,11 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                 switch (behaviour.behaviour)
                 {
                     default:
-                    case EnemyBehaviour::Hubertus:
-                        HandleDamageHubertus(entity, other);
-                        break;
-                    case EnemyBehaviour::KindredSpirit:
-                        HandleDamageKindredSpirit(entity, other);
-                        break;
-                    case EnemyBehaviour::Assi:
-                        HandleDamageAssi(entity, other);
-                        break;
-                    case EnemyBehaviour::Cuball:
-                        HandleDamageCuball(entity, other);
-                        break;
-                    case EnemyBehaviour::Duke:
-                        HandleDamageDuke(entity, other);
-                        break;
+                    case EnemyBehaviour::Hubertus:      HandleDamageHubertus(entity, other); break;
+                    case EnemyBehaviour::KindredSpirit: HandleDamageKindredSpirit(entity, other); break;
+                    case EnemyBehaviour::Assi:          HandleDamageAssi(entity, other); break;
+                    case EnemyBehaviour::Cuball:        HandleDamageCuball(entity, other); break;
+                    case EnemyBehaviour::Duke:          HandleDamageDuke(entity, other); break;
                 }
             }
         }
@@ -279,13 +256,7 @@ void EnemyBehaviourSystem::UpdateAssi(Engine::Entity entity, float deltaTime)
             std::pair<int, int> pos = ToDungeon(glm::round(transform.GetGlobalTranslation()));
             std::vector<std::pair<int,int>> targetNodes = FindNodes(pos.first, pos.second);
             std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
-
-            behaviour.targetNode = target;
-            behaviour.targetPos = ToGlobal(behaviour.targetNode);
-            behaviour.movement = ToGlobal(behaviour.targetNode) - glm::vec2(glm::round(transform.GetGlobalTranslation()));
-            if(behaviour.movement != glm::vec2(0))
-                behaviour.movement = glm::normalize(behaviour.movement);
-            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+            SetTarget(behaviour, transform, pos, target, true);
         }
         else
             MoveEnemyNormal(behaviour, transform, deltaTime);
@@ -482,12 +453,7 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
                 behaviour.path.pop_back(); //the last node is the one where the duke is already standing so we remove it
                 dukeExtra.bigPhase = DukeExtra::BigPhase::Preparing;
 
-                behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
-                behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
-                behaviour.targetPos = ToGlobal(behaviour.targetNode);
-                behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-                transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-                transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
                 behaviour.path.pop_back();
             }
             break;
@@ -542,12 +508,7 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
                         dukeExtra.bigPhase = DukeExtra::BigPhase::Preparing;
                         dukeExtra.phase = DukeExtra::Phase::Waiting;
 
-                        behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
-                        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
-                        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-                        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-                        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-                        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                        SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
                         behaviour.path.pop_back();
                     }
                     else if (distance < DukeExtra::minPlayerDistance)
@@ -586,12 +547,7 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
                         behaviour.path = GeneratePath(ToDungeon(transform.GetGlobalTranslation()), targetPosD);
                         behaviour.path.pop_back();
                         if(behaviour.path.empty()) return;
-                        behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
-                        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
-                        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-                        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-                        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-                        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                        SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
                         behaviour.path.pop_back();
                     }
                     else
@@ -638,12 +594,7 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
                         behaviour.path = GeneratePath(ToDungeon(transform.GetGlobalTranslation()), targetPosD);
                         behaviour.path.pop_back();
                         if(behaviour.path.empty()) return;
-                        behaviour.oldTargetNode = ToDungeon(transform.GetGlobalTranslation());
-                        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
-                        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-                        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-                        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-                        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                        SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
                         behaviour.path.pop_back();
                     }
                     else
@@ -662,6 +613,18 @@ void EnemyBehaviourSystem::HandleDamageDuke(Engine::Entity entity, Engine::Entit
 
 }
 
+void EnemyBehaviourSystem::SetTarget(EnemyBehaviour &behaviour, Engine::Transform &transform, std::pair<int, int> dungeonPosStart, std::pair<int, int> dungeonPosTarget, bool setRotation)
+{
+    behaviour.oldTargetNode = dungeonPosStart;
+    behaviour.targetNode = dungeonPosTarget;
+    behaviour.targetPos = ToGlobal(behaviour.targetNode);
+    behaviour.movement = ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode);
+    if(behaviour.movement != glm::vec2(0)) behaviour.movement = glm::normalize(behaviour.movement);
+
+    transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
+    if(setRotation) transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+}
+
 void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime, bool setRotation)
 {
     transform.AddTranslation(glm::vec3(behaviour.movement * behaviour.speed * deltaTime, 0));
@@ -677,13 +640,7 @@ void EnemyBehaviourSystem::MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Tr
             std::advance(iter, index);
             i++;
         } while(i < 5 && *iter == behaviour.oldTargetNode);
-        behaviour.oldTargetNode = behaviour.targetNode;
-        behaviour.targetNode = *iter;
-        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-        if(setRotation)
-            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+        SetTarget(behaviour, transform, behaviour.targetNode, *iter, setRotation);
     }
 }
 
@@ -736,12 +693,7 @@ void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transfo
                     std::advance(iter, index);
                     i++;
                 } while (i < 5 && *iter == behaviour.oldTargetNode);
-                behaviour.oldTargetNode = behaviour.targetNode;
-                behaviour.targetNode = *iter;
-                behaviour.targetPos = ToGlobal(behaviour.targetNode);
-                behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
-                transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-                transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+                SetTarget(behaviour, transform, behaviour.targetNode, *iter, true);
             }
 
             parent.SetTranslation(transform.GetTranslation() + glm::vec3(behaviour.movement * 0.5f, -0.5f));
@@ -796,12 +748,7 @@ void EnemyBehaviourSystem::MoveDuke(EnemyBehaviour &behaviour, Engine::Transform
             return;
         }
 
-        behaviour.oldTargetNode = behaviour.targetNode;
-        behaviour.targetNode = behaviour.path[behaviour.path.size() - 1];
-        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) -  ToGlobal(behaviour.oldTargetNode));
-        transform.SetTranslation(glm::vec3(ToGlobal(behaviour.oldTargetNode), transform.GetTranslation().z));
-        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(behaviour.movement.y, behaviour.movement.x))));
+        SetTarget(behaviour, transform, behaviour.targetNode, behaviour.path[behaviour.path.size() - 1], true);
         behaviour.path.pop_back();
     }
 }

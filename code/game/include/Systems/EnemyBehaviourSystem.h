@@ -46,6 +46,7 @@ class EnemyBehaviourSystem : public Engine::System
     void UpdateDuke(Engine::Entity entity, float deltaTime);
     void HandleDamageDuke(Engine::Entity entity, Engine::Entity other);
 
+    void SetTarget(EnemyBehaviour& behaviour, Engine::Transform& transform, std::pair<int, int> dungeonPosStart, std::pair<int, int> dungeonPosTarget, bool setRotation);
     void MoveEnemyNormal(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime, bool setRotation = true);
     void MoveAssi(EnemyBehaviour& behaviour, Engine::Transform& transform, glm::vec3 direction, float deltaTime);
     void MoveCuball(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
