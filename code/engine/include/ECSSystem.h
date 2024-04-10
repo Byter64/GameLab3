@@ -59,13 +59,13 @@ namespace Engine
         template<typename T>
         void RemoveComponent(Entity entity)
         {
-            componentManager->RemoveComponent<T>(entity);
 
             auto signature = entityManager->GetSignature(entity);
             signature.set(componentManager->GetComponentType<T>(), false);
             entityManager->SetSignature(entity, signature);
-
             systemManager->EntitySignatureChanged(entity, signature);
+
+            componentManager->RemoveComponent<T>(entity);
         }
 
         template<typename T>

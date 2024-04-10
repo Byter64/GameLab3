@@ -17,7 +17,7 @@ namespace Engine
         virtual void EntityAdded(Entity entity) = 0;
 
         /**
-         * Gets called when an entity is removed from the system. At the time of calling, the entity has already been removed from "entities".
+         * Gets called when an entity is removed from the system. At the time of calling, the entity has already been removed from "entities" but its components are still intact.
          * @param entity
          */
         virtual void EntityRemoved(Entity entity) = 0;

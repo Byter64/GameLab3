@@ -1,9 +1,7 @@
 #pragma once
 
-namespace Engine
+
+namespace Engine::CrashHandler
 {
-    namespace CrashHandler
-    {
-        void SetupCrashHandler();
-    } // Engine
-} // CrashHandler
+    void SetupCrashHandler();
+} // Engine::CrashHandler

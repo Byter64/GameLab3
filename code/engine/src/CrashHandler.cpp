@@ -3,7 +3,6 @@
 #include "Engine.h"
 #include <fstream>
 #include <errhandlingapi.h>
-#include "../../extern/WimXML-master/source/APIHook.h"
 
 namespace Engine::CrashHandler
 {

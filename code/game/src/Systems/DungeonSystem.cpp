@@ -297,6 +297,8 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
     }
     enemyBehaviourSystem->ChangeWallMap(enemyWallMap);
 
+    if(ecsSystem->HasComponent<Engine::TilemapCollider>(entity))
+        ecsSystem->RemoveComponent<Engine::TilemapCollider>(entity);
     Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
     collider.map = wallMap;
     collider.layer = (unsigned char)CollisionLayer::Dungeon;
@@ -318,8 +320,9 @@ void DungeonSystem::UpdateDungeon(Engine::Entity entity)
         ReadInDungeonMap(dungeon, dungeonFile.string());
         ReadInEnemies(dungeon, enemyFile.string());
     }
-    catch (std::runtime_error& e)
+    catch (std::exception& e)
     {
+        std::cout << e.what() << std::endl;
         exit(-1);
     }
 }
