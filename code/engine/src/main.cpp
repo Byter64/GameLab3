@@ -1,11 +1,12 @@
-
 #include <iostream>
 #include <cmath>
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
 #include "Engine.h"
 #include "GlobalGameEvents.h"
-
+#include "CrashHandler.h"
+#include <fstream>
+#include <string>
 #define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
 #define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
 
@@ -27,24 +28,28 @@ void window_pos_callback(GLFWwindow *window, int x, int y);
 
 int main()
 {
+    Engine::CrashHandler::SetupCrashHandler();
+
     Engine::Systems::timeManager = std::make_shared<Engine::TimeManager>();
-    if(SetupWindow() == -1) return -1;
+    if (SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
 
     OnStartGame(screenWidth, screenHeight);
-    float passedTimeInSeconds = 1.0f/60;
+    float passedTimeInSeconds = 1.0f / 60;
     glfwSetTime(passedTimeInSeconds);
 
     std::chrono::high_resolution_clock::time_point gameTime1 = std::chrono::high_resolution_clock::now();
-    while (!glfwWindowShouldClose(window)) {
+    std::cout << "Engine initialization took " << Engine::Systems::timeManager->GetTimeSinceStartup() << " s" << std::endl;
+    while (!glfwWindowShouldClose(window))
+    {
         time1 = std::chrono::high_resolution_clock::now();
 
         glfwPollEvents();
         Engine::Systems::inputSystem->Update();
 
         UpdateWithoutPause();
-        if(!Engine::isGamePaused)
+        if (!Engine::isGamePaused)
         {
             Update(passedTimeInSeconds);
             Engine::Systems::collisionSystem->CheckCollisions();
@@ -53,17 +58,17 @@ int main()
 
         Engine::Systems::renderSystem->Render();
         Engine::Systems::textRenderSystem->Render();
-        if(!Engine::areAnimationsPaused)
+        if (!Engine::areAnimationsPaused)
             Engine::Systems::animationSystem->Update(passedTimeInSeconds);
 
         glfwSwapBuffers(window);
 
         auto time2 = std::chrono::high_resolution_clock::now();
-        while(std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
+        while (std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1).count() < FRAMETIME144FPS)
             time2 = std::chrono::high_resolution_clock::now();
 
         auto delta = std::chrono::duration_cast<std::chrono::microseconds>(time2 - time1);
-        passedTimeInSeconds = ((float)delta.count());
+        passedTimeInSeconds = ((float) delta.count());
         passedTimeInSeconds = passedTimeInSeconds > FRAMETIME144FPS * 14 ? FRAMETIME144FPS * 14 : passedTimeInSeconds;
         passedTimeInSeconds /= 1000000;
 

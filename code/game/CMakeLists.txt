@@ -104,6 +104,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Helpers/DukeExtra.h
         ../extern/a-star-master/include/AStar.hpp
         ../extern/a-star-master/source/AStar.cpp
+        ../engine/src/CrashHandler.cpp
+        ../engine/include/CrashHandler.h
 )
 
 set(EXE_FILE Game)
@@ -119,5 +121,6 @@ add_custom_command(
         $<TARGET_FILE_DIR:${EXE_FILE}>/Assets)
 
 target_compile_definitions(${EXE_FILE} PRIVATE _ASSET_ROOT=Assets/)
+target_compile_definitions(${EXE_FILE} PRIVATE _LOGS_ROOT=Logs/)
 target_compile_features(${EXE_FILE} PRIVATE cxx_std_17)
 target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm) # Hallo ich bin ein Kommentar :)

@@ -12,6 +12,8 @@
 namespace Engine::Files
 {
     static const std::filesystem::path ASSETS = GET_STRING2(_ASSET_ROOT);
+    static const std::filesystem::path LOGS = GET_STRING2(_LOGS_ROOT);
+    static const std::filesystem::path LOG = LOGS / "log.txt";
 
     /// Parses a file and separates the text by whitespaces
     /// \param path
