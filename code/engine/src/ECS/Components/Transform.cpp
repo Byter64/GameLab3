@@ -370,8 +370,21 @@ namespace Engine
         parent = other.parent;
         if(parent != nullptr)
         {
+            //Find child index of old transform (other)
+            auto iter = parent->children.begin();
+            int index = 0;
+            Transform* pointer = &other;
+            while(*iter != &other)
+            {
+                iter++;
+                index++;
+            }
             parent->children.remove(&other);
-            parent->GetChildren().push_back(this);
+
+            //Set child index of new transform (this)
+            iter = parent->children.begin();
+            std::advance(iter, index);
+            parent->children.insert(iter,this);
         }
         return *this;
     }
