@@ -78,7 +78,6 @@ void DungeonSystem::Update()
             enemies.push_back(ECSHelper::SpawnDuke(frontEnemy.spawnPosition));
             break;
     }
-
     dungeon.spawnerData.pop_front();
     for(Engine::Entity enemy : enemies) dungeon.activeEnemies.push_back(enemy);
 
@@ -119,104 +118,74 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
     }
     if(noDungeon)
     {
-        std::cout << "Game is over" << std::endl;
-        exit(-1);
+        std::cout << "Game is over, you won, all dungeons cleared. Hurray" << std::endl;
+        std::cout << "Seems though as if the developer forgot to handle the case that someone actually finished the game (or played it)" << std::endl;
+        exit(0);
     }
 
-    enum
-    {
-        Nothing,
-        ExpectingTime,
-        ExpectingXPos,
-        ExpectingYPos
-    } state = Nothing;
-
+    bool doesEnemyBlock = false;
     float time = 0;
+    float timeDelta;
     EnemyBehaviour::Type behaviour;
     std::pair<int, int> pos;
-    float timeDelta;
-    bool doesEnemyBlock = false;
     for (int i = 0; i < filecontent.size(); i++)
     {
-        std::string& symbol = filecontent[i];
+        std::string &symbol = filecontent[i];
         std::transform(symbol.begin(), symbol.end(), symbol.begin(), tolower);
 
-        switch (state)
+        if (symbol == WAIT_KEYWORD)
         {
-            case Nothing:
-                if(symbol == WAIT_KEYWORD)
-                    state = ExpectingTime;
-                else if(symbol == BLOCK_KEYWORD)
-                {
-                    doesEnemyBlock = true;
-                }
-                else if(symbol == SINGLE_KEYWORD && players.second == Engine::Entity::INVALID_ENTITY_ID)
-                {
-                    Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
-                    std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-                    transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
-                }
-                else if(symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
-                {
-                    Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
-                    std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-                    transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
+            timeDelta = std::stof(filecontent[i + 1]);
+            time += timeDelta;
+            i += 1;
+        }
+        else if (symbol == BLOCK_KEYWORD)
+        {
+            doesEnemyBlock = true;
+        }
+        else if (symbol == SINGLE_KEYWORD && players.second == Engine::Entity::INVALID_ENTITY_ID)
+        {
+            Engine::Transform &transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
+            std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
+            transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
+            i += 2;
+        }
+        else if (symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
+        {
+            Engine::Transform &transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
+            std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
+            transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
 
-                    Engine::Transform& transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
-                    std::pair<int, int> pos2 = {std::stoi(filecontent[i + 3]), std::stoi(filecontent[i + 4])};
-                    transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
-                }
-                else if(symbol == MIRROR_KEYWORD)
-                {
-                    std::pair<int, int> mirrors{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-                    CuballExtra::mirrorDirection = mirrors;
-                }
-                else if(symbol == PREPPOS_KEYWORD)
-                {
-                    std::pair<int, int> prepPos{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-                    DukeExtra::preparationPositions.push_back(prepPos);
-                }
-                else if(EnemyBehaviour::stringToBehaviour.count(symbol))
-                {
-                    behaviour = EnemyBehaviour::stringToBehaviour.at(symbol);
-                    state = ExpectingXPos;
-                }
-                break;
-            case ExpectingTime:
-                try { timeDelta = std::stof(symbol); }
-                catch (std::invalid_argument exception)
-                {
-                    std::cout << "a time value was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
-                    exit(-1);
-                }
-                time += timeDelta;
-                state = Nothing;
-                break;
+            Engine::Transform &transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
+            std::pair<int, int> pos2 = {std::stoi(filecontent[i + 3]), std::stoi(filecontent[i + 4])};
+            transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
+            i += 4;
+        }
+        else if (symbol == MIRROR_KEYWORD)
+        {
+            std::pair<int, int> mirrors{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
+            CuballExtra::mirrorDirection = mirrors;
+            i += 2;
+        }
+        else if (symbol == PREPPOS_KEYWORD)
+        {
+            std::pair<int, int> prepPos{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
+            DukeExtra::preparationPositions.push_back(prepPos);
+            i += 2;
+        }
+        else if (EnemyBehaviour::stringToBehaviour.count(symbol))
+        {
+            behaviour = EnemyBehaviour::stringToBehaviour.at(symbol);
+            pos.first = std::stoi(filecontent[i + 1]);
+            pos.second = std::stoi(filecontent[i + 2]);
 
-            case ExpectingXPos:
-                try { pos.first = std::stoi(symbol); }
-                catch (std::invalid_argument exception)
-                {
-                    std::cout << "a value for x position was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
-                    exit(-1);
-                }
-                state = ExpectingYPos;
-                break;
-            case ExpectingYPos:
-                try { pos.second = std::stoi(symbol); }
-                catch (std::invalid_argument exception)
-                {
-                    std::cout << "a value for y position was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
-                    exit(-1);
-                }
-                dungeon.spawnerData.push_back({behaviour, pos, time, doesEnemyBlock});
-                if(doesEnemyBlock)
-                {
-                    doesEnemyBlock = false;
-                    time = 0.0f;
-                }
-                state = Nothing;
-                break;
+            dungeon.spawnerData.push_back({behaviour, pos, time, doesEnemyBlock});
+            if (doesEnemyBlock)
+            {
+                doesEnemyBlock = false;
+                time = 0.0f;
+            }
+            i += 2;
         }
     }
 }
