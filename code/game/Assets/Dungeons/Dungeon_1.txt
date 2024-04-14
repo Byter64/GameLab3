@@ -9,12 +9,12 @@ Hubertus 19 9
 wait 15
 KindredSpirit 11 5
 
-wait 20 
+block
 Hubertus 10 8
 Hubertus 12 8
 KindredSpirit 11 8
 
-wait 15
+block
 KindredSpirit 3 7
 KindredSpirit 3 9
 

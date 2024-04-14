@@ -27,5 +27,6 @@ public:
     void Update();
     void LoadNextDungeon();
     bool IsDungeonCleared();
+    void OnEnemyDestroyed(Engine::Entity enemy);
 
 };

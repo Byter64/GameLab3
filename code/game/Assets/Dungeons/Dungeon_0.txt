@@ -4,7 +4,7 @@ TwoPlayers 10 8  12 8
 wait 5
 Hubertus 1 1
 
-wait 10
+block
 Hubertus 19  5
 Hubertus 19 11
 

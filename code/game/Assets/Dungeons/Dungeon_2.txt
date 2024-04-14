@@ -4,7 +4,7 @@ Mirror 1 0
 
 Assi 21 8
 
-wait 30
+block
 KindredSpirit 7 12
 KindredSpirit 7 15
 Hubertus 19 8
@@ -15,7 +15,7 @@ Assi 11 7
 Assi 11 9
 KindredSpirit 1 15
 
-wait 20
+block
 Assi 9 9
 Hubertus 10 9
 Assi 13 9

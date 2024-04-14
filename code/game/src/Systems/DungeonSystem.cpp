@@ -47,72 +47,59 @@ void DungeonSystem::Update()
 {
     Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
-    if (dungeon.enemies.empty() && dungeon.activeEnemies.empty())
+    if(dungeon.spawnerData.empty()) return;
+
+    EnemySpawnerData& frontEnemy = dungeon.spawnerData.front();
+
+    if(frontEnemy.spawnTime > Engine::Systems::timeManager->GetTimeSinceStartup() - dungeon.referenceSpawnTime) return;
+    if(frontEnemy.waitUntilEveryoneDied && !dungeon.activeEnemies.empty()) return;
+
+    if(frontEnemy.waitUntilEveryoneDied)
+        dungeon.referenceSpawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+
+    std::vector<Engine::Entity> enemies;
+    switch (frontEnemy.type)
     {
-        dungeon.areAllEnemiesDefeated = true;
+        case EnemyBehaviour::Hubertus:
+            enemies.push_back(ECSHelper::SpawnHubertus(frontEnemy.spawnPosition));
+            break;
+        case EnemyBehaviour::KindredSpirit: {
+            auto enemyPair = ECSHelper::SpawnKindredSpirit(frontEnemy.spawnPosition);
+            enemies.push_back(enemyPair.second);
+            enemies.push_back(enemyPair.first);
+            break; }
+        case EnemyBehaviour::Assi:
+            enemies.push_back(ECSHelper::SpawnAssi(frontEnemy.spawnPosition));
+            break;
+        case EnemyBehaviour::Cuball:
+            enemies.push_back(ECSHelper::SpawnCuball(frontEnemy.spawnPosition));
+            break;
+        case EnemyBehaviour::Duke:
+            enemies.push_back(ECSHelper::SpawnDuke(frontEnemy.spawnPosition));
+            break;
     }
-    //Spawn enemies
-    for (auto &pair: dungeon.enemies)
+
+    dungeon.spawnerData.pop_front();
+    for(Engine::Entity enemy : enemies) dungeon.activeEnemies.push_back(enemy);
+
+    for (Engine::Entity spawnedEntity: enemies)
     {
-        if (dungeon.activeEnemies.count(pair.first) == 0 &&
-            pair.second.top().first < (Engine::Systems::timeManager->GetTimeSinceStartup() - dungeon.creationTime))
+        ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int) CollisionLayer::Ignore;
+        if (ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
         {
-            std::vector<Engine::Entity> enemies;
-            switch (pair.second.top().second)
-            {
-                case EnemyBehaviour::Hubertus:
-                    enemies.push_back(ECSHelper::SpawnHubertus(pair.first));
-                    break;
-
-                case EnemyBehaviour::KindredSpirit:
-                {
-                    auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
-                    enemies.push_back(enemyPair.second);
-                    enemies.push_back(enemyPair.first);
-                    std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
-                    dungeon.activeEnemies[secondPos] = enemyPair.second;
-                    break;
-                }
-                case EnemyBehaviour::Assi:
-                    enemies.push_back(ECSHelper::SpawnAssi(pair.first));
-                    break;
-                case EnemyBehaviour::Cuball:
-                    enemies.push_back(ECSHelper::SpawnCuball(pair.first));
-                    break;
-                case EnemyBehaviour::Duke:
-                    enemies.push_back(ECSHelper::SpawnDuke(pair.first));
-                    break;
-            }
-            pair.second.pop();
-            dungeon.activeEnemies[pair.first] = enemies.back();
-
-            for (Engine::Entity spawnedEntity: enemies)
-            {
-                ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int) CollisionLayer::Ignore;
-                if (ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
-                {
-                    Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
-                } else
-                {
-                    Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(), spawnedEntity);
-                    Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
-                }
-            }
+            Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
+        } else
+        {
+            Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(), spawnedEntity);
+            Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
         }
-    }
-
-    for (auto iter = dungeon.enemies.begin(); iter != dungeon.enemies.end();)
-    {
-        if (iter->second.empty())
-            iter = dungeon.enemies.erase(iter);
-        else
-            ++iter;
     }
 }
 
 void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
 {
     static const std::string WAIT_KEYWORD = "wait";
+    static const std::string BLOCK_KEYWORD = "block";
     static const std::string SINGLE_KEYWORD = "singleplayer";
     static const std::string MULTI_KEYWORD = "twoplayers";
     static const std::string MIRROR_KEYWORD = "mirror";
@@ -148,6 +135,7 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
     EnemyBehaviour::Type behaviour;
     std::pair<int, int> pos;
     float timeDelta;
+    bool doesEnemyBlock = false;
     for (int i = 0; i < filecontent.size(); i++)
     {
         std::string& symbol = filecontent[i];
@@ -158,6 +146,10 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
             case Nothing:
                 if(symbol == WAIT_KEYWORD)
                     state = ExpectingTime;
+                else if(symbol == BLOCK_KEYWORD)
+                {
+                    doesEnemyBlock = true;
+                }
                 else if(symbol == SINGLE_KEYWORD && players.second == Engine::Entity::INVALID_ENTITY_ID)
                 {
                     Engine::Transform& transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
@@ -217,7 +209,12 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
                     std::cout << "a value for y position was expected but none was given. Problematic symbol: " << filecontent[i] << std::endl;
                     exit(-1);
                 }
-                dungeon.enemies[pos].push({time, behaviour});
+                dungeon.spawnerData.push_back({behaviour, pos, time, doesEnemyBlock});
+                if(doesEnemyBlock)
+                {
+                    doesEnemyBlock = false;
+                    time = 0.0f;
+                }
                 state = Nothing;
                 break;
         }
@@ -228,7 +225,7 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
 {
     Engine::Entity entity = ecsSystem->GetEntity(dungeon);
 
-    dungeon.creationTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+    dungeon.referenceSpawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     RemoveEntityWithChildren(entity, false);
 
     int width, height, channels;
@@ -302,7 +299,6 @@ void DungeonSystem::LoadNextDungeon()
 {
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeDungeon++;
-    dungeon.areAllEnemiesDefeated = false;
 
     std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
     std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
@@ -349,5 +345,12 @@ DungeonSystem::Type DungeonSystem::ToType(unsigned char red, unsigned char green
 
 bool DungeonSystem::IsDungeonCleared()
 {
-    return ecsSystem->GetComponent<Dungeon>(entity).areAllEnemiesDefeated;
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    return dungeon.spawnerData.size() == 0 && dungeon.activeEnemies.size() == 0;
+}
+
+void DungeonSystem::OnEnemyDestroyed(Engine::Entity enemy)
+{
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    dungeon.activeEnemies.remove(enemy);
 }

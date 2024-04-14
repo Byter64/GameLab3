@@ -112,6 +112,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECSException.cpp
         ../engine/include/ECSException.h
         ../engine/src/ECS/ComponentManager.cpp
+        include/Helpers/EnemySpawnerData.h
 )
 
 set(EXE_FILE Game)
