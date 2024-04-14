@@ -34,6 +34,8 @@ namespace Engine
 
     void TextRenderSystem::SetViewport(int screenWidth, int screenHeight)
     {
+        screenWidth = screenWidth < 1 ? 1 : screenWidth;
+        screenHeight = screenHeight < 1 ? 1 : screenHeight;
         gltViewport(screenWidth, screenHeight);
         targetResolution = {screenWidth, screenHeight};
         resolutionScale = {screenWidth / (float)referenceResolution.first, screenHeight / (float)referenceResolution.second};
