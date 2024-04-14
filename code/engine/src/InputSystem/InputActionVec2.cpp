@@ -199,15 +199,16 @@ namespace Engine
         float x = GetValue(axes.first);
         float y = GetValue(axes.second);
 
+        x = glm::abs(x) < deadzone ? 0.0f : x;
+        y = glm::abs(y) < deadzone ? 0.0f : y;
+        if(oldInput == glm::vec2(x, y)) return;
+
         glm::vec2 value(x, y);
         Update(value);
     }
 
     void InputActionVec2::Update(glm::vec2 value)
     {
-        value.x = glm::abs(value.x) < deadzone.x ? 0.0f : value.x;
-        value.y = glm::abs(value.y) < deadzone.y ? 0.0f : value.y;
-
         //Check for end of input
         if(value == glm::vec2(0,0) && oldInput != glm::vec2 (0,0))
         {
