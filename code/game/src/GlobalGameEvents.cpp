@@ -9,7 +9,6 @@
 extern std::shared_ptr<BulletSystem> bulletSystem;
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
 extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 extern std::shared_ptr<ElevatorSystem> elevatorSystem;
 extern std::shared_ptr<BreakableWallSystem> destroyerSystem;

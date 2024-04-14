@@ -6,7 +6,6 @@
 
 std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<DungeonEnemySystem> dungeonEnemySystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
 std::shared_ptr<ElevatorSystem> elevatorSystem;
@@ -57,11 +56,6 @@ void ECSHelper::Initialize()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->AddSystemSignature<EnemyBehaviourSystem>(enemyBehaviourSignature);
-
-    dungeonEnemySystem = ecsSystem->RegisterSystem<DungeonEnemySystem>();
-    Engine::Signature dungeonEnemySignature;
-    dungeonEnemySignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
-    ecsSystem->AddSystemSignature<DungeonEnemySystem>(dungeonEnemySignature);
 
     dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
     Engine::Signature dungeonSignature;
