@@ -39,8 +39,8 @@ void DungeonSystem::Initialize()
         dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
     }
 
-    ReadInDungeonMap(dungeon, dungeonFile.string());
-    ReadInEnemies(dungeon, enemyFile.string());
+    ReadInDungeonMap(dungeonFile.string());
+    ReadInEnemies(enemyFile.string());
 }
 
 void DungeonSystem::Update()
@@ -95,7 +95,26 @@ void DungeonSystem::Update()
     }
 }
 
-void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
+void DungeonSystem::LoadNextDungeon()
+{
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    dungeon.activeDungeon++;
+
+    std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
+    std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
+    try
+    {
+        ReadInDungeonMap(dungeonFile.string());
+        ReadInEnemies(enemyFile.string());
+    }
+    catch (std::exception& e)
+    {
+        std::cout << e.what() << std::endl;
+        exit(-1);
+    }
+}
+
+void DungeonSystem::ReadInEnemies(std::string file)
 {
     static const std::string WAIT_KEYWORD = "wait";
     static const std::string BLOCK_KEYWORD = "block";
@@ -103,6 +122,8 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
     static const std::string MULTI_KEYWORD = "twoplayers";
     static const std::string MIRROR_KEYWORD = "mirror";
     static const std::string PREPPOS_KEYWORD = "preppos";
+
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
     DukeExtra::preparationPositions.clear();
 
@@ -190,9 +211,9 @@ void DungeonSystem::ReadInEnemies(Dungeon& dungeon, std::string file)
     }
 }
 
-void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
+void DungeonSystem::ReadInDungeonMap(std::string file)
 {
-    Engine::Entity entity = ecsSystem->GetEntity(dungeon);
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
     dungeon.referenceSpawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     RemoveEntityWithChildren(entity, false);
@@ -234,15 +255,12 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
             if(type1 == Type::Wall)
                 name = "Wall(";
             else if (type1 == Type::BreakableWall)
-                name = "Breakable Wall(";
+                name = "Breakable Wall( ";
 
-            name += std::to_string(x);
-            name += "|";
-            name += std::to_string(y);
-            name += ")";
+            name += std::to_string(x) + " | " + std::to_string(y) + " )";
 
-            Engine::Entity wall;
             glm::vec3 spawnPos = glm::vec3(x - width / 2, y - height / 2,0);
+            Engine::Entity wall;
             if(type1 == Type::Wall)
                 wall = ECSHelper::SpawnWall(spawnPos);
             else if(type1 == Type::BreakableWall)
@@ -254,33 +272,12 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
     }
     enemyBehaviourSystem->ChangeWallMap(enemyWallMap);
 
-    if(ecsSystem->HasComponent<Engine::TilemapCollider>(entity))
-        ecsSystem->RemoveComponent<Engine::TilemapCollider>(entity);
-    Engine::TilemapCollider& collider = ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
+    Engine::TilemapCollider& collider = ecsSystem->HasComponent<Engine::TilemapCollider>(entity) ? ecsSystem->GetComponent<Engine::TilemapCollider>(entity) :
+            ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
     collider.map = wallMap;
     collider.layer = (unsigned char)CollisionLayer::Dungeon;
     collider.position = {wallMap.size() / 2, wallMap[0].size() / 2, 0};
     collider.position *= -1;
-
-}
-
-void DungeonSystem::LoadNextDungeon()
-{
-    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
-    dungeon.activeDungeon++;
-
-    std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
-    std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
-    try
-    {
-        ReadInDungeonMap(dungeon, dungeonFile.string());
-        ReadInEnemies(dungeon, enemyFile.string());
-    }
-    catch (std::exception& e)
-    {
-        std::cout << e.what() << std::endl;
-        exit(-1);
-    }
 }
 
 DungeonSystem::Type DungeonSystem::ToType(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha)

@@ -11,6 +11,7 @@
 #include "GameDefines.h"
 #include <limits>
 
+extern std::shared_ptr<DungeonSystem> dungeonSystem;
 extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem;
 extern std::pair<Engine::Entity, Engine::Entity> players;
 
@@ -89,6 +90,8 @@ void EnemyBehaviourSystem::EntityRemoved(Engine::Entity entity)
         glm::vec4 colour = Engine::GetComponentsInChildren<Engine::MeshRenderer>(entity)[0]->primitiveData[0].material.baseColorFactor;
         KindredSpiritExtra::colours.push(colour);
     }
+
+    dungeonSystem->OnEnemyDestroyed(entity);
 }
 
 void EnemyBehaviourSystem::Update(float deltaTime)

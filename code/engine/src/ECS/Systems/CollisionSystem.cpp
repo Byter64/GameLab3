@@ -5,6 +5,41 @@
 
 namespace Engine
 {
+    void CollisionSystem::EntityAdded(Entity entity)
+    {
+        if(ecsSystem->HasComponent<BoxCollider>(entity))
+            entitiesWithBoxColliders.insert(entity);
+        else if(ecsSystem->HasComponent<TilemapCollider>(entity))
+            entitiesWithTilemapColliders.insert(entity);
+    }
+
+    void CollisionSystem::EntityRemoved(Entity entity)
+    {
+        std::vector<Collision> const &collisions = entitiesWithBoxColliders.count(entity) ?
+                                                   ecsSystem->GetComponent<BoxCollider>(entity).collisions : ecsSystem->GetComponent<TilemapCollider>(entity).collisions;
+
+        entitiesWithBoxColliders.erase(entity);
+        entitiesWithTilemapColliders.erase(entity);
+
+        for (auto& collision: collisions)
+        {
+            Entity other = collision.other;
+            Collision col = {other, entity};
+            if (ecsSystem->HasComponent<BoxCollider>(other))
+            {
+                BoxCollider &otherCollider = ecsSystem->GetComponent<BoxCollider>(other);
+                auto iter = std::find(otherCollider.collisions.begin(), otherCollider.collisions.end(), col);
+                otherCollider.collisions.erase(iter);
+            }
+            else if (ecsSystem->HasComponent<TilemapCollider>(other))
+            {
+                TilemapCollider &otherCollider = ecsSystem->GetComponent<TilemapCollider>(other);
+                auto iter = std::find(otherCollider.collisions.begin(), otherCollider.collisions.end(), col);
+                otherCollider.collisions.erase(iter);
+            }
+        }
+    }
+
     void CollisionSystem::CheckCollisions()
     {
         for(Entity entity : entitiesWithBoxColliders)
@@ -233,41 +268,6 @@ namespace Engine
         for(auto& collision : collider.collisions)
             if(collision.state == Collision::State::ENTER)
                 collision.state = Collision::State::STAY;
-    }
-
-    void CollisionSystem::EntityAdded(Entity entity)
-    {
-        if(ecsSystem->HasComponent<BoxCollider>(entity))
-            entitiesWithBoxColliders.insert(entity);
-        else if(ecsSystem->HasComponent<TilemapCollider>(entity))
-            entitiesWithTilemapColliders.insert(entity);
-    }
-
-    void CollisionSystem::EntityRemoved(Entity entity)
-    {
-        std::vector<Collision> const &collisions = entitiesWithBoxColliders.count(entity) ?
-                ecsSystem->GetComponent<BoxCollider>(entity).collisions : ecsSystem->GetComponent<TilemapCollider>(entity).collisions;
-
-        entitiesWithBoxColliders.erase(entity);
-        entitiesWithTilemapColliders.erase(entity);
-
-        for (auto& collision: collisions)
-        {
-            Entity other = collision.other;
-            Collision col = {other, entity};
-            if (ecsSystem->HasComponent<BoxCollider>(other))
-            {
-                BoxCollider &otherCollider = ecsSystem->GetComponent<BoxCollider>(other);
-                auto iter = std::find(otherCollider.collisions.begin(), otherCollider.collisions.end(), col);
-                otherCollider.collisions.erase(iter);
-            }
-            else if (ecsSystem->HasComponent<TilemapCollider>(other))
-            {
-                TilemapCollider &otherCollider = ecsSystem->GetComponent<TilemapCollider>(other);
-                auto iter = std::find(otherCollider.collisions.begin(), otherCollider.collisions.end(), col);
-                otherCollider.collisions.erase(iter);
-            }
-        }
     }
 
     void CollisionSystem::SetCollisionBetweenLayers(unsigned char layer1, unsigned char layer2, bool canCollide)
