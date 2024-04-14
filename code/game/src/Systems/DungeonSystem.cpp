@@ -35,11 +35,12 @@ void DungeonSystem::Initialize()
 
     if (!(std::filesystem::exists(enemyFile) && std::filesystem::exists(dungeonFile)))
     {
-        enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
-        dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
+        enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeonIndex) + ".txt");
+        dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeonIndex) + ".png");
     }
 
     ReadInDungeonMap(dungeonFile.string());
+    enemyBehaviourSystem->UpdateGraph();
     ReadInEnemies(enemyFile.string());
 }
 
@@ -98,13 +99,14 @@ void DungeonSystem::Update()
 void DungeonSystem::LoadNextDungeon()
 {
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
-    dungeon.activeDungeon++;
+    dungeon.activeDungeonIndex++;
 
-    std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
-    std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
+    std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeonIndex) + ".txt");
+    std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeonIndex) + ".png");
     try
     {
         ReadInDungeonMap(dungeonFile.string());
+        enemyBehaviourSystem->UpdateGraph();
         ReadInEnemies(enemyFile.string());
     }
     catch (std::exception& e)
@@ -231,7 +233,7 @@ void DungeonSystem::ReadInDungeonMap(std::string file)
         throw std::runtime_error(message);
     }
 
-    wallMap.clear();
+    std::vector<std::vector<bool>> wallMap;
     std::vector<std::vector<bool>> enemyWallMap;
     for(int x = 0; x < width; x++)
     {
@@ -270,7 +272,11 @@ void DungeonSystem::ReadInDungeonMap(std::string file)
             ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));
         }
     }
-    enemyBehaviourSystem->ChangeWallMap(enemyWallMap);
+    dungeon.wallMap = wallMap;
+    dungeon.size = {width, height};
+    dungeon.originOffset = glm::vec2(width, height) / -2.0f;
+    dungeon.originOffset.x = glm::ceil(dungeon.originOffset.x);
+    dungeon.originOffset.y = glm::ceil(dungeon.originOffset.y) * -1;
 
     Engine::TilemapCollider& collider = ecsSystem->HasComponent<Engine::TilemapCollider>(entity) ? ecsSystem->GetComponent<Engine::TilemapCollider>(entity) :
             ecsSystem->AddComponent<Engine::TilemapCollider>(entity);
@@ -319,4 +325,30 @@ void DungeonSystem::OnEnemyDestroyed(Engine::Entity enemy)
 {
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeEnemies.remove(enemy);
+}
+
+void DungeonSystem::ChangeWall(int x, int y, bool isWall)
+{
+    ecsSystem->GetComponent<Dungeon>(entity).wallMap[x][y] = isWall;
+    enemyBehaviourSystem->UpdateGraph();
+}
+
+Engine::Entity DungeonSystem::GetDungeonEntity()
+{
+    return entity;
+}
+
+std::pair<int, int> DungeonSystem::GetDungeonSize()
+{
+    return ecsSystem->GetComponent<Dungeon>(entity).size;
+}
+
+std::vector<std::vector<bool>> &DungeonSystem::GetWallMap()
+{
+    return ecsSystem->GetComponent<Dungeon>(entity).wallMap;
+}
+
+glm::vec2 DungeonSystem::GetOriginOffset()
+{
+    return ecsSystem->GetComponent<Dungeon>(entity).originOffset;
 }

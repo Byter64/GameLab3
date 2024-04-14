@@ -9,11 +9,13 @@
 
 class EnemyBehaviourSystem : public Engine::System
 {
+    inline static float enemyScoreDecrease;
+    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> idleDurationRanges;
+    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> walkDurationRanges;
+    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> shootIntervalRanges;
+
     AStar::Generator generator;
-    std::vector<std::vector<bool>> wallMap;
     std::map<std::pair<int, int>, std::list<std::pair<int, int>>> graph;
-    static inline std::pair<int, int> dungeonSize;
-    static inline glm::vec2 originOffset;
 
     void EntityAdded(Engine::Entity entity);
     void EntityRemoved(Engine::Entity entity);
@@ -23,13 +25,7 @@ class EnemyBehaviourSystem : public Engine::System
     std::pair<int, int> FindWall(int startx, int starty, int dirx, int diry);
 
     bool IsWall(std::pair<int, int> pos);
-    bool IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y);
-
-    inline static float enemyScoreDecrease;
-
-    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> idleDurationRanges;
-    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> walkDurationRanges;
-    inline static std::map<EnemyBehaviour::Type, std::pair<float, float>> shootIntervalRanges;
+    bool IsNode(std::vector<std::vector<bool>> const &wallMap, int x, int y);
 
     void UpdateHubertus(Engine::Entity entity, float deltaTime);
     void HandleDamageHubertus(Engine::Entity entity, Engine::Entity other);
@@ -59,8 +55,7 @@ class EnemyBehaviourSystem : public Engine::System
 public:
     EnemyBehaviourSystem();
 
-    void ChangeWallMap(std::vector<std::vector<bool>>& wallMap);
-    void ChangeWall(int x, int y, bool isWall);
+    void UpdateGraph();
     void Update(float deltaTime);
 
     static glm::vec2 ToGlobal(glm::vec2 dungeonPos);

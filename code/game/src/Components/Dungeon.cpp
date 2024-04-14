@@ -1,7 +1,7 @@
 #include "Components/Dungeon.h"
 
 Dungeon::Dungeon(std::filesystem::path pathToDungeons, std::string fileName) : pathToDungeons(pathToDungeons), fileName(fileName),
-spawnerData(), activeEnemies(), activeDungeon(0)
+                                                                               spawnerData(), activeEnemies(), activeDungeonIndex(0)
 {
     referenceSpawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
 }

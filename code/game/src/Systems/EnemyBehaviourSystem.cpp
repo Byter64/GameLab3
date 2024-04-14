@@ -324,6 +324,7 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+    std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
 
     if(!ecsSystem->HasComponent<Engine::Animator>(entity))
     {
@@ -339,8 +340,8 @@ void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
         while(IsWall(pos))
         {
             std::pair<int, int> dungeonPos = ToDungeon(transform.GetTranslation());
-            int maxX = CuballExtra::mirrorDirection.first == 1 ? wallMap.size() / 2 : wallMap.size();
-            int maxY = CuballExtra::mirrorDirection.second == 1 ? wallMap[0].size() / 2 : wallMap[0].size();
+            int maxX = CuballExtra::mirrorDirection.first == 1 ? dungeonSize.first / 2 : dungeonSize.first;
+            int maxY = CuballExtra::mirrorDirection.second == 1 ? dungeonSize.second / 2 : dungeonSize.second;
             int offsetX = dungeonPos.first < maxX && CuballExtra::mirrorDirection.first == 1 ? maxX : 0;
             int offsetY = dungeonPos.second < maxY && CuballExtra::mirrorDirection.second == 1 ? maxY : 0;
 
@@ -520,13 +521,14 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
                     {
                         glm::vec3 dir = Miscellaneous::RoundTo4Directions(transform.GetGlobalTranslation() - playerTransform.GetGlobalTranslation());
                         std::pair<int, int> targetPosD = ToDungeon(playerTransform.GetGlobalTranslation() + DukeExtra::prefPlayerDistance * dir);
+                        std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
 
                         while(IsWall(targetPosD))
                         {
-                            if(targetPosD.first > wallMap.size() - 2)
-                                targetPosD.first = wallMap.size() - 2;
-                            if(targetPosD.second > wallMap[0].size() - 2)
-                                targetPosD.second = wallMap[0].size() - 2;
+                            if(targetPosD.first > dungeonSize.first - 2)
+                                targetPosD.first = dungeonSize.first - 2;
+                            if(targetPosD.second > dungeonSize.second - 2)
+                                targetPosD.second = dungeonSize.second - 2;
                             if(dir.x == 0)
                             {
                                 targetPosD.first += 1;
@@ -571,10 +573,11 @@ void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
                         std::pair<int, int> targetPosD = ToDungeon(transform.GetGlobalTranslation() + 2.0f * glm::normalize(dir));
                         while(IsWall(targetPosD))
                         {
-                            if(targetPosD.first > wallMap.size() - 2)
-                                targetPosD.first = wallMap.size() - 2;
-                            if(targetPosD.second > wallMap[0].size() - 2)
-                                targetPosD.second = wallMap[0].size() - 2;
+                            std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
+                            if(targetPosD.first > dungeonSize.first - 2)
+                                targetPosD.first = dungeonSize.first - 2;
+                            if(targetPosD.second > dungeonSize.second - 2)
+                                targetPosD.second = dungeonSize.second - 2;
                             if(dir.x == 0)
                             {
                                 targetPosD.first += 1;
@@ -764,6 +767,9 @@ void EnemyBehaviourSystem::MoveDuke(EnemyBehaviour &behaviour, Engine::Transform
 /// \return
 std::pair<int, int> EnemyBehaviourSystem::FindNode(int startx, int starty, int dirx, int diry)
 {
+    std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
+    auto const& wallMap = dungeonSystem->GetWallMap();
+
     startx += dirx;
     starty += diry;
     while(startx < dungeonSize.first && startx >= 0 && starty < dungeonSize.second && starty >= 0)
@@ -803,6 +809,9 @@ std::vector<std::pair<int, int>> EnemyBehaviourSystem::FindNodes(int startx, int
 /// \return
 std::pair<int, int> EnemyBehaviourSystem::FindWall(int startx, int starty, int dirx, int diry)
 {
+    std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
+    auto const& wallMap = dungeonSystem->GetWallMap();
+
     startx += dirx;
     starty += diry;
     while(startx < dungeonSize.first && startx >= 0 && starty < dungeonSize.second && starty >= 0)
@@ -815,7 +824,7 @@ std::pair<int, int> EnemyBehaviourSystem::FindWall(int startx, int starty, int d
 }
 
 /// Will crash, if the wallMap does not have a wall on its outer border
-bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> &wallMap, int x, int y)
+bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> const &wallMap, int x, int y)
 {
     //position is a wall
     if(wallMap[x][y]) return false;
@@ -834,16 +843,21 @@ bool EnemyBehaviourSystem::IsNode(std::vector<std::vector<bool>> &wallMap, int x
 
 bool EnemyBehaviourSystem::IsWall(std::pair<int, int> pos)
 {
+    auto const& wallMap = dungeonSystem->GetWallMap();
     if(pos.first < 0 || pos.second < 0 || pos.first >= wallMap.size() || pos.second >= wallMap[0].size())
         return true;
     return wallMap[pos.first][pos.second];
 }
 
 /// This needs to be called (at least) once before the first call to Update
-/// \param wallMap a bool map of the dungeon, where true marks a wall, a false marks free space
-void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap)
+void EnemyBehaviourSystem::UpdateGraph()
 {
-    this->wallMap = wallMap;
+    Engine::Entity entity = dungeonSystem->GetDungeonEntity();
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    auto const& wallMap = dungeon.wallMap;
+    auto const& dungeonSize = dungeon.size;
+    auto const& originOffset = dungeon.originOffset;
+
     graph.clear();
 
     generator.clearCollisions();
@@ -853,12 +867,6 @@ void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap
             if(wallMap[x][y])
                 generator.addCollision({x, y});
 
-    dungeonSize = std::make_pair(wallMap.size(), wallMap[0].size());
-    originOffset = glm::vec2(dungeonSize.first, dungeonSize.second) / -2.0f;
-    originOffset.x = glm::ceil(originOffset.x);
-    originOffset.y = glm::ceil(originOffset.y);
-
-    originOffset.y *= -1.0f;
     //Generate all nodes
     for (int y = 0; y < wallMap[0].size(); y++)
     {
@@ -889,29 +897,25 @@ void EnemyBehaviourSystem::ChangeWallMap(std::vector<std::vector<bool>> &wallMap
     }
 }
 
-
-void EnemyBehaviourSystem::ChangeWall(int x, int y, bool isWall)
-{
-    wallMap[x][y] = isWall;
-    ChangeWallMap(wallMap);
-}
-
 /// Transforms the given point, which is in dungeon coordinates, into global coordinates
 /// \param dungeonPos
 /// \return
 glm::vec2 EnemyBehaviourSystem::ToGlobal(glm::vec2 dungeonPos)
 {
+    glm::vec2 originOffset = dungeonSystem->GetOriginOffset();
     return glm::vec2(originOffset.x + dungeonPos.x, originOffset.y - dungeonPos.y);
 }
 
 
 glm::vec2 EnemyBehaviourSystem::ToGlobal(std::pair<int, int> dungeonPos)
 {
+    glm::vec2 originOffset = dungeonSystem->GetOriginOffset();
     return glm::vec2(originOffset.x + dungeonPos.first, originOffset.y - dungeonPos.second);
 }
 
 std::pair<int, int> EnemyBehaviourSystem::ToDungeon(glm::vec3 globalPos)
 {
+    glm::vec2 originOffset = dungeonSystem->GetOriginOffset();
     return {glm::round(globalPos.x - originOffset.x), glm::round(originOffset.y - globalPos.y)};
 }
 

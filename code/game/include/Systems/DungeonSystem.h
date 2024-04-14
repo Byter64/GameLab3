@@ -21,12 +21,14 @@ class DungeonSystem : public Engine::System
 
     Type ToType(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 public:
-    std::vector<std::vector<bool>> wallMap;
-
     void Initialize();
     void Update();
     void LoadNextDungeon();
     bool IsDungeonCleared();
     void OnEnemyDestroyed(Engine::Entity enemy);
-
+    void ChangeWall(int x, int y, bool isWall);
+    Engine::Entity GetDungeonEntity();
+    std::pair<int, int> GetDungeonSize();
+    std::vector<std::vector<bool>>& GetWallMap();
+    glm::vec2 GetOriginOffset();
 };

@@ -2,6 +2,7 @@
 #include "ECSExtension.h"
 
 extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
+extern std::shared_ptr<DungeonSystem> dungeonSystem;
 
 void BreakableWallSystem::EntityAdded(Engine::Entity entity)
 {
@@ -27,7 +28,7 @@ void BreakableWallSystem::Update()
         {
             Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
             std::pair<int, int> dungeonPos = EnemyBehaviourSystem::ToDungeon(transform.GetGlobalTranslation());
-            enemyBehaviourSystem->ChangeWall(dungeonPos.first, dungeonPos.second, false);
+            dungeonSystem->ChangeWall(dungeonPos.first, dungeonPos.second, false);
             Engine::RemoveEntityWithChildren(entity);
         }
     }
