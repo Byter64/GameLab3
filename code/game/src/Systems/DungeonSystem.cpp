@@ -22,99 +22,91 @@ void DungeonSystem::EntityRemoved(Engine::Entity entity)
 
 }
 
-void DungeonSystem::InitializeDungeons()
+void DungeonSystem::Initialize()
 {
-    if(entities.size() != 1)
+    entity = ecsSystem->CreateEntity();
+    ecsSystem->AddComponent<Engine::Name>(entity, "Dungeon");
+    ecsSystem->AddComponent(entity, Engine::Transform());
+    ecsSystem->AddComponent<Dungeon>(entity, Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
+
+    Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + "x" + ".txt");
+    std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + "x" + ".png");
+
+    if (!(std::filesystem::exists(enemyFile) && std::filesystem::exists(dungeonFile)))
     {
-        std::string message{ "There are too many entities with a Dungeon component"};
-        throw std::runtime_error(message);
+        enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
+        dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
     }
 
-    for (Engine::Entity entity : entities)
-    {
-        Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
-        std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + "x" + ".txt");
-        std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + "x" + ".png");
-
-        if(!(std::filesystem::exists(enemyFile) && std::filesystem::exists(dungeonFile)))
-        {
-            enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".txt");
-            dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeon) + ".png");
-        }
-        ReadInDungeonMap(dungeon, dungeonFile.string());
-        ReadInEnemies(dungeon, enemyFile.string());
-    }
+    ReadInDungeonMap(dungeon, dungeonFile.string());
+    ReadInEnemies(dungeon, enemyFile.string());
 }
 
 void DungeonSystem::Update()
 {
-    for(Engine::Entity entity : entities)
+    Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+
+    if (dungeon.enemies.empty() && dungeon.activeEnemies.empty())
     {
-        Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
-
-        if(dungeon.enemies.empty() && dungeon.activeEnemies.empty())
-        {
-            dungeon.areAllEnemiesDefeated = true;
-            continue;
-        }
-        //Spawn enemies
-        for (auto &pair: dungeon.enemies)
-        {
-            if (dungeon.activeEnemies.count(pair.first) == 0 &&
+        dungeon.areAllEnemiesDefeated = true;
+    }
+    //Spawn enemies
+    for (auto &pair: dungeon.enemies)
+    {
+        if (dungeon.activeEnemies.count(pair.first) == 0 &&
             pair.second.top().first < (Engine::Systems::timeManager->GetTimeSinceStartup() - dungeon.creationTime))
+        {
+            std::vector<Engine::Entity> enemies;
+            switch (pair.second.top().second)
             {
-                std::vector<Engine::Entity> enemies;
-                switch (pair.second.top().second)
-                {
-                    case EnemyBehaviour::Hubertus:
-                        enemies.push_back(ECSHelper::SpawnHubertus(pair.first));
-                        break;
+                case EnemyBehaviour::Hubertus:
+                    enemies.push_back(ECSHelper::SpawnHubertus(pair.first));
+                    break;
 
-                    case EnemyBehaviour::KindredSpirit:
-                    {
-                        auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
-                        enemies.push_back(enemyPair.second);
-                        enemies.push_back(enemyPair.first);
-                        std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
-                        dungeon.activeEnemies[secondPos] = enemyPair.second;
-                        break;
-                    }
-                    case EnemyBehaviour::Assi:
-                        enemies.push_back(ECSHelper::SpawnAssi(pair.first));
-                        break;
-                    case EnemyBehaviour::Cuball:
-                        enemies.push_back(ECSHelper::SpawnCuball(pair.first));
-                        break;
-                    case EnemyBehaviour::Duke:
-                        enemies.push_back(ECSHelper::SpawnDuke(pair.first));
-                        break;
+                case EnemyBehaviour::KindredSpirit:
+                {
+                    auto enemyPair = ECSHelper::SpawnKindredSpirit(pair.first);
+                    enemies.push_back(enemyPair.second);
+                    enemies.push_back(enemyPair.first);
+                    std::pair<int, int> secondPos = {pair.first.first * -1, pair.first.second * -1};
+                    dungeon.activeEnemies[secondPos] = enemyPair.second;
+                    break;
                 }
-                pair.second.pop();
-                dungeon.activeEnemies[pair.first] = enemies.back();
+                case EnemyBehaviour::Assi:
+                    enemies.push_back(ECSHelper::SpawnAssi(pair.first));
+                    break;
+                case EnemyBehaviour::Cuball:
+                    enemies.push_back(ECSHelper::SpawnCuball(pair.first));
+                    break;
+                case EnemyBehaviour::Duke:
+                    enemies.push_back(ECSHelper::SpawnDuke(pair.first));
+                    break;
+            }
+            pair.second.pop();
+            dungeon.activeEnemies[pair.first] = enemies.back();
 
-                for(Engine::Entity spawnedEntity : enemies)
+            for (Engine::Entity spawnedEntity: enemies)
+            {
+                ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int) CollisionLayer::Ignore;
+                if (ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
                 {
-                    ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int)CollisionLayer::Ignore;
-                    if(ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
-                    {
-                        Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
-                    }
-                    else
-                    {
-                        Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(),spawnedEntity);
-                        Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
-                    }
+                    Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
+                } else
+                {
+                    Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(), spawnedEntity);
+                    Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
                 }
             }
         }
+    }
 
-        for (auto iter = dungeon.enemies.begin(); iter != dungeon.enemies.end();)
-        {
-            if (iter->second.empty())
-                iter = dungeon.enemies.erase(iter);
-            else
-                ++iter;
-        }
+    for (auto iter = dungeon.enemies.begin(); iter != dungeon.enemies.end();)
+    {
+        if (iter->second.empty())
+            iter = dungeon.enemies.erase(iter);
+        else
+            ++iter;
     }
 }
 
@@ -306,7 +298,7 @@ void DungeonSystem::ReadInDungeonMap(Dungeon& dungeon, std::string file)
 
 }
 
-void DungeonSystem::UpdateDungeon(Engine::Entity entity)
+void DungeonSystem::LoadNextDungeon()
 {
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeDungeon++;
@@ -353,4 +345,9 @@ DungeonSystem::Type DungeonSystem::ToType(unsigned char red, unsigned char green
     }
 
     return type1;
+}
+
+bool DungeonSystem::IsDungeonCleared()
+{
+    return ecsSystem->GetComponent<Dungeon>(entity).areAllEnemiesDefeated;
 }

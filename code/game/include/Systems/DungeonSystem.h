@@ -11,6 +11,8 @@ class DungeonSystem : public Engine::System
         BreakableWall
     };
 
+    Engine::Entity entity;
+
     void EntityAdded(Engine::Entity entity) override;
     void EntityRemoved(Engine::Entity entity) override;
 
@@ -21,7 +23,9 @@ class DungeonSystem : public Engine::System
 public:
     std::vector<std::vector<bool>> wallMap;
 
-    void InitializeDungeons();
+    void Initialize();
     void Update();
-    void UpdateDungeon(Engine::Entity entity);
+    void LoadNextDungeon();
+    bool IsDungeonCleared();
+
 };

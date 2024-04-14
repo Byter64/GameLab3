@@ -21,7 +21,6 @@ static void PauseGame(void*);
 static float pauseStartTime;
 static Engine::Entity pauseText;
 static float pauseTextScale = 8;
-static Dungeon* dungeon;
 
 std::pair<Engine::Entity, Engine::Entity> players = {Engine::Entity::INVALID_ENTITY_ID, Engine::Entity::INVALID_ENTITY_ID};
 
@@ -53,12 +52,6 @@ void OnStartGame(int screenWidth, int screenHeight)
     pauseTextText.horizontalAlignment = Engine::Text::Center;
     pauseTextText.verticalAlignment = Engine::Text::Center;
     pauseTextText.SetText("Game Paused");
-
-    Engine::Entity dungeon = ecsSystem->CreateEntity();
-    ecsSystem->AddComponent<Engine::Name>(dungeon, "Dungeon");
-    ecsSystem->AddComponent(dungeon, Engine::Transform());
-    ecsSystem->AddComponent<Dungeon>(dungeon, Dungeon(Engine::Files::ASSETS / "Dungeons", "Dungeon_"));
-    ::dungeon = &ecsSystem->GetComponent<Dungeon>(dungeon);
 
     Engine::Entity playersText = ecsSystem->CreateEntity();
     auto& playersUI = ecsSystem->AddComponent<Engine::Text>(playersText);
@@ -166,7 +159,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
-    dungeonSystem->InitializeDungeons();
+    dungeonSystem->Initialize();
 }
 
 void OnEndGame()
@@ -184,8 +177,8 @@ void Update(float deltaTime)
     destroyerSystem->Update();
 
     //Number of components needs to be 1 because the prefab will always exist
-    if(dungeon->areAllEnemiesDefeated && ecsSystem->GetNumberOfComponents<Loot>() == 1)
-        dungeonSystem->UpdateDungeon(ecsSystem->GetEntity(*dungeon));
+    if(dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 1)
+        dungeonSystem->LoadNextDungeon();
 }
 
 void UpdateWithoutPause()
