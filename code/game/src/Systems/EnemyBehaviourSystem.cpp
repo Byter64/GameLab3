@@ -23,10 +23,6 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
 
     EnemyBehaviour::scoreDecrease = Defines::Float("Enemy_ScoreDecrease");
 
-    idleDurationRanges[EnemyBehaviour::Assi].first = Defines::Float("Assi_IdleDuration_Min");
-    idleDurationRanges[EnemyBehaviour::Assi].second = Defines::Float("Assi_IdleDuration_Max");
-
-    AssiExtra::stunnedTime = Defines::Float("Assi_StunnedTime");
     DukeExtra::detectionRadius = Defines::Float("Duke_DetectionRadius");
     DukeExtra::minPlayerDistance = Defines::Float("Duke_MinPlayerDistance");
     DukeExtra::prefPlayerDistance = Defines::Float("Duke_PrefPlayerDistance");
@@ -68,7 +64,6 @@ void EnemyBehaviourSystem::Update(float deltaTime)
         switch (behaviour.behaviour)
         {
             default:
-            case EnemyBehaviour::Cuball:        UpdateCuball(entity, deltaTime); break;
             case EnemyBehaviour::Duke:          UpdateDuke(entity, deltaTime); break;
         }
         Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
@@ -81,124 +76,10 @@ void EnemyBehaviourSystem::Update(float deltaTime)
                 switch (behaviour.behaviour)
                 {
                     default:
-                    case EnemyBehaviour::Cuball:        HandleDamageCuball(entity, other); break;
                     case EnemyBehaviour::Duke:          HandleDamageDuke(entity, other); break;
                 }
             }
         }
-    }
-}
-
-void EnemyBehaviourSystem::UpdateCuball(Engine::Entity entity, float deltaTime)
-{
-    EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-    Engine::Transform &transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-    std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
-
-    if(!ecsSystem->HasComponent<Engine::Animator>(entity))
-    {
-        behaviour.isActive = true;
-        ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int)CollisionLayer::Enemy;
-    }
-    if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::MoveToNewPosition)
-    {
-        behaviour.isActive = false;
-        ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int)CollisionLayer::Ignore;
-
-        std::pair<int, int> pos{-1, -1};
-        while(IsWall(pos))
-        {
-            std::pair<int, int> dungeonPos = ToDungeon(transform.GetTranslation());
-            int maxX = CuballExtra::mirrorDirection.first == 1 ? dungeonSize.first / 2 : dungeonSize.first;
-            int maxY = CuballExtra::mirrorDirection.second == 1 ? dungeonSize.second / 2 : dungeonSize.second;
-            int offsetX = dungeonPos.first < maxX && CuballExtra::mirrorDirection.first == 1 ? maxX : 0;
-            int offsetY = dungeonPos.second < maxY && CuballExtra::mirrorDirection.second == 1 ? maxY : 0;
-
-            pos = {rand() % maxX, rand() % maxY};
-            pos.first += offsetX;
-            pos.second += offsetY;
-        }
-        transform.SetTranslation(glm::vec3(ToGlobal(pos), 0));
-        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning");
-        behaviour.enemyExtra.cuball.phase = CuballExtra::BecomeBall;
-    }
-    else if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::BecomeBall)
-    {
-        behaviour.isActive = false;
-        ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int)CollisionLayer::Ignore;
-
-        ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(0))).isActive = true;
-        ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(1))).isActive = false;
-        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
-            renderer->isActive = true;
-
-        behaviour.isActive = false;
-        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_CubeToBall");
-        behaviour.enemyExtra.cuball.phase = CuballExtra::DisableMeshes;
-    }
-    else if(!ecsSystem->HasComponent<Engine::Animator>(entity) && behaviour.enemyExtra.cuball.phase == CuballExtra::DisableMeshes)
-    {
-        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
-            renderer->isActive = false;
-
-        std::pair<int, int> dungeonPos = ToDungeon(transform.GetGlobalTranslation());
-        std::vector<std::pair<int,int>> targetNodes = FindNodes(dungeonPos.first, dungeonPos.second);
-        std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
-        behaviour.oldTargetNode = dungeonPos;
-        behaviour.targetNode = target;
-        behaviour.targetPos = ToGlobal(behaviour.targetNode);
-        behaviour.movement = glm::normalize(ToGlobal(behaviour.targetNode) - ToGlobal(behaviour.oldTargetNode));
-
-        behaviour.enemyExtra.cuball.phase = CuballExtra::Ball;
-    }
-
-    if(!behaviour.isActive) return;
-
-    MoveCuball(behaviour, transform, deltaTime);
-}
-
-void EnemyBehaviourSystem::HandleDamageCuball(Engine::Entity entity, Engine::Entity other)
-{
-    //Bullet is already destroying itself, so no need to do it here
-    Health& health = ecsSystem->GetComponent<Health>(entity);
-    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-    CuballExtra& extra = behaviour.enemyExtra.cuball;
-
-    if(!behaviour.isActive) return;
-
-    health.health--;
-    if(health.health <= 0)
-    {
-        if(extra.phase == CuballExtra::Cube)
-        {
-            behaviour.isActive = false;
-            health.health = Defines::Int("Cuball_Ball_Health");
-            health.maxHealth = Defines::Int("Cuball_Ball_Health");
-            behaviour.bulletSpeed = Defines::Float("Cuball_Ball_BulletSpeed");
-            behaviour.speed = Defines::Float("Cuball_Ball_Speed");
-
-            Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-            Engine::Transform& parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
-            glm::vec3 pos = transform.GetGlobalTranslation();
-            transform.SetParent(nullptr);
-            transform.SetRotation(glm::quat({glm::radians(90.0f), 0, 0}));
-            transform.SetTranslation(pos);
-
-            ecsSystem->RemoveEntity(extra.rotationParent);
-            extra.rotationParent = Engine::Entity::INVALID_ENTITY_ID;
-
-            Engine::Animation& cuballSpawning = Engine::Systems::animationSystem->GetAnimation("Cuball_Spawning");
-            Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning", false, cuballSpawning.endTime, -1);
-
-            extra.phase = CuballExtra::MoveToNewPosition;
-            return;
-        }
-
-        RemoveEntityWithChildren(entity);
-        float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
-        int score = EnemyBehaviour::scores[EnemyBehaviour::Cuball] - (int)(timeAlive * enemyScoreDecrease);
-        score = score < 1 ? 1 : score;
-        ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
     }
 }
 
@@ -388,6 +269,11 @@ void EnemyBehaviourSystem::HandleDamageDuke(Engine::Entity entity, Engine::Entit
 
 }
 
+std::list<std::pair<int, int>> EnemyBehaviourSystem::GetNeighbours(std::pair<int, int> node)
+{
+    return graph.at(node);
+}
+
 void EnemyBehaviourSystem::SetTarget(Movement &movement, std::pair<int, int> dungeonPosStart, std::pair<int, int> dungeonPosTarget)
 {
     movement.oldTargetNode = dungeonPosStart;
@@ -427,77 +313,6 @@ void EnemyBehaviourSystem::MoveStraight(Movement& movement, glm::vec2 direction,
     movement.direction = direction;
     movement.currentPos += direction * distance;
 }
-
-void EnemyBehaviourSystem::MoveCuball(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
-{
-    CuballExtra& extra = behaviour.enemyExtra.cuball;
-    std::pair<int, int> targetNode = behaviour.targetNode;
-    if(extra.phase == CuballExtra::Cube)
-    {
-        extra.progress += deltaTime * behaviour.speed;
-        float easedProgress = extra.progress * extra.progress * extra.progress;
-        if (easedProgress >= 1.0f)
-            easedProgress = 1.0f;
-        ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent).SetRotation(
-                glm::mix(extra.startRotation, extra.targetRotation, easedProgress));
-
-        if (easedProgress >= 1.0f)
-        {
-            Engine::Transform &parent = ecsSystem->GetComponent<Engine::Transform>(extra.rotationParent);
-            glm::quat rot = transform.GetGlobalRotation();
-            glm::vec3 pos = transform.GetGlobalTranslation();
-            transform.SetParent(nullptr);
-            transform.SetRotation(rot);
-            transform.SetTranslation(pos);
-
-            if (glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < behaviour.speed * deltaTime * 2)
-            {
-                std::list<std::pair<int, int>> &list = graph[behaviour.targetNode];
-                auto iter = list.end();
-                int i = 0;
-                do
-                {
-                    int index = rand() % list.size();
-                    iter = list.begin();
-                    std::advance(iter, index);
-                    i++;
-                } while (i < 5 && *iter == behaviour.oldTargetNode);
-                SetTarget(behaviour, transform, behaviour.targetNode, *iter, true);
-            }
-
-            parent.SetTranslation(transform.GetTranslation() + glm::vec3(behaviour.movement * 0.5f, -0.5f));
-            parent.SetRotation(glm::identity<glm::quat>());
-            transform.SetParent(&parent);
-            transform.SetTranslation(-glm::vec3(behaviour.movement * 0.5f, -0.5f));
-
-            extra.startRotation = glm::identity<glm::quat>();
-            glm::vec3 euler = {glm::radians(behaviour.movement.y * -90), glm::radians(behaviour.movement.x * 90), 0};
-            extra.targetRotation = glm::quat(euler);
-            extra.progress = 0;
-        }
-    }
-    else if (extra.phase == CuballExtra::Ball)
-    {
-        glm::vec3 distance = transform.GetGlobalTranslation();
-        MoveEnemyNormal(behaviour, transform, deltaTime, false);
-        distance = transform.GetGlobalTranslation() - distance;
-        //distance in radiance = (distance * 2 * pi) / circumference
-        distance = distance * -2.0f * glm::pi<float>() / glm::pi<float>();
-        glm::vec3 axis = glm::normalize(glm::cross(glm::vec3(0, 0, -1), distance));
-        glm::quat rotation = glm::quat(axis * glm::length(distance)) * transform.GetRotation();
-        transform.SetRotation(rotation);
-    }
-
-    if(targetNode != behaviour.targetNode)
-    {
-        for(std::pair<int, int> node : graph[targetNode])
-        {
-            glm::vec3 direction = glm::vec3(ToGlobal(node), 0) - transform.GetGlobalTranslation();
-            ECSHelper::SpawnBullet(ecsSystem->GetEntity(transform), transform.GetGlobalTranslation(), direction, behaviour.bulletSpeed);
-        }
-    }
-}
-
 
 void EnemyBehaviourSystem::MoveDuke(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
 {

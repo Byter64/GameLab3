@@ -51,9 +51,7 @@ struct EnemyBehaviour
 
     inline static float scoreDecrease;
     bool isActive = false;
-    bool isMoving = false;
     Type behaviour = Hubertus;
-    float idleTimer = 0;
 
     std::pair<int, int> startPos = {1, 1};
     std::pair<int, int> targetNode;

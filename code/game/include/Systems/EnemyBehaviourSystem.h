@@ -17,9 +17,6 @@ class EnemyBehaviourSystem : public Engine::System
     void EntityAdded(Engine::Entity entity);
     void EntityRemoved(Engine::Entity entity);
 
-    void UpdateCuball(Engine::Entity entity, float deltaTime);
-    void HandleDamageCuball(Engine::Entity entity, Engine::Entity other);
-
     void UpdateDuke(Engine::Entity entity, float deltaTime);
     void HandleDamageDuke(Engine::Entity entity, Engine::Entity other);
 
@@ -33,6 +30,7 @@ public:
     std::vector<std::pair<int, int>> FindNodes(int startx, int starty);
     std::pair<int, int> FindWall(int startx, int starty, int dirx, int diry);
 
+    std::list<std::pair<int, int>> GetNeighbours(std::pair<int, int> node);
     void SetTarget(Movement& movement, std::pair<int, int> dungeonPosStart, std::pair<int, int> dungeonPosTarget);
     void MoveRandomly(Movement& movement, float distance);
     void MoveStraight(Movement& movement, glm::vec2 direction, float distance);

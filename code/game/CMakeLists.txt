@@ -92,7 +92,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Systems/ElevatorSystem.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
-        include/Helpers/CuballExtra.h
         ../engine/include/ECS/Components/TilemapCollider.h
         include/Components/BreakableWall.h
         src/Systems/BreakableWallSystem.cpp
@@ -120,6 +119,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Enemies/Assi.h
         src/Systems/AssiSystem.cpp
         include/Systems/AssiSystem.h
+        include/Components/Enemies/Cuball.h
+        src/Systems/CuballSystem.cpp
+        include/Systems/CuballSystem.h
 )
 
 set(EXE_FILE Game)
