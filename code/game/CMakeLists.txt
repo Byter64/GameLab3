@@ -90,7 +90,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Elevator.h
         src/Systems/ElevatorSystem.cpp
         include/Systems/ElevatorSystem.h
-        include/Helpers/AssiExtra.h
         src/Miscellaneous.cpp
         include/Miscellaneous.h
         include/Helpers/CuballExtra.h
@@ -118,6 +117,9 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Enemies/KindredSpirit.h
         include/Systems/KindredSpiritSystem.h
         src/Systems/KindredSpiritSystem.cpp
+        include/Components/Enemies/Assi.h
+        src/Systems/AssiSystem.cpp
+        include/Systems/AssiSystem.h
 )
 
 set(EXE_FILE Game)

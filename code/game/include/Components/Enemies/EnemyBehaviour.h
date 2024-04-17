@@ -54,7 +54,6 @@ struct EnemyBehaviour
     bool isMoving = false;
     Type behaviour = Hubertus;
     float idleTimer = 0;
-    float shootTimer = 0;
 
     std::pair<int, int> startPos = {1, 1};
     std::pair<int, int> targetNode;

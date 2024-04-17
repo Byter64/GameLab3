@@ -28,7 +28,7 @@ void HubertusSystem::EntityAdded(Engine::Entity entity)
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> distr(shootIntervalRange.first, shootIntervalRange.second);
     hubertus.shootTimer = distr(gen);
-    distr = std::uniform_real_distribution<>(walkDurationRange.first, walkDurationRange.second);
+    distr = std::uniform_real_distribution<>(idleDurationRange.first, idleDurationRange.second);
     hubertus.idleTimer = distr(gen);
     hubertus.isMoving = true;
 
@@ -70,7 +70,7 @@ void HubertusSystem::Update(Engine::Entity entity, float deltaTime)
 
     if(hubertus.isMoving)
     {
-        Systems::enemyBehaviourSystem->MoveRandomly(hubertus.movement, deltaTime);
+        Systems::enemyBehaviourSystem->MoveRandomly(hubertus.movement, hubertus.speed * deltaTime);
         transform.SetTranslation(glm::vec3(hubertus.movement.currentPos, 0));
     }
 }

@@ -17,19 +17,18 @@ KindredSpiritSystem::KindredSpiritSystem()
 
 void KindredSpiritSystem::EntityAdded(Engine::Entity entity)
 {
-    EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     KindredSpirit &kindredSpirit = ecsSystem->GetComponent<KindredSpirit>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
     if(kindredSpirit.isMainEntity)
     {
-        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(behaviour.startPos), 0));
-        std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(behaviour.startPos.first, behaviour.startPos.second);
+        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos), 0));
+        std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(kindredSpirit.startPos.first, kindredSpirit.startPos.second);
         std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
-        Systems::enemyBehaviourSystem->SetTarget(kindredSpirit.movement, behaviour.startPos, target);
+        Systems::enemyBehaviourSystem->SetTarget(kindredSpirit.movement, kindredSpirit.startPos, target);
     }
     else
-        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(behaviour.startPos) * -1.0f, 0));
+        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos) * -1.0f, 0));
 }
 
 void KindredSpiritSystem::EntityRemoved(Engine::Entity entity)
@@ -53,7 +52,7 @@ void KindredSpiritSystem::Update(Engine::Entity entity, float deltaTime)
 
     if(kindredSpirit.isMainEntity)
     {
-        Systems::enemyBehaviourSystem->MoveRandomly(kindredSpirit.movement, deltaTime);
+        Systems::enemyBehaviourSystem->MoveRandomly(kindredSpirit.movement, kindredSpirit.speed * deltaTime);
         transform.SetTranslation(glm::vec3(kindredSpirit.movement.currentPos, 0));
     }
     else
