@@ -19,8 +19,7 @@ class EnemyBehaviourSystem : public Engine::System
 
     void UpdateDuke(Engine::Entity entity, float deltaTime);
     void HandleDamageDuke(Engine::Entity entity, Engine::Entity other);
-
-    void MoveCuball(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
+    
     void MoveDuke(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
 
 public:
