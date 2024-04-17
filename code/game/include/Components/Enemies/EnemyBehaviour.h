@@ -49,6 +49,7 @@ struct EnemyBehaviour
                 10
             };
 
+    inline static float scoreDecrease;
     bool isActive = false;
     bool isMoving = false;
     Type behaviour = Hubertus;

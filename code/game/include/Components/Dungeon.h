@@ -4,7 +4,7 @@
 #include <list>
 #include <list>
 #include "ECS/Entity.h"
-#include "EnemyBehaviour.h"
+#include "Components/Enemies/EnemyBehaviour.h"
 #include <queue>
 #include <functional>
 #include <chrono>

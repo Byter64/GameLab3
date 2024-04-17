@@ -170,18 +170,18 @@ void DungeonSystem::ReadInEnemies(std::string file)
         {
             Engine::Transform &transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
             std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
+            transform1.SetTranslation(glm::vec3(ToGlobal(pos1), 0.0f));
             i += 2;
         }
         else if (symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
         {
             Engine::Transform &transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
             std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            transform1.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos1), 0.0f));
+            transform1.SetTranslation(glm::vec3(ToGlobal(pos1), 0.0f));
 
             Engine::Transform &transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
             std::pair<int, int> pos2 = {std::stoi(filecontent[i + 3]), std::stoi(filecontent[i + 4])};
-            transform2.SetTranslation(glm::vec3(EnemyBehaviourSystem::ToGlobal(pos2), 0.0f));
+            transform2.SetTranslation(glm::vec3(ToGlobal(pos2), 0.0f));
             i += 4;
         }
         else if (symbol == MIRROR_KEYWORD)
@@ -333,6 +333,33 @@ void DungeonSystem::ChangeWall(int x, int y, bool isWall)
     enemyBehaviourSystem->UpdateGraph();
 }
 
+
+/// Will crash, if the wallMap does not have a wall on its outer border
+bool DungeonSystem::IsNode(std::vector<std::vector<bool>> const &wallMap, int x, int y)
+{
+    //position is a wall
+    if(wallMap[x][y]) return false;
+    int connections = 0;
+    if(!wallMap[x + 1][y]) connections++;
+    if(!wallMap[x - 1][y]) connections++;
+    if(!wallMap[x][y + 1]) connections++;
+    if(!wallMap[x][y - 1]) connections++;
+    //position is not a straight path
+    if(connections != 2) return true;
+    //position is a straight path
+    if((!wallMap[x + 1][y] && !wallMap[x - 1][y]) || (!wallMap[x][y + 1] && !wallMap[x][y - 1])) return false;
+    //position is a corner
+    return true;
+}
+
+bool DungeonSystem::IsWall(std::pair<int, int> pos)
+{
+    auto const& wallMap = GetWallMap();
+    if(pos.first < 0 || pos.second < 0 || pos.first >= wallMap.size() || pos.second >= wallMap[0].size())
+        return true;
+    return wallMap[pos.first][pos.second];
+}
+
 Engine::Entity DungeonSystem::GetDungeonEntity()
 {
     return entity;
@@ -351,4 +378,26 @@ std::vector<std::vector<bool>> &DungeonSystem::GetWallMap()
 glm::vec2 DungeonSystem::GetOriginOffset()
 {
     return ecsSystem->GetComponent<Dungeon>(entity).originOffset;
+}
+
+/// Transforms the given point, which is in dungeon coordinates, into global coordinates
+/// \param dungeonPos
+/// \return
+glm::vec2 DungeonSystem::ToGlobal(glm::vec2 dungeonPos)
+{
+    glm::vec2 originOffset = GetOriginOffset();
+    return glm::vec2(originOffset.x + dungeonPos.x, originOffset.y - dungeonPos.y);
+}
+
+
+glm::vec2 DungeonSystem::ToGlobal(std::pair<int, int> dungeonPos)
+{
+    glm::vec2 originOffset = GetOriginOffset();
+    return glm::vec2(originOffset.x + dungeonPos.first, originOffset.y - dungeonPos.second);
+}
+
+std::pair<int, int> DungeonSystem::ToDungeon(glm::vec3 globalPos)
+{
+    glm::vec2 originOffset = GetOriginOffset();
+    return {glm::round(globalPos.x - originOffset.x), glm::round(originOffset.y - globalPos.y)};
 }

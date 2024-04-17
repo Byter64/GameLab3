@@ -26,9 +26,17 @@ public:
     void LoadNextDungeon();
     bool IsDungeonCleared();
     void OnEnemyDestroyed(Engine::Entity enemy);
+
     void ChangeWall(int x, int y, bool isWall);
+    bool IsWall(std::pair<int, int> pos);
+    bool IsNode(std::vector<std::vector<bool>> const &wallMap, int x, int y);
+
     Engine::Entity GetDungeonEntity();
     std::pair<int, int> GetDungeonSize();
     std::vector<std::vector<bool>>& GetWallMap();
     glm::vec2 GetOriginOffset();
+
+    glm::vec2 ToGlobal(glm::vec2 dungeonPos);
+    glm::vec2 ToGlobal(std::pair<int, int> dungeonPos);
+    std::pair<int, int> ToDungeon(glm::vec3 globalPos);
 };

@@ -1,5 +1,5 @@
 #pragma once
-#include "Components/EnemyBehaviour.h"
+#include "Components/Enemies/EnemyBehaviour.h"
 #include <utility>
 
 struct EnemySpawnerData

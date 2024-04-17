@@ -5,13 +5,6 @@
 #include "ECSExtension.h"
 #include "GameDefines.h"
 
-
-extern std::shared_ptr<BulletSystem> bulletSystem;
-extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol being declared somewhere!!!!!!!!!!!!!!!?!?!?!?!"?!?§!"$
-extern std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
-extern std::shared_ptr<ElevatorSystem> elevatorSystem;
-extern std::shared_ptr<BreakableWallSystem> destroyerSystem;
 extern GLFWwindow *window;
 
 static std::shared_ptr<Engine::InputActionButton> pause;
@@ -25,6 +18,8 @@ std::pair<Engine::Entity, Engine::Entity> players = {Engine::Entity::INVALID_ENT
 
 void OnStartGame(int screenWidth, int screenHeight)
 {
+    srand(std::chrono::system_clock::now().time_since_epoch().count());
+
     Defines::InitializeDefines();
     ECSHelper::Initialize();
     Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
@@ -63,7 +58,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     playersTextUI.scale = 4;
     playersTextUI.position = {960, 80};
     playersTextUI.horizontalAlignment = Engine::Text::Center;
-    playerControllerSystem->scoreUI = playersUIActualScore;
+    Systems::playerControllerSystem->scoreUI = playersUIActualScore;
 
 
     Engine::Entity player1Text = ecsSystem->CreateEntity();
@@ -158,7 +153,7 @@ void OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
-    dungeonSystem->Initialize();
+    Systems::dungeonSystem->Initialize();
 }
 
 void OnEndGame()
@@ -168,16 +163,16 @@ void OnEndGame()
 
 void Update(float deltaTime)
 {
-    playerControllerSystem->Update(deltaTime);
-    enemyBehaviourSystem->Update(deltaTime);
-    dungeonSystem->Update();
-    elevatorSystem->Update();
-    bulletSystem->Update(deltaTime);
-    destroyerSystem->Update();
+    Systems::playerControllerSystem->Update(deltaTime);
+    Systems::enemyBehaviourSystem->Update(deltaTime);
+    Systems::dungeonSystem->Update();
+    Systems::elevatorSystem->Update();
+    Systems::bulletSystem->Update(deltaTime);
+    Systems::destroyerSystem->Update();
 
     //Number of components needs to be 1 because the prefab will always exist
-    if(dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 1)
-        dungeonSystem->LoadNextDungeon();
+    if(Systems::dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 1)
+        Systems::dungeonSystem->LoadNextDungeon();
 }
 
 void UpdateWithoutPause()

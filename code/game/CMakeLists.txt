@@ -52,7 +52,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Bullet.h
         src/Systems/BulletSystem.cpp
         include/Systems/BulletSystem.h
-        include/Components/EnemyBehaviour.h
+        include/Components/Enemies/EnemyBehaviour.h
         src/Systems/EnemyBehaviourSystem.cpp
         include/Systems/EnemyBehaviourSystem.h
         include/Components/Health.h
@@ -76,7 +76,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/Miscellaneous.cpp
         ../engine/include/Miscellaneous.h
         include/Helpers/EnemyExtra.h
-        include/Helpers/KindredSpiritExtra.h
         ../engine/include/InputSystem/GamepadInputID.h
         ../engine/src/InputSystem/GamepadInputID.cpp
         ../engine/src/TimeManager.cpp
@@ -111,6 +110,14 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/ECSException.h
         ../engine/src/ECS/ComponentManager.cpp
         include/Helpers/EnemySpawnerData.h
+        include/Components/Enemies/Hubertus.h
+        src/Systems/HubertusSystem.cpp
+        include/Systems/HubertusSystem.h
+        include/Systems.h
+        include/Helpers/Movement.h
+        include/Components/Enemies/KindredSpirit.h
+        include/Systems/KindredSpiritSystem.h
+        src/Systems/KindredSpiritSystem.cpp
 )
 
 set(EXE_FILE Game)
