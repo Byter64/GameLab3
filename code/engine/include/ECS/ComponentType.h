@@ -5,6 +5,6 @@ namespace Engine
 {
 
     typedef std::uint8_t ComponentType;
-    const ComponentType MAX_COMPONENTS = 32;
+    const ComponentType MAX_COMPONENTS = 64;
 
 } // Engine
