@@ -9,7 +9,6 @@
 #include "CollisionLayer.h"
 #include <stdarg.h>
 
-extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
 extern std::pair<Engine::Entity, Engine::Entity> players;
 
 void DungeonSystem::EntityAdded(Engine::Entity entity)
@@ -40,7 +39,7 @@ void DungeonSystem::Initialize()
     }
 
     ReadInDungeonMap(dungeonFile.string());
-    enemyBehaviourSystem->UpdateGraph();
+    Systems::enemyBehaviourSystem->UpdateGraph();
     ReadInEnemies(enemyFile.string());
 }
 
@@ -85,7 +84,7 @@ void DungeonSystem::Update()
     for (Engine::Entity spawnedEntity: enemies)
     {
         ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int) CollisionLayer::Ignore;
-        if (ecsSystem->GetComponent<EnemyBehaviour>(spawnedEntity).behaviour == EnemyBehaviour::Cuball)
+        if (ecsSystem->HasComponent<Cuball>(spawnedEntity))
         {
             Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
         } else
@@ -106,7 +105,7 @@ void DungeonSystem::LoadNextDungeon()
     try
     {
         ReadInDungeonMap(dungeonFile.string());
-        enemyBehaviourSystem->UpdateGraph();
+        Systems::enemyBehaviourSystem->UpdateGraph();
         ReadInEnemies(enemyFile.string());
     }
     catch (std::exception& e)
@@ -127,7 +126,7 @@ void DungeonSystem::ReadInEnemies(std::string file)
 
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
-    DukeExtra::preparationPositions.clear();
+    Duke::preparationPositions.clear();
 
     std::vector<std::string> filecontent;
     bool noDungeon = false;
@@ -187,13 +186,13 @@ void DungeonSystem::ReadInEnemies(std::string file)
         else if (symbol == MIRROR_KEYWORD)
         {
             std::pair<int, int> mirrors{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            CuballExtra::mirrorDirection = mirrors;
+            Cuball::mirrorDirection = mirrors;
             i += 2;
         }
         else if (symbol == PREPPOS_KEYWORD)
         {
             std::pair<int, int> prepPos{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            DukeExtra::preparationPositions.push_back(prepPos);
+            Duke::preparationPositions.push_back(prepPos);
             i += 2;
         }
         else if (EnemyBehaviour::stringToBehaviour.count(symbol))
@@ -330,7 +329,7 @@ void DungeonSystem::OnEnemyDestroyed(Engine::Entity enemy)
 void DungeonSystem::ChangeWall(int x, int y, bool isWall)
 {
     ecsSystem->GetComponent<Dungeon>(entity).wallMap[x][y] = isWall;
-    enemyBehaviourSystem->UpdateGraph();
+    Systems::enemyBehaviourSystem->UpdateGraph();
 }
 
 

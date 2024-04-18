@@ -4,13 +4,6 @@
 #include "CollisionLayer.h"
 #include "GameDefines.h"
 
-std::shared_ptr<PlayerControllerSystem> playerControllerSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<BulletSystem> bulletSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<DungeonSystem> dungeonSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem; //Never change this name, as Systems depend on this symbol
-std::shared_ptr<ElevatorSystem> elevatorSystem;
-std::shared_ptr<BreakableWallSystem> destroyerSystem;
-
 Engine::Entity wallPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity breakableWallPrefab = Engine::Entity::INVALID_ENTITY_ID;
 Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
@@ -27,6 +20,11 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<PlayerController>();
     ecsSystem->RegisterComponent<Bullet>();
     ecsSystem->RegisterComponent<EnemyBehaviour>();
+    ecsSystem->RegisterComponent<Hubertus>();
+    ecsSystem->RegisterComponent<KindredSpirit>();
+    ecsSystem->RegisterComponent<Assi>();
+    ecsSystem->RegisterComponent<Cuball>();
+    ecsSystem->RegisterComponent<Duke>();
     ecsSystem->RegisterComponent<Health>();
     ecsSystem->RegisterComponent<Dungeon>();
     ecsSystem->RegisterComponent<Loot>();
@@ -34,7 +32,7 @@ void ECSHelper::Initialize()
     ecsSystem->RegisterComponent<BreakableWall>();
     //When adding new components here, don't forget to add them to ECSHelper::CopyEntity, too!!!!!
 
-    playerControllerSystem = ecsSystem->RegisterSystem<PlayerControllerSystem>();
+    Systems::playerControllerSystem = ecsSystem->RegisterSystem<PlayerControllerSystem>();
     Engine::Signature  playerControllerSignature;
     playerControllerSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     playerControllerSignature.set(ecsSystem->GetComponentType<PlayerController>());
@@ -42,14 +40,14 @@ void ECSHelper::Initialize()
     playerControllerSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->AddSystemSignature<PlayerControllerSystem>(playerControllerSignature);
 
-    bulletSystem = ecsSystem->RegisterSystem<BulletSystem>();
+    Systems::bulletSystem = ecsSystem->RegisterSystem<BulletSystem>();
     Engine::Signature bulletSignature;
     bulletSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     bulletSignature.set(ecsSystem->GetComponentType<Bullet>());
     bulletSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
     ecsSystem->AddSystemSignature<BulletSystem>(bulletSignature);
 
-    enemyBehaviourSystem = ecsSystem->RegisterSystem<EnemyBehaviourSystem>();
+    Systems::enemyBehaviourSystem = ecsSystem->RegisterSystem<EnemyBehaviourSystem>();
     Engine::Signature enemyBehaviourSignature;
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
@@ -57,17 +55,62 @@ void ECSHelper::Initialize()
     enemyBehaviourSignature.set(ecsSystem->GetComponentType<Health>());
     ecsSystem->AddSystemSignature<EnemyBehaviourSystem>(enemyBehaviourSignature);
 
-    dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
+    Systems::hubertusSystem = ecsSystem->RegisterSystem<HubertusSystem>();
+    Engine::Signature hubertusSignature;
+    hubertusSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    hubertusSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
+    hubertusSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    hubertusSignature.set(ecsSystem->GetComponentType<Health>());
+    hubertusSignature.set(ecsSystem->GetComponentType<Hubertus>());
+    ecsSystem->AddSystemSignature<HubertusSystem>(hubertusSignature);
+
+    Systems::kindredSpiritSystem = ecsSystem->RegisterSystem<KindredSpiritSystem>();
+    Engine::Signature kindredSpiritSignature;
+    kindredSpiritSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    kindredSpiritSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
+    kindredSpiritSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    kindredSpiritSignature.set(ecsSystem->GetComponentType<Health>());
+    kindredSpiritSignature.set(ecsSystem->GetComponentType<KindredSpirit>());
+    ecsSystem->AddSystemSignature<KindredSpiritSystem>(kindredSpiritSignature);
+
+    Systems::assiSystem = ecsSystem->RegisterSystem<AssiSystem>();
+    Engine::Signature assiSignature;
+    assiSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    assiSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
+    assiSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    assiSignature.set(ecsSystem->GetComponentType<Health>());
+    assiSignature.set(ecsSystem->GetComponentType<Assi>());
+    ecsSystem->AddSystemSignature<AssiSystem>(assiSignature);
+
+    Systems::cuballSystem = ecsSystem->RegisterSystem<CuballSystem>();
+    Engine::Signature cuballSignature;
+    cuballSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    cuballSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
+    cuballSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    cuballSignature.set(ecsSystem->GetComponentType<Health>());
+    cuballSignature.set(ecsSystem->GetComponentType<Cuball>());
+    ecsSystem->AddSystemSignature<CuballSystem>(cuballSignature);
+
+    Systems::dukeSystem = ecsSystem->RegisterSystem<DukeSystem>();
+    Engine::Signature dukeSignature;
+    dukeSignature.set(ecsSystem->GetComponentType<Engine::Transform>());
+    dukeSignature.set(ecsSystem->GetComponentType<EnemyBehaviour>());
+    dukeSignature.set(ecsSystem->GetComponentType<Engine::BoxCollider>());
+    dukeSignature.set(ecsSystem->GetComponentType<Health>());
+    dukeSignature.set(ecsSystem->GetComponentType<Duke>());
+    ecsSystem->AddSystemSignature<DukeSystem>(dukeSignature);
+
+    Systems::dungeonSystem = ecsSystem->RegisterSystem<DungeonSystem>();
     Engine::Signature dungeonSignature;
     dungeonSignature.set(ecsSystem->GetComponentType<Dungeon>());
     ecsSystem->AddSystemSignature<DungeonSystem>(dungeonSignature);
 
-    elevatorSystem = ecsSystem->RegisterSystem<ElevatorSystem>();
+    Systems::elevatorSystem = ecsSystem->RegisterSystem<ElevatorSystem>();
     Engine::Signature elevatorSignature;
     elevatorSignature.set(ecsSystem->GetComponentType<Elevator>());
     ecsSystem->AddSystemSignature<ElevatorSystem>(elevatorSignature);
 
-    destroyerSystem = ecsSystem->RegisterSystem<BreakableWallSystem>();
+    Systems::destroyerSystem = ecsSystem->RegisterSystem<BreakableWallSystem>();
     Engine::Signature destroyerSignature;
     destroyerSignature.set(ecsSystem->GetComponentType<Health>());
     destroyerSignature.set(ecsSystem->GetComponentType<BreakableWall>());
@@ -220,12 +263,13 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
-    behaviour.behaviour = EnemyBehaviour::Hubertus;
-    behaviour.startPos = startPos;
-    behaviour.speed = Defines::Float("Hubertus_Speed");
-    behaviour.bulletSpeed = Defines::Float("Hubertus_BulletSpeed");
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
+    Hubertus hubertus;
+    hubertus.startPos = startPos;
+    hubertus.speed = Defines::Float("Hubertus_Speed");
+    hubertus.bulletSpeed = Defines::Float("Hubertus_BulletSpeed");
+    ecsSystem->AddComponent(enemy, hubertus);
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Hubertus_Health"), Defines::Int("Hubertus_Health")});
 
     return enemy;
@@ -250,12 +294,13 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     coll1.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
 
     EnemyBehaviour behav1;
-    behav1.enemyExtra.kindredSpirit = KindredSpiritExtra();
-    behav1.behaviour = EnemyBehaviour::KindredSpirit;
-    behav1.startPos = startPos;
-    behav1.enemyExtra.kindredSpirit.isMainEntity = true;
-    behav1.speed = Defines::Float("KindredSpirit_Speed");
     behav1.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
+    ecsSystem->AddComponent(enemy1, behav1);
+    KindredSpirit kindredSpirit1;
+    kindredSpirit1 = KindredSpirit();
+    kindredSpirit1.startPos = startPos;
+    kindredSpirit1.isMainEntity = true;
+    kindredSpirit1.speed = Defines::Float("KindredSpirit_Speed");
     ecsSystem->AddComponent<Health>(enemy1, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     Engine::Entity enemy2 = CopyEntity(kindredSpiritPrefab, true);
@@ -267,22 +312,23 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
     coll2.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
 
     EnemyBehaviour behav2;
-    behav2.enemyExtra.kindredSpirit = KindredSpiritExtra();
-    behav2.behaviour = EnemyBehaviour::KindredSpirit;
-    behav2.startPos = startPos; //this value needs to be the same as for the first spirit
-    behav2.speed = Defines::Float("KindredSpirit_Speed");
-    behav2.enemyExtra.kindredSpirit.isMainEntity = false;
-    behav2.enemyExtra.kindredSpirit.other = enemy1;
     behav2.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    ecsSystem->AddComponent<Health>(enemy2, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
+    KindredSpirit kindredSpirit2;
+    ecsSystem->AddComponent(enemy2, behav2);
+    kindredSpirit2 = KindredSpirit();
+    kindredSpirit2.startPos = startPos; //this value needs to be the same as for the first spirit
+    kindredSpirit2.speed = Defines::Float("KindredSpirit_Speed");
+    kindredSpirit2.isMainEntity = false;
+    kindredSpirit2.other = enemy1;
+    ecsSystem->AddComponent(enemy2, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
-    behav1.enemyExtra.kindredSpirit.other = enemy2;
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy1, behav1);
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy2, behav2);
+    kindredSpirit1.other = enemy2;
+    ecsSystem->AddComponent(enemy1, kindredSpirit1);
+    ecsSystem->AddComponent(enemy2, kindredSpirit2);
 
 
-    glm::vec4 colour = KindredSpiritExtra::colours.front();
-    KindredSpiritExtra::colours.pop();
+    glm::vec4 colour = KindredSpirit::colours.front();
+    KindredSpirit::colours.pop();
     for(Engine::MeshRenderer* renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(enemy1))
         for(Engine::MeshRenderer::PrimitiveData &primitive : renderer->primitiveData)
             primitive.material.baseColorFactor = colour;
@@ -308,12 +354,13 @@ Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
-    behaviour.enemyExtra.assi = AssiExtra();
-    behaviour.behaviour = EnemyBehaviour::Assi;
-    behaviour.startPos = startPos;
-    behaviour.speed = Defines::Float("Assi_Speed");
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
+    ecsSystem->AddComponent(enemy, behaviour);
+    Assi assi;
+    assi = Assi();
+    assi.startPos = startPos;
+    assi.speed = Defines::Float("Assi_Speed");
+    ecsSystem->AddComponent(enemy, assi);
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Assi_Health"), Defines::Int("Assi_Health")});
 
     return enemy;
@@ -338,15 +385,16 @@ Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
-    behaviour.behaviour = EnemyBehaviour::Cuball;
-    behaviour.startPos = startPos;
-    behaviour.speed = Defines::Float("Cuball_Cube_Speed");
-    behaviour.bulletSpeed = Defines::Float("Cuball_Cube_BulletSpeed");
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
-    behaviour.enemyExtra.cuball = CuballExtra{};
-    behaviour.enemyExtra.cuball.rotationParent = ecsSystem->CreateEntity();
-    ecsSystem->AddComponent<Engine::Transform>(behaviour.enemyExtra.cuball.rotationParent);
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
+    Cuball cuball;
+    cuball = Cuball{};
+    cuball.startPos = startPos;
+    cuball.speed = Defines::Float("Cuball_Cube_Speed");
+    cuball.bulletSpeed = Defines::Float("Cuball_Cube_BulletSpeed");
+    cuball.rotationParent = ecsSystem->CreateEntity();
+    ecsSystem->AddComponent(enemy, cuball);
+    ecsSystem->AddComponent<Engine::Transform>(cuball.rotationParent);
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Cuball_Cube_Health"), Defines::Int("Cuball_Cube_Health")});
 
     return enemy;
@@ -366,10 +414,8 @@ Engine::Entity ECSHelper::SpawnDuke(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
-    behaviour.behaviour = EnemyBehaviour::Duke;
-    behaviour.startPos = startPos;
-    behaviour.speed = Defines::Float("Duke_Speed");
-    behaviour.bulletSpeed = Defines::Float("Duke_BulletSpeed");
+    Duke duke;
+    ecsSystem->AddComponent(enemy, duke);
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Duke_Health"), Defines::Int("Duke_Health")});

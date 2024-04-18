@@ -75,7 +75,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/Systems.cpp
         ../engine/src/Miscellaneous.cpp
         ../engine/include/Miscellaneous.h
-        include/Helpers/EnemyExtra.h
         ../engine/include/InputSystem/GamepadInputID.h
         ../engine/src/InputSystem/GamepadInputID.cpp
         ../engine/src/TimeManager.cpp
@@ -96,7 +95,6 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/BreakableWall.h
         src/Systems/BreakableWallSystem.cpp
         include/Systems/BreakableWallSystem.h
-        include/Helpers/DukeExtra.h
         ../extern/a-star-master/include/AStar.hpp
         ../extern/a-star-master/source/AStar.cpp
         ../engine/src/CrashHandler.cpp
@@ -122,6 +120,10 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Components/Enemies/Cuball.h
         src/Systems/CuballSystem.cpp
         include/Systems/CuballSystem.h
+        include/Components/Enemies/Duke.h
+        src/Systems/DukeSystem.cpp
+        include/Systems/DukeSystem.h
+        src/Systems.cpp
 )
 
 set(EXE_FILE Game)

@@ -1,7 +1,8 @@
 #pragma once
-#include <list>
+#include "Engine.h"
+#include "Helpers/Movement.h"
 
-struct DukeExtra
+struct Duke
 {
     enum class BigPhase
     {
@@ -23,10 +24,13 @@ struct DukeExtra
     inline static float minPlayerDistance;
     inline static float prefPlayerDistance;
     inline static std::list<std::pair<int, int>> preparationPositions{};
+
     BigPhase bigPhase = BigPhase::Waiting;
     Phase phase = Phase::Waiting;
     Engine::Entity target;
     int targetPathNode = 0;
+    Movement movement;
+    std::pair<int, int> startPos = {1, 1};
 
-    ~DukeExtra() = default;
+    ~Duke() = default;
 };

@@ -74,9 +74,9 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             }
         }
         //If kindredSpirit or Assi or Cuball was hit
-        else if (ecsSystem->HasComponent<EnemyBehaviour>(other) && (ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::KindredSpirit ||
-                                                                            ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::Assi ||
-                                                                            ecsSystem->GetComponent<EnemyBehaviour>(other).behaviour == EnemyBehaviour::Cuball))
+        else if (ecsSystem->HasComponent<EnemyBehaviour>(other) && (ecsSystem->HasComponent<KindredSpirit>(other) ||
+                                                                            ecsSystem->HasComponent<Assi>(other) ||
+                                                                            ecsSystem->HasComponent<Cuball>(other)))
         {
             if(controller.stunnedTimer < 0.0f)
             {

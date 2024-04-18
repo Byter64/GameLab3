@@ -23,250 +23,18 @@ EnemyBehaviourSystem::EnemyBehaviourSystem()
 
     EnemyBehaviour::scoreDecrease = Defines::Float("Enemy_ScoreDecrease");
 
-    DukeExtra::detectionRadius = Defines::Float("Duke_DetectionRadius");
-    DukeExtra::minPlayerDistance = Defines::Float("Duke_MinPlayerDistance");
-    DukeExtra::prefPlayerDistance = Defines::Float("Duke_PrefPlayerDistance");
-
     generator.setHeuristic(AStar::Heuristic::euclidean);
     generator.setDiagonalMovement(false);
 }
 
 void EnemyBehaviourSystem::EntityAdded(Engine::Entity entity)
 {
-    EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-    Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
-    transform.SetTranslation(glm::vec3(ToGlobal(behaviour.startPos), 0));
-
-    std::vector<std::pair<int,int>> targetNodes = FindNodes(behaviour.startPos.first, behaviour.startPos.second);
-    std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
-    SetTarget(behaviour, transform, behaviour.startPos, target, true);
-
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distr(shootIntervalRanges[behaviour.behaviour].first, shootIntervalRanges[behaviour.behaviour].second);
-    behaviour.shootTimer = distr(gen);
-    distr = std::uniform_real_distribution<>(walkDurationRanges[behaviour.behaviour].first, walkDurationRanges[behaviour.behaviour].second);
-    behaviour.idleTimer = distr(gen);
-    behaviour.isMoving = true;
 }
 
 void EnemyBehaviourSystem::EntityRemoved(Engine::Entity entity)
 {
     Systems::dungeonSystem->OnEnemyDestroyed(entity);
-}
-
-void EnemyBehaviourSystem::Update(float deltaTime)
-{
-    for (Engine::Entity entity: entities)
-    {
-        EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-        switch (behaviour.behaviour)
-        {
-            default:
-            case EnemyBehaviour::Duke:          UpdateDuke(entity, deltaTime); break;
-        }
-        Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(entity);
-        for(auto& collision : collider.collisions)
-        {
-            Engine::Entity other = collision.other;
-            //If is a bullet and was not shot from an enemy
-            if(ecsSystem->HasComponent<Bullet>(other) && !ecsSystem->HasComponent<EnemyBehaviour>(ecsSystem->GetComponent<Bullet>(other).spawner))
-            {
-                switch (behaviour.behaviour)
-                {
-                    default:
-                    case EnemyBehaviour::Duke:          HandleDamageDuke(entity, other); break;
-                }
-            }
-        }
-    }
-}
-
-void EnemyBehaviourSystem::UpdateDuke(Engine::Entity entity, float deltaTime)
-{
-    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
-    Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-    DukeExtra& dukeExtra = behaviour.enemyExtra.dukeExtra;
-
-    switch (dukeExtra.bigPhase)
-    {
-        case DukeExtra::BigPhase::Waiting:
-        {
-            int player1XPos = -1, player2XPos = -1;
-            player1XPos = ToDungeon(ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()).first;
-            if (players.second != Engine::Entity::INVALID_ENTITY_ID)
-                player2XPos = ToDungeon(ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()).first;
-
-            if (player1XPos > DukeExtra::preparingThreshold || player2XPos > DukeExtra::preparingThreshold)
-            {
-                std::pair<int, int> pos = ToDungeon(transform.GetGlobalTranslation());
-                std::pair<int, int> target = DukeExtra::preparationPositions.back();
-                DukeExtra::preparationPositions.pop_back();
-                behaviour.path = GeneratePath(pos, target);
-                behaviour.path.pop_back(); //the last node is the one where the duke is already standing so we remove it
-                dukeExtra.bigPhase = DukeExtra::BigPhase::Preparing;
-
-                SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
-                behaviour.path.pop_back();
-            }
-            break;
-        }
-        case DukeExtra::BigPhase::Preparing:
-            if(behaviour.targetNode != std::make_pair(-1, -1))
-                MoveDuke(behaviour, transform, deltaTime);
-            else
-            {
-                Engine::Entity player = FindClosestPlayer(entity);
-                glm::vec3 direction = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - transform.GetGlobalTranslation();
-                direction = Miscellaneous::RoundTo4Directions(glm::normalize(direction));
-                transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x))));
-
-                int player1XPos = -1, player2XPos = -1;
-                player1XPos = ToDungeon(ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()).first;
-                if (players.second != Engine::Entity::INVALID_ENTITY_ID)
-                    player2XPos = ToDungeon(ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()).first;
-
-                if (player1XPos > DukeExtra::fightingThreshold || player2XPos > DukeExtra::fightingThreshold)
-                {
-                    dukeExtra.bigPhase = DukeExtra::BigPhase::Fighting;
-                }
-            }
-            break;
-        case DukeExtra::BigPhase::Fighting:
-            switch (dukeExtra.phase)
-            {
-                case DukeExtra::Phase::Waiting:
-                {
-                    Engine::Entity player = FindClosestPlayer(entity);
-                    Engine::Transform &playerTransform = ecsSystem->GetComponent<Engine::Transform>(player);
-                    if (glm::length(playerTransform.GetGlobalTranslation() - transform.GetGlobalTranslation()) < DukeExtra::detectionRadius)
-                    {
-                        dukeExtra.target = player;
-                        dukeExtra.phase = DukeExtra::Phase::Duelling;
-                    }
-                    break;
-                }
-                case DukeExtra::Phase::Duelling:
-                {
-                    Engine::Transform &playerTransform = ecsSystem->GetComponent<Engine::Transform>(dukeExtra.target);
-                    glm::vec3 enemyToPlayer = playerTransform.GetGlobalTranslation() - transform.GetGlobalTranslation();
-                    float distance = glm::length(enemyToPlayer);
-                    if (distance > DukeExtra::detectionRadius && false)
-                    {
-                        std::pair<int, int> pos = ToDungeon(transform.GetGlobalTranslation());
-                        std::pair<int, int> target = DukeExtra::preparationPositions.back();
-                        DukeExtra::preparationPositions.pop_back();
-                        behaviour.path = GeneratePath(pos, target);
-                        behaviour.path.pop_back(); //the last node is the one where the duke is already standing so we remove it
-                        dukeExtra.bigPhase = DukeExtra::BigPhase::Preparing;
-                        dukeExtra.phase = DukeExtra::Phase::Waiting;
-
-                        SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
-                        behaviour.path.pop_back();
-                    }
-                    else if (distance < DukeExtra::minPlayerDistance)
-                        dukeExtra.phase = DukeExtra::Phase::Retreating;
-                    else if (behaviour.targetNode == std::make_pair(-1, -1))
-                    {
-                        glm::vec3 dir = Miscellaneous::RoundTo4Directions(transform.GetGlobalTranslation() - playerTransform.GetGlobalTranslation());
-                        std::pair<int, int> targetPosD = ToDungeon(playerTransform.GetGlobalTranslation() + DukeExtra::prefPlayerDistance * dir);
-                        std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
-
-                        while(IsWall(targetPosD))
-                        {
-                            if(targetPosD.first > dungeonSize.first - 2)
-                                targetPosD.first = dungeonSize.first - 2;
-                            if(targetPosD.second > dungeonSize.second - 2)
-                                targetPosD.second = dungeonSize.second - 2;
-                            if(dir.x == 0)
-                            {
-                                targetPosD.first += 1;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.first -= 2;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.first += 1;
-                            }
-                            else
-                            {
-                                targetPosD.second += 1;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.second -= 2;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.second += 1;
-                            }
-                            targetPosD.first += dir.x;
-                            targetPosD.second += dir.y;
-                        }
-
-                        behaviour.path = GeneratePath(ToDungeon(transform.GetGlobalTranslation()), targetPosD);
-                        behaviour.path.pop_back();
-                        if(behaviour.path.empty()) return;
-                        SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
-                        behaviour.path.pop_back();
-                    }
-                    else
-                    {
-                        MoveDuke(behaviour, transform, deltaTime);
-                    }
-                    break;
-                }
-                case DukeExtra::Phase::Retreating:
-                {
-                    Engine::Transform &playerTransform = ecsSystem->GetComponent<Engine::Transform>(dukeExtra.target);
-                    float distance = glm::length(playerTransform.GetGlobalTranslation() - transform.GetGlobalTranslation());
-                    if(distance > DukeExtra::minPlayerDistance)
-                        dukeExtra.phase = DukeExtra::Phase::Duelling;
-                    else if (behaviour.targetNode == std::make_pair(-1, -1))
-                    {
-                        glm::vec3 dir = transform.GetGlobalTranslation() - playerTransform.GetGlobalTranslation();
-                        std::pair<int, int> targetPosD = ToDungeon(transform.GetGlobalTranslation() + 2.0f * glm::normalize(dir));
-                        while(IsWall(targetPosD))
-                        {
-                            std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
-                            if(targetPosD.first > dungeonSize.first - 2)
-                                targetPosD.first = dungeonSize.first - 2;
-                            if(targetPosD.second > dungeonSize.second - 2)
-                                targetPosD.second = dungeonSize.second - 2;
-                            if(dir.x == 0)
-                            {
-                                targetPosD.first += 1;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.first -= 2;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.first += 1;
-                            }
-                            else
-                            {
-                                targetPosD.second += 1;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.second -= 2;
-                                if(!IsWall(targetPosD)) break;
-                                targetPosD.second += 1;
-                            }
-                            targetPosD.first += dir.x;
-                            targetPosD.second += dir.y;
-                        }
-                        behaviour.path = GeneratePath(ToDungeon(transform.GetGlobalTranslation()), targetPosD);
-                        behaviour.path.pop_back();
-                        if(behaviour.path.empty()) return;
-                        SetTarget(behaviour, transform, ToDungeon(transform.GetGlobalTranslation()), behaviour.path[behaviour.path.size() - 1], true);
-                        behaviour.path.pop_back();
-                    }
-                    else
-                    {
-                        MoveDuke(behaviour, transform, deltaTime);
-                    }
-                    break;
-                }
-            }
-            break;
-    }
-}
-
-void EnemyBehaviourSystem::HandleDamageDuke(Engine::Entity entity, Engine::Entity other)
-{
-
 }
 
 std::list<std::pair<int, int>> EnemyBehaviourSystem::GetNeighbours(std::pair<int, int> node)
@@ -314,29 +82,6 @@ void EnemyBehaviourSystem::MoveStraight(Movement& movement, glm::vec2 direction,
     movement.currentPos += direction * distance;
 }
 
-void EnemyBehaviourSystem::MoveDuke(EnemyBehaviour &behaviour, Engine::Transform &transform, float deltaTime)
-{
-    float speed = behaviour.enemyExtra.dukeExtra.bigPhase == DukeExtra::BigPhase::Preparing ? 1 : behaviour.speed;
-    glm::vec3 movement = glm::vec3(behaviour.movement * speed * deltaTime, 0);
-    transform.AddTranslation(movement);
-
-    bool isCloseToTarget = glm::length(behaviour.targetPos - glm::vec2(transform.GetGlobalTranslation())) < speed * deltaTime * 2;
-    if(isCloseToTarget)
-    {
-        if(behaviour.path.empty())
-        {
-            behaviour.targetPos = {-1 ,-1};
-            behaviour.oldTargetNode = {-1 ,-1};
-            behaviour.targetNode = {-1 ,-1};
-            transform.AddTranslation(-movement);
-            return;
-        }
-
-        SetTarget(behaviour, transform, behaviour.targetNode, behaviour.path[behaviour.path.size() - 1], true);
-        behaviour.path.pop_back();
-    }
-}
-
 /// Finds a node by raytracing into a given direction from a given point
 /// \param startx
 /// \param starty
@@ -345,8 +90,8 @@ void EnemyBehaviourSystem::MoveDuke(EnemyBehaviour &behaviour, Engine::Transform
 /// \return
 std::pair<int, int> EnemyBehaviourSystem::FindNode(int startx, int starty, int dirx, int diry)
 {
-    std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
-    auto const& wallMap = dungeonSystem->GetWallMap();
+    std::pair<int, int> dungeonSize = Systems::dungeonSystem->GetDungeonSize();
+    auto const& wallMap = Systems::dungeonSystem->GetWallMap();
 
     startx += dirx;
     starty += diry;
@@ -387,8 +132,8 @@ std::vector<std::pair<int, int>> EnemyBehaviourSystem::FindNodes(int startx, int
 /// \return
 std::pair<int, int> EnemyBehaviourSystem::FindWall(int startx, int starty, int dirx, int diry)
 {
-    std::pair<int, int> dungeonSize = dungeonSystem->GetDungeonSize();
-    auto const& wallMap = dungeonSystem->GetWallMap();
+    std::pair<int, int> dungeonSize = Systems::dungeonSystem->GetDungeonSize();
+    auto const& wallMap = Systems::dungeonSystem->GetWallMap();
 
     startx += dirx;
     starty += diry;
@@ -404,7 +149,7 @@ std::pair<int, int> EnemyBehaviourSystem::FindWall(int startx, int starty, int d
 /// This needs to be called (at least) once before the first call to Update
 void EnemyBehaviourSystem::UpdateGraph()
 {
-    Engine::Entity entity = dungeonSystem->GetDungeonEntity();
+    Engine::Entity entity = Systems::dungeonSystem->GetDungeonEntity();
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     auto const& wallMap = dungeon.wallMap;
     auto const& dungeonSize = dungeon.size;
@@ -424,7 +169,7 @@ void EnemyBehaviourSystem::UpdateGraph()
     {
         for (int x = 0; x < wallMap.size(); x++)
         {
-            if (IsNode(wallMap, x, y))
+            if (Systems::dungeonSystem->IsNode(wallMap, x, y))
             {
                 graph[std::make_pair(x, y)] = std::list<std::pair<int, int>>();
             }
@@ -453,8 +198,8 @@ Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(Engine::Entity enemy, int
 {
     Engine::Transform& enemyTransform = ecsSystem->GetComponent<Engine::Transform>(enemy);
     glm::vec3 enemyPos = enemyTransform.GetGlobalTranslation();
-    std::pair<int, int> enemyPosDungeon = ToDungeon(enemyPos);
-    for(Engine::Entity player : playerControllerSystem->entities)
+    std::pair<int, int> enemyPosDungeon = Systems::dungeonSystem->ToDungeon(enemyPos);
+    for(Engine::Entity player : Systems::playerControllerSystem->entities)
     {
         glm::vec3 distanceToPlayer = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - enemyPos;
         glm::vec3 direction = Miscellaneous::RoundTo4Directions(glm::normalize(distanceToPlayer));
@@ -462,7 +207,7 @@ Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(Engine::Entity enemy, int
         if(length(direction - glm::normalize(distanceToPlayer)) > 0.1f) continue;
 
         std::pair<int, int> wall = FindWall(enemyPosDungeon.first, enemyPosDungeon.second, (int)direction.x, (int)-direction.y);
-        glm::vec3 distanceToWall = glm::vec3(ToGlobal(wall), 0) - enemyPos;
+        glm::vec3 distanceToWall = glm::vec3(Systems::dungeonSystem->ToGlobal(wall), 0) - enemyPos;
         if(glm::length(distanceToPlayer) < maxDistance && glm::length(distanceToPlayer) < glm::length(distanceToWall))
         {
             return player;

@@ -164,7 +164,6 @@ void OnEndGame()
 void Update(float deltaTime)
 {
     Systems::playerControllerSystem->Update(deltaTime);
-    Systems::enemyBehaviourSystem->Update(deltaTime);
     Systems::dungeonSystem->Update();
     Systems::elevatorSystem->Update();
     Systems::bulletSystem->Update(deltaTime);

@@ -1,9 +1,6 @@
 #include "Systems/BreakableWallSystem.h"
 #include "ECSExtension.h"
 
-extern std::shared_ptr<EnemyBehaviourSystem> enemyBehaviourSystem;
-extern std::shared_ptr<DungeonSystem> dungeonSystem;
-
 void BreakableWallSystem::EntityAdded(Engine::Entity entity)
 {
 
@@ -27,8 +24,8 @@ void BreakableWallSystem::Update()
         if(health.health <= 0)
         {
             Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-            std::pair<int, int> dungeonPos = EnemyBehaviourSystem::ToDungeon(transform.GetGlobalTranslation());
-            dungeonSystem->ChangeWall(dungeonPos.first, dungeonPos.second, false);
+            std::pair<int, int> dungeonPos = Systems::dungeonSystem->ToDungeon(transform.GetGlobalTranslation());
+            Systems::dungeonSystem->ChangeWall(dungeonPos.first, dungeonPos.second, false);
             Engine::RemoveEntityWithChildren(entity);
         }
     }

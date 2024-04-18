@@ -17,11 +17,6 @@ class EnemyBehaviourSystem : public Engine::System
     void EntityAdded(Engine::Entity entity);
     void EntityRemoved(Engine::Entity entity);
 
-    void UpdateDuke(Engine::Entity entity, float deltaTime);
-    void HandleDamageDuke(Engine::Entity entity, Engine::Entity other);
-    
-    void MoveDuke(EnemyBehaviour& behaviour, Engine::Transform& transform, float deltaTime);
-
 public:
     EnemyBehaviourSystem();
 
@@ -35,7 +30,6 @@ public:
     void MoveStraight(Movement& movement, glm::vec2 direction, float distance);
 
     void UpdateGraph();
-    void Update(float deltaTime);
 
     Engine::Entity FindPlayerInSight(Engine::Entity enemy, int maxDistance);
     std::vector<std::pair<int, int>> GeneratePath(std::pair<int, int> start, std::pair<int, int> end);

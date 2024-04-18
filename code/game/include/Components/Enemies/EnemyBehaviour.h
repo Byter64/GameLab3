@@ -4,7 +4,6 @@
 #include <map>
 #include <string>
 #include <vector>
-#include "Helpers/EnemyExtra.h"
 
 struct EnemyBehaviour
 {
@@ -51,19 +50,5 @@ struct EnemyBehaviour
 
     inline static float scoreDecrease;
     bool isActive = false;
-    Type behaviour = Hubertus;
-
-    std::pair<int, int> startPos = {1, 1};
-    std::pair<int, int> targetNode;
-    std::pair<int, int> oldTargetNode;
-    glm::vec2 targetPos;
-    glm::vec2 movement;
-    float speed = 1.0f;
-    float bulletSpeed = 3.0f;
     float spawnTime;
-    std::vector<std::pair<int, int>> path{};
-
-    //The type is determined by behaviour
-    //You could call it a tagged union ヾ(⌐■_■)ノ♪
-    EnemyExtra enemyExtra;
 };
