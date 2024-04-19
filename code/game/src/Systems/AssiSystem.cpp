@@ -23,11 +23,8 @@ void AssiSystem::EntityAdded(Engine::Entity entity)
     Systems::enemyBehaviourSystem->SetTarget(assi.movement, assi.startPos, target);
     assi.movement.currentPos = Systems::dungeonSystem->ToGlobal(assi.startPos);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> distr(idleDurationRange.first, idleDurationRange.second);
-    assi.idleTimer = distr(gen);
-    assi.isMoving = true;
+    assi.idleTimer = 1.0f;
+    assi.isMoving = false;
 }
 
 void AssiSystem::EntityRemoved(Engine::Entity entity)
@@ -65,7 +62,8 @@ void AssiSystem::Update(Engine::Entity entity, float deltaTime)
                 distr = std::uniform_real_distribution<>(idleDurationRange.first, idleDurationRange.second);
             assi.idleTimer = distr(gen);
 
-            transform.SetTranslation(glm::round(transform.GetTranslation()));
+            assi.movement.currentPos = glm::round(assi.movement.currentPos);
+            transform.SetTranslation(glm::vec3(assi.movement.currentPos, 0));
         }
         else
         {
@@ -113,6 +111,7 @@ void AssiSystem::Move(Engine::Entity entity, float deltaTime)
     {
         assi.isPlayerInSight = true;
         glm::vec3 direction = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - transform.GetGlobalTranslation();
+        if(direction != glm::vec3(0)) direction = glm::normalize(direction);
         Systems::enemyBehaviourSystem->MoveStraight(assi.movement, direction, assi.speed * deltaTime);
         transform.SetTranslation(glm::vec3(assi.movement.currentPos, 0));
 

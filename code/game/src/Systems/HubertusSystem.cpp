@@ -73,6 +73,11 @@ void HubertusSystem::Update(Engine::Entity entity, float deltaTime)
     {
         Systems::enemyBehaviourSystem->MoveRandomly(hubertus.movement, hubertus.speed * deltaTime);
         transform.SetTranslation(glm::vec3(hubertus.movement.currentPos, 0));
+        float angle = glm::atan(hubertus.movement.direction.y, hubertus.movement.direction.x);
+        angle /= glm::radians(90.0f);
+        angle = glm::round(angle);
+        angle *= glm::radians(90.0f);
+        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, angle)));
     }
 }
 
