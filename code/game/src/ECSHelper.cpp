@@ -136,6 +136,18 @@ Engine::Entity ECSHelper::CopyEntity(Engine::Entity entity, bool copyChildren)
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Elevator>(entity));
     if(ecsSystem->HasComponent<Dungeon>(entity))
         ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Dungeon>(entity));
+    if(ecsSystem->HasComponent<EnemyBehaviour>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<EnemyBehaviour>(entity));
+    if(ecsSystem->HasComponent<Hubertus>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Hubertus>(entity));
+    if(ecsSystem->HasComponent<KindredSpirit>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<KindredSpirit>(entity));
+    if(ecsSystem->HasComponent<Assi>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Assi>(entity));
+    if(ecsSystem->HasComponent<Cuball>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Cuball>(entity));
+    if(ecsSystem->HasComponent<Duke>(entity))
+        ecsSystem->AddComponent(newEntity, ecsSystem->GetComponent<Duke>(entity));
 
     return newEntity;
 }

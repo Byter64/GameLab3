@@ -21,6 +21,7 @@ void AssiSystem::EntityAdded(Engine::Entity entity)
     std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(assi.startPos.first, assi.startPos.second);
     std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
     Systems::enemyBehaviourSystem->SetTarget(assi.movement, assi.startPos, target);
+    assi.movement.currentPos = Systems::dungeonSystem->ToGlobal(assi.startPos);
 
     std::random_device rd;
     std::mt19937 gen(rd());

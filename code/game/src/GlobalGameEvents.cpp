@@ -75,6 +75,7 @@ void OnStartGame(int screenWidth, int screenHeight)
 
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
+    ecsSystem->GetComponent<Engine::Name>(player) = "Player 1";
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     //Controller
     controller.uiTextScore = playerUI;
@@ -123,6 +124,7 @@ void OnStartGame(int screenWidth, int screenHeight)
 
 
         Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player2.glb")[0];
+        ecsSystem->GetComponent<Engine::Name>(player2) = "Player 2";
         PlayerController &controller2 = ecsSystem->AddComponent<PlayerController>(player2);
         controller2.uiTextScore = playerUI2;
         controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
@@ -164,6 +166,11 @@ void OnEndGame()
 void Update(float deltaTime)
 {
     Systems::playerControllerSystem->Update(deltaTime);
+    Systems::hubertusSystem->Update(deltaTime);
+    Systems::kindredSpiritSystem->Update(deltaTime);
+    Systems::assiSystem->Update(deltaTime);
+    Systems::cuballSystem->Update(deltaTime);
+    Systems::dukeSystem->Update(deltaTime);
     Systems::dungeonSystem->Update();
     Systems::elevatorSystem->Update();
     Systems::bulletSystem->Update(deltaTime);

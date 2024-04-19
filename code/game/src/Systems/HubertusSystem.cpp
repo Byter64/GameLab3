@@ -23,6 +23,7 @@ void HubertusSystem::EntityAdded(Engine::Entity entity)
     std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(hubertus.startPos.first, hubertus.startPos.second);
     std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
     Systems::enemyBehaviourSystem->SetTarget(hubertus.movement, hubertus.startPos, target);
+    hubertus.movement.currentPos = Systems::dungeonSystem->ToGlobal(hubertus.startPos);
 
     std::random_device rd;
     std::mt19937 gen(rd());

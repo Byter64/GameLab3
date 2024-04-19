@@ -16,6 +16,7 @@ void CuballSystem::EntityAdded(Engine::Entity entity)
     std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(cuball.startPos.first, cuball.startPos.second);
     std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
     Systems::enemyBehaviourSystem->SetTarget(cuball.movement, cuball.startPos, target);
+    cuball.movement.currentPos = Systems::dungeonSystem->ToGlobal(cuball.startPos);
 }
 
 void CuballSystem::EntityRemoved(Engine::Entity entity)
@@ -199,7 +200,7 @@ void CuballSystem::MoveCuball(Engine::Entity entity, float deltaTime)
 
     if(targetNode != cuball.movement.targetNode)
     {
-        std::list<std::pair<int, int>> list = Systems::enemyBehaviourSystem->GetNeighbours(cuball.movement.targetNode);
+        std::list<std::pair<int, int>> list = Systems::enemyBehaviourSystem->GetNeighbours(targetNode);
         for(std::pair<int, int> node : list)
         {
             glm::vec3 direction = glm::vec3(Systems::dungeonSystem->ToGlobal(node), 0) - transform.GetGlobalTranslation();

@@ -26,6 +26,7 @@ void KindredSpiritSystem::EntityAdded(Engine::Entity entity)
         std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(kindredSpirit.startPos.first, kindredSpirit.startPos.second);
         std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
         Systems::enemyBehaviourSystem->SetTarget(kindredSpirit.movement, kindredSpirit.startPos, target);
+        kindredSpirit.movement.currentPos = Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos);
     }
     else
         transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos) * -1.0f, 0));
