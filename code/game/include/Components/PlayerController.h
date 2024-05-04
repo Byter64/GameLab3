@@ -7,7 +7,7 @@ struct PlayerController
 {
     friend class PlayerControllerSystem;
     glm::vec3 movementInput;
-    glm::vec3 lookDirection;
+    glm::vec3 lookDirection{1, 0, 0};
     bool wasFirePushed;
     bool wasRevivePushed;
 

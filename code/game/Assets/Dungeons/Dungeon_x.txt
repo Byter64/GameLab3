@@ -1,7 +1,0 @@
-SinglePlayer 11 8
-TwoPlayers 10 8  12 8
-
-Hubertus 1 1
-KindredSpirit 9 4
-Assi 1 11
-Cuball 15 1
