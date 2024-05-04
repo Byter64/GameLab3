@@ -65,7 +65,10 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             {
                 glm::vec3 position = transform.GetGlobalTranslation();
                 std::cout << ecsSystem->GetComponent<Engine::Name>(playerEntity) << " was hit by " << ecsSystem->GetComponent<Engine::Name>(other) << ". Player position was: (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;
-                std::cout << "Bullet was fired by " << ecsSystem->GetComponent<Engine::Name>(ecsSystem->GetComponent<Bullet>(other).spawner) << "." << std::endl;
+                std::string bulletSpawnername = "Unknown";
+                if(ecsSystem->HasComponent<Engine::Name>(ecsSystem->GetComponent<Bullet>(other).spawner))
+                    bulletSpawnername = ecsSystem->GetComponent<Engine::Name>(ecsSystem->GetComponent<Bullet>(other).spawner);
+                std::cout << "Bullet was fired by " << bulletSpawnername << "." << std::endl;
                 //Bullet is already destroying itself, so no need to do it here
                 Health &health = ecsSystem->GetComponent<Health>(playerEntity);
                 health.health--;
