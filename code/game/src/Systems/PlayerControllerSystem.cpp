@@ -61,7 +61,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             {
                 controller.stunnedTimer = controller.stunnedTime;
             }
-            else if(controller.stunnedTimer < 0.0f)
+            else if(controller.stunnedTimer <= 0.0f)
             {
                 glm::vec3 position = transform.GetGlobalTranslation();
                 std::cout << ecsSystem->GetComponent<Engine::Name>(playerEntity) << " was hit by " << ecsSystem->GetComponent<Engine::Name>(other) << ". Player position was: (" << position.x << ", " << position.y << ", " << position.z << ")" << std::endl;

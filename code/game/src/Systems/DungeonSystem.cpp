@@ -113,6 +113,10 @@ void DungeonSystem::LoadNextDungeon()
         std::cout << e.what() << std::endl;
         exit(-1);
     }
+
+    ecsSystem->GetComponent<PlayerController>(players.first).stunnedTimer = 0;
+    if(players.second != Engine::Entity::INVALID_ENTITY_ID)
+        ecsSystem->GetComponent<PlayerController>(players.second).stunnedTimer = 0;
 }
 
 void DungeonSystem::ReadInEnemies(std::string file)
