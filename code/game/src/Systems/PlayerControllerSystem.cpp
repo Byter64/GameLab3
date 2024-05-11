@@ -130,8 +130,9 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
 
     if(glm::length(controller.movementInput) >= inputDeadzone)
     {
-        transform.AddTranslation(glm::vec3(controller.movementInput) * deltaTime * controller.speed);
-        controller.lookDirection = glm::normalize(glm::vec3(controller.movementInput));
+        glm::vec3 movementInput = glm::normalize(controller.movementInput);
+        transform.AddTranslation(movementInput * deltaTime * controller.speed);
+        controller.lookDirection = movementInput;
     }
     if(controller.wasFirePushed)
     {
