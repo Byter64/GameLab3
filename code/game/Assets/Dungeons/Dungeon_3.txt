@@ -1,5 +1,6 @@
 SinglePlayer 10 8
 TwoPlayers 10 8  12 8
+Mirror 1 0
 
 Cuball 1 1
 
