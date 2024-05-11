@@ -272,7 +272,7 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
     Engine::Entity enemy = CopyEntity(hubertusPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
