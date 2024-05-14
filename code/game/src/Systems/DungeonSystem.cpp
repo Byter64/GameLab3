@@ -61,38 +61,22 @@ void DungeonSystem::Update()
     switch (frontEnemy.type)
     {
         case EnemyBehaviour::Hubertus:
-            enemies.push_back(ECSHelper::SpawnHubertus(frontEnemy.spawnPosition));
+            ECSHelper::SpawnEnemy(ECSHelper::CreateHubertus(frontEnemy.spawnPosition));
             break;
-        case EnemyBehaviour::KindredSpirit: {
-            auto enemyPair = ECSHelper::SpawnKindredSpirit(frontEnemy.spawnPosition);
-            enemies.push_back(enemyPair.second);
-            enemies.push_back(enemyPair.first);
-            break; }
+        case EnemyBehaviour::KindredSpirit:
+            ECSHelper::SpawnEnemy(ECSHelper::CreateKindredSpirit(frontEnemy.spawnPosition).first);
+            break;
         case EnemyBehaviour::Assi:
-            enemies.push_back(ECSHelper::SpawnAssi(frontEnemy.spawnPosition));
+            ECSHelper::SpawnEnemy(ECSHelper::CreateAssi(frontEnemy.spawnPosition));
             break;
         case EnemyBehaviour::Cuball:
-            enemies.push_back(ECSHelper::SpawnCuball(frontEnemy.spawnPosition));
+            ECSHelper::SpawnEnemy(ECSHelper::CreateCuball(frontEnemy.spawnPosition));
             break;
         case EnemyBehaviour::Duke:
-            enemies.push_back(ECSHelper::SpawnDuke(frontEnemy.spawnPosition));
+            ECSHelper::SpawnEnemy(ECSHelper::CreateDuke(frontEnemy.spawnPosition));
             break;
     }
     dungeon.spawnerData.pop_front();
-    for(Engine::Entity enemy : enemies) dungeon.activeEnemies.push_back(enemy);
-
-    for (Engine::Entity spawnedEntity: enemies)
-    {
-        ecsSystem->GetComponent<Engine::BoxCollider>(spawnedEntity).layer = (int) CollisionLayer::Ignore;
-        if (ecsSystem->HasComponent<Cuball>(spawnedEntity))
-        {
-            Engine::Systems::animationSystem->PlayAnimation(spawnedEntity, "Cuball_Spawning");
-        } else
-        {
-            Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(spawnedEntity).GetTranslation(), spawnedEntity);
-            Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
-        }
-    }
 }
 
 void DungeonSystem::LoadNextDungeon()

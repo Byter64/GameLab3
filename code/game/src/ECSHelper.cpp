@@ -261,7 +261,7 @@ Engine::Entity ECSHelper::SpawnElevator(glm::vec3 position, Engine::Entity spawn
     return elevator;
 }
 
-Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
+Engine::Entity ECSHelper::CreateHubertus(std::pair<int, int> startPos)
 {
     if(hubertusPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
@@ -288,7 +288,7 @@ Engine::Entity ECSHelper::SpawnHubertus(std::pair<int, int> startPos)
 }
 
 //This function will spawn one at the given position and one at startPos * -1
-std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pair<int, int> startPos)
+std::pair<Engine::Entity, Engine::Entity> ECSHelper::CreateKindredSpirit(std::pair<int, int> startPos)
 {
     if(kindredSpiritPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
@@ -352,7 +352,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::SpawnKindredSpirit(std::pai
 }
 
 
-Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
+Engine::Entity ECSHelper::CreateAssi(std::pair<int, int> startPos)
 {
     if(assiPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
@@ -379,7 +379,7 @@ Engine::Entity ECSHelper::SpawnAssi(std::pair<int, int> startPos)
 }
 
 
-Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
+Engine::Entity ECSHelper::CreateCuball(std::pair<int, int> startPos)
 {
     if(cuballPrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
@@ -412,7 +412,7 @@ Engine::Entity ECSHelper::SpawnCuball(std::pair<int, int> startPos)
     return enemy;
 }
 
-Engine::Entity ECSHelper::SpawnDuke(std::pair<int, int> startPos)
+Engine::Entity ECSHelper::CreateDuke(std::pair<int, int> startPos)
 {
     if(dukePrefab == Engine::Entity::INVALID_ENTITY_ID)
     {
@@ -434,4 +434,21 @@ Engine::Entity ECSHelper::SpawnDuke(std::pair<int, int> startPos)
     ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Duke_Health"), Defines::Int("Duke_Health")});
 
     return enemy;
+}
+
+void ECSHelper::SpawnEnemy(Engine::Entity entity)
+{
+    ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int) CollisionLayer::Ignore;
+    if (ecsSystem->HasComponent<Cuball>(entity))
+    {
+        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning");
+    }
+    else
+    {
+        Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(entity).GetTranslation(), entity);
+        Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
+
+        if(ecsSystem->HasComponent<KindredSpirit>(entity) && ecsSystem->GetComponent<KindredSpirit>(entity).isMainEntity)
+            SpawnEnemy(ecsSystem->GetComponent<KindredSpirit>(entity).other);
+    }
 }
