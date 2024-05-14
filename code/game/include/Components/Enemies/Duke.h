@@ -4,31 +4,28 @@
 
 struct Duke
 {
-    enum class BigPhase
+    inline static const float minDistanceToPlayer = 3;
+    inline static const float teleportTime = 0.5f;
+
+    enum Phase
     {
-        Waiting,
-        Preparing,
-        Fighting
+        Tp_TeleportStart,
+        Tp_TeleportEnd,
+        Tp_Move,
+        Tp_MoveTowardsPlayer,
+        Tp_Sp_TeleportStart,
+
+        Sp_TeleportEnd,
+        Sp_SpawnEnemy,
+        Sp_TeleportStart
     };
 
-    enum class Phase
-    {
-        Waiting,
-        Duelling,
-        Retreating
-    };
-
-    inline static const int preparingThreshold = 7;
-    inline static const int fightingThreshold = 17;
-    inline static float detectionRadius;
-    inline static float minPlayerDistance;
-    inline static float prefPlayerDistance;
-    inline static std::list<std::pair<int, int>> preparationPositions{};
-
-    BigPhase bigPhase = BigPhase::Waiting;
-    Phase phase = Phase::Waiting;
+    float speed = 6.0f;
+    float bulletSpeed = 3.0f;
+    float timer = 0.5f;
     Engine::Entity target;
-    int targetPathNode = 0;
+    Phase phase = Tp_TeleportEnd;
+
     Movement movement;
     std::pair<int, int> startPos = {1, 1};
 

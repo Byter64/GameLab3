@@ -30,6 +30,7 @@ public:
     void ChangeWall(int x, int y, bool isWall);
     bool IsWall(std::pair<int, int> pos);
     bool IsNode(std::vector<std::vector<bool>> const &wallMap, int x, int y);
+    std::pair<int, int> GetRandomFreePos();
 
     Engine::Entity GetDungeonEntity();
     std::pair<int, int> GetDungeonSize();

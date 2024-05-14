@@ -1,0 +1,5 @@
+SinglePlayer 1 8
+TwoPlayers 1 7  1 9
+Mirror 0 1
+
+Duke 12 9

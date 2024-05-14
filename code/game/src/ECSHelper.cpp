@@ -427,6 +427,7 @@ Engine::Entity ECSHelper::SpawnDuke(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
     Duke duke;
+    duke.startPos = startPos;
     ecsSystem->AddComponent(enemy, duke);
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);

@@ -130,8 +130,6 @@ void DungeonSystem::ReadInEnemies(std::string file)
 
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
-    Duke::preparationPositions.clear();
-
     std::vector<std::string> filecontent;
     bool noDungeon = false;
     try
@@ -191,12 +189,6 @@ void DungeonSystem::ReadInEnemies(std::string file)
         {
             std::pair<int, int> mirrors{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
             Cuball::mirrorDirection = mirrors;
-            i += 2;
-        }
-        else if (symbol == PREPPOS_KEYWORD)
-        {
-            std::pair<int, int> prepPos{std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            Duke::preparationPositions.push_back(prepPos);
             i += 2;
         }
         else if (EnemyBehaviour::stringToBehaviour.count(symbol))
@@ -403,4 +395,17 @@ std::pair<int, int> DungeonSystem::ToDungeon(glm::vec3 globalPos)
 {
     glm::vec2 originOffset = GetOriginOffset();
     return {glm::round(globalPos.x - originOffset.x), glm::round(originOffset.y - globalPos.y)};
+}
+
+std::pair<int, int> DungeonSystem::GetRandomFreePos()
+{
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    int x, y;
+    while(true)
+    {
+        x = rand() % dungeon.wallMap.size();
+        y = rand() % dungeon.wallMap[0].size();
+        if(!dungeon.wallMap[x][y])
+            return {x, y};
+    }
 }
