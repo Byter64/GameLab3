@@ -22,11 +22,12 @@ struct Duke
         Sp_TeleportStart
     };
 
-    float speed = 6.0f;
-    float bulletSpeed = 3.0f;
+    float speed = 5.0f;
+    float bulletSpeed = 10.0f;
     float timer = 0.5f;
     Engine::Entity target;
     Phase phase = Tp_TeleportEnd;
+    bool canShoot = true;
 
     Movement movement;
     std::pair<int, int> startPos = {1, 1};

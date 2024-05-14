@@ -49,6 +49,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             if (duke.timer <= 0)
             {
                 duke.phase = Duke::Tp_Move;
+                duke.canShoot = true;
             }
             break;
         }
@@ -58,6 +59,15 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             Systems::enemyBehaviourSystem->MoveStraight(duke.movement, duke.movement.direction, duke.speed * deltaTime);
             float newDistance = glm::length(duke.movement.currentPos - duke.movement.targetPos);
             transform.SetTranslation(glm::vec3(duke.movement.currentPos, 0));
+
+            float normalizedDistance = 1 - glm::length(duke.movement.currentPos - duke.movement.targetPos) / glm::length(Systems::dungeonSystem->ToGlobal(duke.movement.oldTargetNode) - duke.movement.targetPos);
+
+            if(duke.canShoot && normalizedDistance > 0.5f)
+            {
+                duke.canShoot = false;
+                ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(duke.movement.direction, 0), duke.bulletSpeed);
+            }
+
             if (newDistance > oldDistance)
             {
                 duke.movement.currentPos = duke.movement.targetPos;
