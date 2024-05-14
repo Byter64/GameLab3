@@ -19,9 +19,9 @@ void DukeSystem::EntityAdded(Engine::Entity entity)
     duke.movement.oldTargetNode = duke.startPos;
     duke.movement.currentPos = Systems::dungeonSystem->ToGlobal(duke.startPos);
 
-    duke.movement.targetNode = {duke.startPos.first + 5, duke.startPos.second};
-    duke.movement.targetPos = Systems::dungeonSystem->ToGlobal(duke.startPos) + glm::vec2(5, 0);
-    duke.movement.direction = glm::normalize(duke.movement.targetPos - duke.movement.currentPos);
+    duke.movement.targetNode = duke.startPos;
+    duke.movement.targetPos = duke.movement.currentPos;
+    duke.movement.direction = {0, -1};
 }
 
 void DukeSystem::EntityRemoved(Engine::Entity entity)
@@ -34,6 +34,8 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
     EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
     Duke& duke = ecsSystem->GetComponent<Duke>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
+
+    if(!behaviour.isActive) return;
 
     switch (duke.phase)
     {
@@ -70,23 +72,24 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
 
             if (newDistance > oldDistance)
             {
-                duke.movement.currentPos = duke.movement.targetPos;
                 duke.timer = Duke::teleportTime / 2;
                 duke.phase = Duke::Tp_TeleportStart;
             }
-            break;
         }
+            break;
         case Duke::Tp_TeleportStart:
             duke.timer -= deltaTime;
             if(duke.timer <= 0)
             {
                 duke.timer = Duke::teleportTime / 2;
+
+                
                 duke.phase = Duke::Tp_TeleportEnd;
 
                 auto newStartCondition = [&](glm::vec3 startGlobalPos) {
-                    return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) < Duke::minDistanceToPlayer &&
+                    return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) >= Duke::minDistanceToPlayer &&
                            (players.second == Engine::Entity::INVALID_ENTITY_ID ||
-                            glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) < Duke::minDistanceToPlayer);
+                            glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) >= Duke::minDistanceToPlayer);
                 };
 
                 auto newTargetCondition = [&](glm::vec3 targetGlobalPos) {
@@ -94,6 +97,52 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 };
                 FindNewPosition(duke.movement, newStartCondition);
                 FindNewTargetPosition(duke.movement, newTargetCondition);
+
+                /*
+                duke.phase = Duke::Sp_TeleportEnd;
+
+                auto newStartCondition = [&](glm::vec3 startGlobalPos) {
+                    return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) >= Duke::minDistanceToPlayerSpawning &&
+                           (players.second == Engine::Entity::INVALID_ENTITY_ID ||
+                            glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) >= Duke::minDistanceToPlayerSpawning);
+                };
+
+                FindNewPosition(duke.movement, newStartCondition);
+                 */
+            }
+            break;
+        case Duke::Sp_TeleportEnd:
+            duke.timer -= deltaTime;
+            transform.SetTranslation(glm::vec3(duke.movement.currentPos, 0));
+            transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::radians(-90.0f))));
+            if (duke.timer <= 0)
+            {
+                duke.phase = Duke::Sp_SpawnEnemy;
+                duke.timer = Duke::spawnTime;
+            }
+            break;
+        case Duke::Sp_SpawnEnemy:
+            duke.timer -= deltaTime;
+            if (duke.timer <= 0)
+            {
+                duke.phase = Duke::Tp_TeleportStart;
+                duke.timer = Duke::teleportTime / 2;
+
+                switch (rand() % 4)
+                {
+                    case EnemyBehaviour::Hubertus:
+                        ECSHelper::SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
+                        break;
+                    case EnemyBehaviour::KindredSpirit:
+                        ECSHelper::SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
+                        break;
+                    case EnemyBehaviour::Assi:
+                        ECSHelper::SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
+                        break;
+                    case EnemyBehaviour::Cuball:
+                        ECSHelper::SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
+                        break;
+                }
             }
             break;
     }
