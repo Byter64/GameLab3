@@ -73,6 +73,15 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 duke.movement.currentPos = duke.movement.targetPos;
                 duke.timer = Duke::teleportTime / 2;
                 duke.phase = Duke::Tp_TeleportStart;
+            }
+            break;
+        }
+        case Duke::Tp_TeleportStart:
+            duke.timer -= deltaTime;
+            if(duke.timer <= 0)
+            {
+                duke.timer = Duke::teleportTime / 2;
+                duke.phase = Duke::Tp_TeleportEnd;
 
                 auto newStartCondition = [&](glm::vec3 startGlobalPos) {
                     return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) < Duke::minDistanceToPlayer &&
@@ -85,15 +94,6 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 };
                 FindNewPosition(duke.movement, newStartCondition);
                 FindNewTargetPosition(duke.movement, newTargetCondition);
-            }
-            break;
-        }
-        case Duke::Tp_TeleportStart:
-            duke.timer -= deltaTime;
-            if(duke.timer <= 0)
-            {
-                duke.timer = Duke::teleportTime / 2;
-                duke.phase = Duke::Tp_TeleportEnd;
             }
             break;
     }
