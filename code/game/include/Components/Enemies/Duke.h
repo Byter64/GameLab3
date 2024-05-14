@@ -5,6 +5,8 @@
 struct Duke
 {
     inline static const float minDistanceToPlayer = 3;
+    inline static const float minWalkDistance = 3;
+    inline static const float maxWalkDistance = 10;
     inline static const float teleportTime = 0.5f;
 
     enum Phase
