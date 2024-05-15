@@ -11,6 +11,7 @@ struct Duke
     inline static float maxWalkDistance = 10;
     inline static float teleportTime = 0.5f;
     inline static float spawnTime = 1.0f;
+    inline static float shootTime = 0.5f;
 
     enum Phase
     {

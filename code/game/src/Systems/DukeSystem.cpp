@@ -13,6 +13,12 @@ DukeSystem::DukeSystem()
     Duke::maxWalkDistance = Defines::Float("Duke_MaxWalkDistance");
     Duke::teleportTime = Defines::Float("Duke_TeleportTime");
     Duke::spawnTime = Defines::Float("Duke_SpawnTime");
+    Duke::shootTime = Defines::Float("Duke_ShootTime");
+
+    Duke::spawnCount[EnemyBehaviour::Hubertus] = Defines::Int("Duke_SpawnCountHubertus");
+    Duke::spawnCount[EnemyBehaviour::KindredSpirit] = Defines::Int("Duke_SpawnCountKindredSpirit");
+    Duke::spawnCount[EnemyBehaviour::Assi] = Defines::Int("Duke_SpawnCountAssi");
+    Duke::spawnCount[EnemyBehaviour::Cuball] = Defines::Int("Duke_SpawnCountCuball");
 }
 
 void DukeSystem::EntityAdded(Engine::Entity entity)
@@ -145,7 +151,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
 
             float normalizedDistance = 1 - glm::length(duke.movement.currentPos - duke.movement.targetPos) / glm::length(Systems::dungeonSystem->ToGlobal(duke.movement.oldTargetNode) - duke.movement.targetPos);
 
-            if(duke.canShoot && normalizedDistance > 0.5f)
+            if(duke.canShoot && normalizedDistance >= Duke::shootTime)
             {
                 duke.canShoot = false;
                 ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(duke.movement.direction, 0), duke.bulletSpeed);
