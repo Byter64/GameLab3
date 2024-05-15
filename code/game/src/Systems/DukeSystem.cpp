@@ -69,8 +69,12 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                     auto newTargetCondition = [&](glm::vec3 targetGlobalPos) {
                         return glm::length(targetGlobalPos - glm::vec3(duke.movement.currentPos, 0)) >= Duke::minWalkDistance;
                     };
-                    FindNewPosition(duke.movement, newStartCondition);
-                    FindNewTargetPosition(duke.movement, newTargetCondition);
+                    bool hasWorked = false;
+                    while(!hasWorked)
+                    {
+                        FindNewPosition(duke.movement, newStartCondition);
+                        hasWorked = FindNewTargetPosition(duke.movement, newTargetCondition);
+                    }
                 }
             }
             break;
@@ -145,7 +149,8 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             {
                 duke.timer = Duke::teleportTime / 2;
                 duke.phase = Duke::Tp_TeleportStart;
-                //duke.phase = Duke::Tp_TeleportTowardsPlayerStart;
+                if(duke.teleportCounter % 20 == 19)
+                    duke.phase = Duke::Tp_TeleportTowardsPlayerStart;
             }
         }
             break;
@@ -154,33 +159,40 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             if(duke.timer <= 0)
             {
                 duke.timer = Duke::teleportTime / 2;
-
-
                 duke.phase = Duke::Tp_TeleportEnd;
 
-                auto newStartCondition = [&](glm::vec3 startGlobalPos) {
-                    return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) >= Duke::minDistanceToPlayer &&
-                           (players.second == Engine::Entity::INVALID_ENTITY_ID ||
-                            glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) >= Duke::minDistanceToPlayer);
-                };
+                if(duke.teleportCounter % 101 != 100)
+                {
+                    auto newStartCondition = [&](glm::vec3 startGlobalPos)
+                    {
+                        return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) >= Duke::minDistanceToPlayer &&
+                               (players.second == Engine::Entity::INVALID_ENTITY_ID ||
+                                glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) >= Duke::minDistanceToPlayer);
+                    };
 
-                auto newTargetCondition = [&](glm::vec3 targetGlobalPos) {
-                    return glm::length(targetGlobalPos - glm::vec3(duke.movement.currentPos, 0)) >= Duke::minWalkDistance;
-                };
-                FindNewPosition(duke.movement, newStartCondition);
-                FindNewTargetPosition(duke.movement, newTargetCondition);
+                    auto newTargetCondition = [&](glm::vec3 targetGlobalPos)
+                    {
+                        return glm::length(targetGlobalPos - glm::vec3(duke.movement.currentPos, 0)) >= Duke::minWalkDistance;
+                    };
+                    bool hasWorked = false;
+                    while(!hasWorked)
+                    {
+                        FindNewPosition(duke.movement, newStartCondition);
+                        hasWorked = FindNewTargetPosition(duke.movement, newTargetCondition);
+                    }
+                }
+                else
+                {
+                    duke.phase = Duke::Sp_TeleportEnd;
+                    auto newStartCondition = [&](glm::vec3 startGlobalPos)
+                    {
+                        return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) >= Duke::minDistanceToPlayerSpawning &&
+                               (players.second == Engine::Entity::INVALID_ENTITY_ID ||
+                                glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) >= Duke::minDistanceToPlayerSpawning);
+                    };
 
-                /*
-                duke.phase = Duke::Sp_TeleportEnd;
-
-                auto newStartCondition = [&](glm::vec3 startGlobalPos) {
-                    return glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation()) >= Duke::minDistanceToPlayerSpawning &&
-                           (players.second == Engine::Entity::INVALID_ENTITY_ID ||
-                            glm::length(startGlobalPos - ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation()) >= Duke::minDistanceToPlayerSpawning);
-                };
-
-                FindNewPosition(duke.movement, newStartCondition);
-                 */
+                    FindNewPosition(duke.movement, newStartCondition);
+                }
             }
             break;
         case Duke::Sp_TeleportEnd:
