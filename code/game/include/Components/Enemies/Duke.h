@@ -4,13 +4,13 @@
 
 struct Duke
 {
-    inline static const float minDistanceToPlayer = 3;
-    inline static const float maxDistanceToPlayerAttacking = 5;
-    inline static const float minDistanceToPlayerSpawning = 10;
-    inline static const float minWalkDistance = 3;
-    inline static const float maxWalkDistance = 10;
-    inline static const float teleportTime = 0.5f;
-    inline static const float spawnTime = 1.0f;
+    inline static float minDistanceToPlayer = 3;
+    inline static float maxDistanceToPlayerAttacking = 5;
+    inline static float minDistanceToPlayerSpawning = 10;
+    inline static float minWalkDistance = 3;
+    inline static float maxWalkDistance = 10;
+    inline static float teleportTime = 0.5f;
+    inline static float spawnTime = 1.0f;
 
     enum Phase
     {

@@ -432,11 +432,13 @@ Engine::Entity ECSHelper::CreateDuke(std::pair<int, int> startPos)
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
     Duke duke;
+    duke.speed = Defines::Float("Duke_Speed");
+    duke.bulletSpeed = Defines::Float("Duke_BulletSpeed");
     duke.startPos = startPos;
     ecsSystem->AddComponent(enemy, duke);
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
-    ecsSystem->AddComponent<Health>(enemy, Health{4, 4});
+    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Duke_Health"), Defines::Int("Duke_Health")});
 
     return enemy;
 }

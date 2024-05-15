@@ -6,7 +6,13 @@ extern std::pair<Engine::Entity, Engine::Entity> players;
 
 DukeSystem::DukeSystem()
 {
-
+    Duke::minDistanceToPlayer = Defines::Float("Duke_MinDistanceToPlayer");
+    Duke::minDistanceToPlayerSpawning = Defines::Float("Duke_MinDistanceToPlayerSpawning");
+    Duke::maxDistanceToPlayerAttacking = Defines::Float("Duke_MaxDistanceToPlayerAttacking");
+    Duke::minWalkDistance = Defines::Float("Duke_MinWalkDistance");
+    Duke::maxWalkDistance = Defines::Float("Duke_MaxWalkDistance");
+    Duke::teleportTime = Defines::Float("Duke_TeleportTime");
+    Duke::spawnTime = Defines::Float("Duke_SpawnTime");
 }
 
 void DukeSystem::EntityAdded(Engine::Entity entity)
