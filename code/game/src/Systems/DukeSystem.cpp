@@ -73,7 +73,8 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             if (newDistance > oldDistance)
             {
                 duke.timer = Duke::teleportTime / 2;
-                duke.phase = Duke::Tp_TeleportStart;
+                //duke.phase = Duke::Tp_TeleportStart;
+                duke.phase = Duke::Tp_TeleportTowardsPlayerStart;
             }
         }
             break;
@@ -83,7 +84,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             {
                 duke.timer = Duke::teleportTime / 2;
 
-                
+
                 duke.phase = Duke::Tp_TeleportEnd;
 
                 auto newStartCondition = [&](glm::vec3 startGlobalPos) {
@@ -117,7 +118,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::radians(-90.0f))));
             if (duke.timer <= 0)
             {
-                duke.phase = Duke::Sp_SpawnEnemy;
+                //duke.phase = Duke::Sp_SpawnEnemy;
                 duke.timer = Duke::spawnTime;
             }
             break;
@@ -144,6 +145,28 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                         break;
                 }
             }
+            break;
+        case Duke::Tp_TeleportTowardsPlayerStart:
+            duke.timer = Duke::teleportTime / 2;
+            duke.phase = Duke::Tp_TeleportEnd;
+            Engine::Entity player = Engine::Entity::INVALID_ENTITY_ID;
+            auto newStartCondition = [&](glm::vec3 startGlobalPos) {
+                return ((player = Systems::enemyBehaviourSystem->FindPlayerInSight(startGlobalPos, Duke::maxDistanceToPlayerAttacking)) == players.first &&
+                                glm::length(ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation() - startGlobalPos) >= 1.0f) ||
+                       (players.second != Engine::Entity::INVALID_ENTITY_ID &&
+                               (player = Systems::enemyBehaviourSystem->FindPlayerInSight(startGlobalPos, Duke::maxDistanceToPlayerAttacking)) == players.second &&
+                               glm::length(ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation() - startGlobalPos) >= 1.0f);
+            };
+
+            auto newTargetCondition = [&](glm::vec3 targetGlobalPos) {
+                glm::vec3 playerPos = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation();
+                glm::vec3 x1 = Miscellaneous::RoundTo4Directions(targetGlobalPos - glm::vec3(duke.movement.currentPos, 0));
+                glm::vec3 x2 = Miscellaneous::RoundTo4Directions(playerPos - glm::vec3(duke.movement.currentPos, 0));
+
+                return x1 == x2;
+            };
+            FindNewPosition(duke.movement, newStartCondition);
+            std::cout << FindNewTargetPosition(duke.movement, newTargetCondition) << std::endl;
             break;
     }
 }

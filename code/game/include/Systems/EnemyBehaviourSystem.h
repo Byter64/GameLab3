@@ -32,6 +32,7 @@ public:
     void UpdateGraph();
 
     Engine::Entity FindPlayerInSight(Engine::Entity enemy, int maxDistance);
+    Engine::Entity FindPlayerInSight(glm::vec3 globalPosition, int maxDistance);
     std::vector<std::pair<int, int>> GeneratePath(std::pair<int, int> start, std::pair<int, int> end);
     Engine::Entity FindClosestPlayer(Engine::Entity enemy);
 

@@ -5,6 +5,7 @@
 struct Duke
 {
     inline static const float minDistanceToPlayer = 3;
+    inline static const float maxDistanceToPlayerAttacking = 5;
     inline static const float minDistanceToPlayerSpawning = 10;
     inline static const float minWalkDistance = 3;
     inline static const float maxWalkDistance = 10;
@@ -16,11 +17,10 @@ struct Duke
         Tp_TeleportStart,
         Tp_TeleportEnd,
         Tp_Move,
-        Tp_MoveTowardsPlayer,
+        Tp_TeleportTowardsPlayerStart,
 
-        Sp_TeleportEnd,
         Sp_SpawnEnemy,
-        Sp_TeleportStart
+        Sp_TeleportEnd,
     };
 
     float speed = 5.0f;

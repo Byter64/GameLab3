@@ -198,16 +198,21 @@ Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(Engine::Entity enemy, int
 {
     Engine::Transform& enemyTransform = ecsSystem->GetComponent<Engine::Transform>(enemy);
     glm::vec3 enemyPos = enemyTransform.GetGlobalTranslation();
-    std::pair<int, int> enemyPosDungeon = Systems::dungeonSystem->ToDungeon(enemyPos);
+    return FindPlayerInSight(enemyPos, maxDistance);
+}
+
+Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(glm::vec3 globalPosition, int maxDistance)
+{
+    std::pair<int, int> enemyPosDungeon = Systems::dungeonSystem->ToDungeon(globalPosition);
     for(Engine::Entity player : Systems::playerControllerSystem->entities)
     {
-        glm::vec3 distanceToPlayer = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - enemyPos;
+        glm::vec3 distanceToPlayer = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - globalPosition;
         glm::vec3 direction = Miscellaneous::RoundTo4Directions(glm::normalize(distanceToPlayer));
 
         if(length(direction - glm::normalize(distanceToPlayer)) > 0.1f) continue;
 
         std::pair<int, int> wall = FindWall(enemyPosDungeon.first, enemyPosDungeon.second, (int)direction.x, (int)-direction.y);
-        glm::vec3 distanceToWall = glm::vec3(Systems::dungeonSystem->ToGlobal(wall), 0) - enemyPos;
+        glm::vec3 distanceToWall = glm::vec3(Systems::dungeonSystem->ToGlobal(wall), 0) - globalPosition;
         if(glm::length(distanceToPlayer) < maxDistance && glm::length(distanceToPlayer) < glm::length(distanceToWall))
         {
             return player;
@@ -216,6 +221,7 @@ Engine::Entity EnemyBehaviourSystem::FindPlayerInSight(Engine::Entity enemy, int
 
     return Engine::Entity::INVALID_ENTITY_ID;
 }
+
 
 std::vector<std::pair<int, int>> EnemyBehaviourSystem::GeneratePath(std::pair<int, int> start, std::pair<int, int> end)
 {
