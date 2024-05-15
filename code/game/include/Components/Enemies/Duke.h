@@ -14,6 +14,10 @@ struct Duke
 
     enum Phase
     {
+        PhaseStart_TeleportStart,
+        PhaseStart_SpawnEnemy,
+        PhaseStart_TeleportEnd,
+
         Tp_TeleportStart,
         Tp_TeleportEnd,
         Tp_Move,
@@ -23,13 +27,23 @@ struct Duke
         Sp_TeleportEnd,
     };
 
+    inline static std::map<EnemyBehaviour::Type, unsigned int> spawnCount =
+            {
+                    {EnemyBehaviour::Hubertus, 6},
+                    {EnemyBehaviour::KindredSpirit, 2},
+                    {EnemyBehaviour::Assi, 3},
+                    {EnemyBehaviour::Cuball, 3}};
+
     float speed = 5.0f;
     float bulletSpeed = 10.0f;
     float timer = 0.5f;
     Engine::Entity target;
-    Phase phase = Tp_TeleportEnd;
+    Phase phase = PhaseStart_TeleportStart;
     bool canShoot = true;
     EnemyBehaviour::Type spawnedType = EnemyBehaviour::Hubertus;
+
+    unsigned int spawnCounter = 0;
+    unsigned int teleportCounter = 0;
 
     Movement movement;
     std::pair<int, int> startPos = {1, 1};
