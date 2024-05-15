@@ -176,8 +176,8 @@ void Update(float deltaTime)
     Systems::bulletSystem->Update(deltaTime);
     Systems::destroyerSystem->Update();
 
-    //Number of components needs to be 1 because the prefab will always exist
-    if(Systems::dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 1)
+    //Number of components needs to be 1 for lootie because the prefab will always exist
+    if(Systems::dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<EnemyBehaviour>() == ECSHelper::numberOfEnemyBehaviourPrefabs && ecsSystem->GetNumberOfComponents<Loot>() == 1)
         Systems::dungeonSystem->LoadNextDungeon();
 }
 

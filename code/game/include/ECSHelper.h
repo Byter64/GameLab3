@@ -4,6 +4,8 @@
 class ECSHelper
 {
 public:
+    inline static int numberOfEnemyBehaviourPrefabs = 0;
+
     static void Initialize();
     static Engine::Entity CopyEntity(Engine::Entity entity, bool copyChildren = true);
 

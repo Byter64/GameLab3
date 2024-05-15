@@ -268,6 +268,7 @@ Engine::Entity ECSHelper::CreateHubertus(std::pair<int, int> startPos)
         hubertusPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
+        numberOfEnemyBehaviourPrefabs++;
     }
     Engine::Entity enemy = CopyEntity(hubertusPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
@@ -295,6 +296,7 @@ std::pair<Engine::Entity, Engine::Entity> ECSHelper::CreateKindredSpirit(std::pa
         kindredSpiritPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Debug.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
         ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetScale(glm::vec3(0.0f));
+        numberOfEnemyBehaviourPrefabs++;
     }
 
     Engine::Entity enemy1 = CopyEntity(kindredSpiritPrefab, true);
@@ -359,6 +361,7 @@ Engine::Entity ECSHelper::CreateAssi(std::pair<int, int> startPos)
         assiPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetScale(glm::vec3(0.0f));
+        numberOfEnemyBehaviourPrefabs++;
     }
     Engine::Entity enemy = CopyEntity(assiPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
@@ -390,6 +393,7 @@ Engine::Entity ECSHelper::CreateCuball(std::pair<int, int> startPos)
         ecsSystem->GetComponent<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(0))).isActive = false;
         for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(ecsSystem->GetEntity(*transform.GetChild(2))))
             renderer->isActive = false;
+        numberOfEnemyBehaviourPrefabs++;
     }
     Engine::Entity enemy = CopyEntity(cuballPrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
@@ -419,6 +423,7 @@ Engine::Entity ECSHelper::CreateDuke(std::pair<int, int> startPos)
         dukePrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Duke.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(dukePrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(dukePrefab).SetScale(glm::vec3(0.0f));
+        numberOfEnemyBehaviourPrefabs++;
     }
     Engine::Entity enemy = CopyEntity(dukePrefab, true);
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
