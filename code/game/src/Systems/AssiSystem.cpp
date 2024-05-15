@@ -98,7 +98,7 @@ void AssiSystem::HandleDamage(Engine::Entity entity, Engine::Entity other)
     health.health--;
     if(health.health <= 0)
     {
-        Systems::enemyBehaviourSystem->Kill(entity);
+        Systems::enemyBehaviourSystem->Kill(entity, EnemyBehaviour::scores[EnemyBehaviour::Assi]);
     }
 }
 

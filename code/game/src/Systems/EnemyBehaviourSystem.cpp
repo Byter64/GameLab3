@@ -245,13 +245,13 @@ Engine::Entity EnemyBehaviourSystem::FindClosestPlayer(Engine::Entity enemy)
         return players.second;
 }
 
-void EnemyBehaviourSystem::Kill(Engine::Entity entity)
+void EnemyBehaviourSystem::Kill(Engine::Entity entity, int score)
 {
     EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
 
     RemoveEntityWithChildren(entity);
     float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
-    int score = EnemyBehaviour::scores[EnemyBehaviour::Hubertus] - (int)(timeAlive * EnemyBehaviour::scoreDecrease);
+    score = score - (int)(timeAlive * EnemyBehaviour::scoreDecrease);
     score = score < 1 ? 1 : score;
     ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
 }

@@ -354,7 +354,7 @@ void DukeSystem::HandleDamage(Engine::Entity entity, Engine::Entity other)
     duke.spawnCounter = 0;
     if(health.health <= 0)
     {
-        Systems::enemyBehaviourSystem->Kill(entity);
+        Systems::enemyBehaviourSystem->Kill(entity, EnemyBehaviour::scores[EnemyBehaviour::Duke]);
     }
 }
 

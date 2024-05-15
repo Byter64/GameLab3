@@ -130,7 +130,7 @@ void CuballSystem::HandleDamage(Engine::Entity entity, Engine::Entity other)
             return;
         }
 
-        Systems::enemyBehaviourSystem->Kill(entity);
+        Systems::enemyBehaviourSystem->Kill(entity, EnemyBehaviour::scores[EnemyBehaviour::Cuball]);
     }
 }
 

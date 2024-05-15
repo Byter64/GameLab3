@@ -91,8 +91,8 @@ void KindredSpiritSystem::HandleDamage(Engine::Entity entity, Engine::Entity oth
         health.health--;
         if (health.health <= 0)
         {
-            Systems::enemyBehaviourSystem->Kill(entity);
-            Systems::enemyBehaviourSystem->Kill(kindredSpirit.other);
+            Systems::enemyBehaviourSystem->Kill(entity, EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit]);
+            Systems::enemyBehaviourSystem->Kill(kindredSpirit.other, EnemyBehaviour::scores[EnemyBehaviour::KindredSpirit]);
         }
     }
 }

@@ -36,5 +36,5 @@ public:
     std::vector<std::pair<int, int>> GeneratePath(std::pair<int, int> start, std::pair<int, int> end);
     Engine::Entity FindClosestPlayer(Engine::Entity enemy);
 
-    void Kill(Engine::Entity entity);
+    void Kill(Engine::Entity entity, int score);
 };
