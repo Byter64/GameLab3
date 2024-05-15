@@ -431,7 +431,7 @@ Engine::Entity ECSHelper::CreateDuke(std::pair<int, int> startPos)
     ecsSystem->AddComponent(enemy, duke);
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent<EnemyBehaviour>(enemy, behaviour);
-    ecsSystem->AddComponent<Health>(enemy, Health{Defines::Int("Duke_Health"), Defines::Int("Duke_Health")});
+    ecsSystem->AddComponent<Health>(enemy, Health{4, 4});
 
     return enemy;
 }

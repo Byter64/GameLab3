@@ -327,7 +327,23 @@ bool DukeSystem::FindNewTargetPosition(Movement &movement, std::function<bool(gl
 
 void DukeSystem::HandleDamage(Engine::Entity entity, Engine::Entity other)
 {
+    //Bullet is already destroying itself, so no need to do it here
+    Health& health = ecsSystem->GetComponent<Health>(entity);
+    EnemyBehaviour& behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
+    Duke& duke = ecsSystem->GetComponent<Duke>(entity);
 
+    if(!behaviour.isActive) return;
+
+    health.health--;
+    duke.spawnedType = static_cast<EnemyBehaviour::Type>(4 - health.health);
+    duke.phase = Duke::PhaseStart_TeleportStart;
+    duke.timer = 0;
+    duke.teleportCounter = 0;
+    duke.spawnCounter = 0;
+    if(health.health <= 0)
+    {
+        Systems::enemyBehaviourSystem->Kill(entity);
+    }
 }
 
 void DukeSystem::Update(float deltaTime)
