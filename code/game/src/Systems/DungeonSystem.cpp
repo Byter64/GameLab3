@@ -45,6 +45,7 @@ void DungeonSystem::Initialize()
 
 void DungeonSystem::Update()
 {
+    if(entity == Engine::Entity::INVALID_ENTITY_ID) return;
     Dungeon &dungeon = ecsSystem->GetComponent<Dungeon>(entity);
 
     if(dungeon.spawnerData.empty()) return;
@@ -296,6 +297,7 @@ DungeonSystem::Type DungeonSystem::ToType(unsigned char red, unsigned char green
 
 bool DungeonSystem::IsDungeonCleared()
 {
+    if(entity == Engine::Entity::INVALID_ENTITY_ID) return false;
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     return dungeon.spawnerData.size() == 0 && dungeon.activeEnemies.size() == 0;
 }

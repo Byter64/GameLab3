@@ -33,6 +33,18 @@ namespace Engine
     /// \param maxJoysticks how many joystick inputs should be checked at max
     void InputSystem::Update(unsigned char maxJoysticks)
     {
+        while (!toBeRemoved.empty())
+        {
+            _Remove(toBeRemoved.back());
+            toBeRemoved.pop_back();
+        }
+
+        while (!toBeAdded.empty())
+        {
+            _Add(toBeAdded.back());
+            toBeAdded.pop_back();
+        }
+
         maxJoysticks = maxJoysticks > GLFW_JOYSTICK_LAST ? GLFW_JOYSTICK_LAST : maxJoysticks;
 
         for(unsigned char i = 0; i < maxJoysticks; i++)
@@ -70,7 +82,7 @@ namespace Engine
 
     //Only call this AFTER all bindings have been assigned to inputAction
     //If bindings are assigned after the inputAction is added, the inputAction needs to be removed before added again
-    void InputSystem::Add(std::shared_ptr<InputAction> inputAction)
+    void InputSystem::_Add(std::shared_ptr<InputAction> inputAction)
     {
         inputAction->inputSystem = this;
 
@@ -83,12 +95,22 @@ namespace Engine
         inputActions.push_back(std::move(inputAction));
     }
 
-    std::shared_ptr<InputAction> InputSystem::Remove(std::shared_ptr<InputAction> inputAction)
+    void InputSystem::Add(std::shared_ptr<InputAction> inputAction)
+    {
+        toBeAdded.push_back(inputAction);
+    }
+
+    void InputSystem::Remove(std::shared_ptr<InputAction> inputAction)
+    {
+        toBeRemoved.push_back(inputAction);
+    }
+
+    void InputSystem::_Remove(std::shared_ptr<InputAction> inputAction)
     {
         auto result = std::find(inputActions.begin(), inputActions.end(), inputAction);
         if(result == inputActions.end())
         {
-            return nullptr;
+            return;
         }
 
         //Delete all references to this InputAction
@@ -108,21 +130,7 @@ namespace Engine
         {
             std::shared_ptr<InputAction> action = *result;
             inputActions.remove(*result);
-            return action;
         }
-        return nullptr;
-    }
-
-    std::shared_ptr<InputAction> InputSystem::Remove(std::string inputActionName)
-    {
-        //Find InputAction
-        auto result = std::find_if(inputActions.begin(), inputActions.end(), [&inputActionName](const std::shared_ptr<InputAction>& inputAction) {return inputAction->name == inputActionName;});
-        if(result == inputActions.end())
-        {
-            return nullptr;
-        }
-
-        return Remove(*result);
     }
 
     int InputSystem::GetKeyState(int key)

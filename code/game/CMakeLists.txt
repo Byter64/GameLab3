@@ -124,6 +124,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/Systems/DukeSystem.cpp
         include/Systems/DukeSystem.h
         src/Systems.cpp
+        src/HighScore.cpp
+        include/HighScore.h
 )
 
 set(EXE_FILE Game)

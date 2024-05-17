@@ -11,7 +11,7 @@ class DungeonSystem : public Engine::System
         BreakableWall
     };
 
-    Engine::Entity entity;
+    Engine::Entity entity = Engine::Entity::INVALID_ENTITY_ID;
 
     void EntityAdded(Engine::Entity entity) override;
     void EntityRemoved(Engine::Entity entity) override;

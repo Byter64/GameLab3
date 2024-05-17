@@ -12,6 +12,7 @@ namespace Engine
         };
 
         GamepadInputID() = default;
+        GamepadInputID(unsigned char joystickID, unsigned char inputID, InputType inputType);
 
         unsigned char joystickID;
         unsigned char inputID; //either button ID or axis ID

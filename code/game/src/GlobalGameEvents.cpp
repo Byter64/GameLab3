@@ -13,32 +13,68 @@ static void PauseGame(void*);
 static float pauseStartTime;
 static Engine::Entity pauseText;
 static float pauseTextScale = 8;
+static int screenWidth;
+static int screenHeight;
 
 std::pair<Engine::Entity, Engine::Entity> players = {Engine::Entity::INVALID_ENTITY_ID, Engine::Entity::INVALID_ENTITY_ID};
 
-void OnStartGame(int screenWidth, int screenHeight)
+static std::list<Engine::Entity> titleEntities{};
+
+void CreateTitleScreenText(std::string text, int x, int y, int scale)
 {
-    srand(std::chrono::system_clock::now().time_since_epoch().count());
+    Engine::Entity infoText = ecsSystem->CreateEntity();
+    titleEntities.push_back(infoText);
+    Engine::Text& infoTextText = ecsSystem->AddComponent<Engine::Text>(infoText);
+    infoTextText.scale = scale;
+    infoTextText.position = {x, y};
+    infoTextText.horizontalAlignment = Engine::Text::Center;
+    infoTextText.verticalAlignment = Engine::Text::Center;
+    infoTextText.SetText(text);
+}
 
-    Defines::InitializeDefines();
-    ECSHelper::Initialize();
-    Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
-    Engine::Systems::textRenderSystem->SetReferenceResolution(screenWidth, screenHeight);
+void StartMainPartOfGame();
 
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Collectible), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Collectible), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Enemy), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Dungeon), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Collectible), static_cast<unsigned char>(CollisionLayer::Collectible), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Bullet), false);
-    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Enemy), false);
-
-    for(int i = 0; i <= (int)CollisionLayer::Ignore; i++)
+std::shared_ptr<Engine::InputActionButton> button1;
+std::shared_ptr<Engine::InputActionButton> button2;
+void StartGameOnButtonPress(void * doesntmatter)
+{
+    while(!titleEntities.empty())
     {
-        Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
+        ecsSystem->RemoveEntity(titleEntities.back());
+        titleEntities.pop_back();
     }
+    Engine::Systems::inputSystem->Remove(button1);
+    Engine::Systems::inputSystem->Remove(button2);
 
+    StartMainPartOfGame();
+}
+
+
+void StartTitlePartOfGame()
+{
+    CreateTitleScreenText("Press any button to start", screenWidth / 2, screenHeight / 2, 5);
+    CreateTitleScreenText("My Cool Game Lab III Game", screenWidth / 2, 300, 9);
+    CreateTitleScreenText("Here would be the highscores if there were any", screenWidth / 2, screenHeight / 2 + 200, 3);
+
+    button1 = std::make_shared<Engine::InputActionButton>("Any button");
+    button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
+    button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
+    button1->AddOnEnd((void*)0, StartGameOnButtonPress);
+    Engine::Systems::inputSystem->Add(button1);
+
+
+    if(glfwJoystickPresent(GLFW_JOYSTICK_2))
+    {
+        button2 = std::make_shared<Engine::InputActionButton>("Any button");
+        button2->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
+        button2->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
+        button2->AddOnEnd((void*)0, StartGameOnButtonPress);
+        Engine::Systems::inputSystem->Add(button2);
+    }
+}
+
+void StartMainPartOfGame()
+{
     pauseText = ecsSystem->CreateEntity();
     Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);
     pauseTextText.scale = 0;
@@ -156,6 +192,34 @@ void OnStartGame(int screenWidth, int screenHeight)
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
     Systems::dungeonSystem->Initialize();
+}
+
+void OnStartGame(int screenWidth, int screenHeight)
+{
+    ::screenWidth = screenWidth;
+    ::screenHeight = screenHeight;
+    srand(std::chrono::system_clock::now().time_since_epoch().count());
+
+    Defines::InitializeDefines();
+    ECSHelper::Initialize();
+    Engine::Systems::textRenderSystem->Initialize(screenWidth, screenHeight);
+    Engine::Systems::textRenderSystem->SetReferenceResolution(screenWidth, screenHeight);
+
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Enemy), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Dungeon), static_cast<unsigned char>(CollisionLayer::Dungeon), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Collectible), static_cast<unsigned char>(CollisionLayer::Collectible), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Bullet), static_cast<unsigned char>(CollisionLayer::Bullet), false);
+    Engine::Systems::collisionSystem->SetCollisionBetweenLayers(static_cast<unsigned char>(CollisionLayer::Enemy), static_cast<unsigned char>(CollisionLayer::Enemy), false);
+
+    for(int i = 0; i <= (int)CollisionLayer::Ignore; i++)
+    {
+        Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
+    }
+
+    StartTitlePartOfGame();
 }
 
 void OnEndGame()

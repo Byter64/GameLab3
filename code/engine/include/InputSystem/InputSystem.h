@@ -23,14 +23,17 @@ namespace Engine
         std::map<GamepadInputID, std::list<InputAction*>> inputToInputActions;
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
+        std::list<std::shared_ptr<InputAction>> toBeAdded{};
+        std::list<std::shared_ptr<InputAction>> toBeRemoved{};
+        void _Add(std::shared_ptr<InputAction> inputAction);
+        void _Remove(std::shared_ptr<InputAction> inputAction);
 
     public:
         explicit InputSystem(GLFWwindow* window);
         ~InputSystem();
         void Update(unsigned char maxJoysticks = 2);
         void Add(std::shared_ptr<InputAction> inputAction);
-        std::shared_ptr<InputAction> Remove(std::shared_ptr<InputAction> inputAction);
-        std::shared_ptr<InputAction> Remove(std::string inputActionName);
+        void Remove(std::shared_ptr<InputAction> inputAction);
         int GetKeyState(int key);
         int GetButtonState(unsigned char joystick, unsigned char button);
         float GetAxisState(unsigned char joystick, unsigned char axis);

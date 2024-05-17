@@ -20,3 +20,10 @@ bool Engine::GamepadInputID::operator!=(const Engine::GamepadInputID &other) con
 {
     return !(*this == other);
 }
+
+Engine::GamepadInputID::GamepadInputID(unsigned char joystickID, unsigned char inputID, Engine::GamepadInputID::InputType inputType)
+{
+    this->joystickID = joystickID;
+    this->inputID = inputID;
+    this->inputType = inputType;
+}
