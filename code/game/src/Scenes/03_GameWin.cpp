@@ -1,12 +1,11 @@
-#include "Scenes/01_TitleScreen.h"
-#include "Scenes/02_Game.h"
+#include "Scenes/03_GameWin.h"
 
 extern int windowWidth, windowHeight;
 
-void TitleScreen::CreateText(std::string text, int x, int y, int scale)
+void GameWin::CreateText(std::string text, int x, int y, int scale)
 {
     Engine::Entity infoText = ecsSystem->CreateEntity();
-    entities.push_back(infoText);
+    titleEntities.push_back(infoText);
     Engine::Text& infoTextText = ecsSystem->AddComponent<Engine::Text>(infoText);
     infoTextText.scale = scale;
     infoTextText.position = {x, y};
@@ -15,11 +14,11 @@ void TitleScreen::CreateText(std::string text, int x, int y, int scale)
     infoTextText.SetText(text);
 }
 
-void TitleScreen::Start()
+void GameWin::Start(int score)
 {
-    CreateText("Press any button to start", windowWidth / 2, windowHeight / 2, 5);
-    CreateText("My Cool Game Lab III Game", windowWidth / 2, 300, 9);
-    CreateText("Here would be the highscores if there were any", windowWidth / 2, windowHeight / 2 + 200, 3);
+    CreateText("Congratulation you won the game", windowWidth / 2, windowHeight / 2, 5);
+    CreateText("You reached " + std::to_string(score) + ".", windowWidth / 2, 300, 9);
+    CreateText("Try to be faster for a higher score!", windowWidth / 2, windowHeight / 2 + 200, 3);
 
     button1 = std::make_shared<Engine::InputActionButton>("Any button");
     button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
@@ -38,19 +37,16 @@ void TitleScreen::Start()
     }
 }
 
-void TitleScreen::OnButtonPress(void * doesntmatter)
+void GameWin::OnButtonPress(void * doesntmatter)
 {
-    End();
-    Game::Start();
-}
-
-void TitleScreen::End()
-{
-    while(!entities.empty())
+    while(!titleEntities.empty())
     {
-        ecsSystem->RemoveEntity(entities.back());
-        entities.pop_back();
+        ecsSystem->RemoveEntity(titleEntities.back());
+        titleEntities.pop_back();
     }
     Engine::Systems::inputSystem->Remove(button1);
     Engine::Systems::inputSystem->Remove(button2);
+
+    //End();
+
 }

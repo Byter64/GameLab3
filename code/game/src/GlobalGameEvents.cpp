@@ -9,9 +9,13 @@
 extern GLFWwindow *window;
 
 std::pair<Engine::Entity, Engine::Entity> players = {Engine::Entity::INVALID_ENTITY_ID, Engine::Entity::INVALID_ENTITY_ID};
+int windowWidth, windowHeight;
 
 void OnStartGame(int screenWidth, int screenHeight)
 {
+    windowWidth = screenWidth;
+    windowHeight = screenHeight;
+
     srand(std::chrono::system_clock::now().time_since_epoch().count());
 
     Defines::InitializeDefines();
@@ -33,7 +37,7 @@ void OnStartGame(int screenWidth, int screenHeight)
         Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
     }
 
-    TitleScreen::Start(screenWidth, screenHeight);
+    TitleScreen::Start();
 }
 
 void Update(float deltaTime)

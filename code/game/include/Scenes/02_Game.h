@@ -10,7 +10,7 @@ class Game {
 
     static void PauseGame(void*);
 public:
-    static void Start(int screenWidth, int screenHeight);
+    static void Start();
     static void Update(float deltaTime);
     static void UpdateWithoutPause();
     static void End();

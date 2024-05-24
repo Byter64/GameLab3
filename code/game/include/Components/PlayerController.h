@@ -41,6 +41,7 @@ struct PlayerController
     void AddReviveInput(Engine::GamepadInputID button);
     void AddScore(int points);
 
+    int GetScore();
 private:
     long long int score = 0;
     bool isActive = true;

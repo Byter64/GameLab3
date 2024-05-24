@@ -9,6 +9,9 @@
 #include "CollisionLayer.h"
 #include <stdarg.h>
 
+#include "Scenes/02_Game.h"
+#include "Scenes/03_GameWin.h"
+
 extern std::pair<Engine::Entity, Engine::Entity> players;
 
 void DungeonSystem::EntityAdded(Engine::Entity entity)
@@ -119,8 +122,11 @@ void DungeonSystem::LoadNextDungeon()
     }
     catch (std::exception& e)
     {
-        std::cout << e.what() << std::endl;
-        exit(-1);
+        int score = ecsSystem->GetComponent<PlayerController>(players.first).GetScore();
+        if(players.second != Engine::Entity::INVALID_ENTITY_ID)
+            score += ecsSystem->GetComponent<PlayerController>(players.second).GetScore();
+        Game::End();
+        GameWin::Start(score);
     }
 
     ecsSystem->GetComponent<PlayerController>(players.first).stunnedTimer = 0;

@@ -3,14 +3,15 @@
 #include "ECSExtension.h"
 
 extern std::pair<Engine::Entity, Engine::Entity> players;
+extern int windowWidth, windowHeight;
 
-void Game::Start(int screenWidth, int screenHeight)
+void Game::Start()
 {
     pauseText = ecsSystem->CreateEntity();
     entities.push_back(pauseText);
     Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);
     pauseTextText.scale = 0;
-    pauseTextText.position = {screenWidth / 2, screenHeight / 2};
+    pauseTextText.position = {windowWidth / 2, windowHeight / 2};
     pauseTextText.horizontalAlignment = Engine::Text::Center;
     pauseTextText.verticalAlignment = Engine::Text::Center;
     pauseTextText.SetText("Game Paused");
@@ -201,7 +202,4 @@ void Game::End()
         ecsSystem->RemoveEntity(entities.back());
         entities.pop_back();
     }
-
-    //Hier weitermachen
-    //Als letztes hattest du in PlayerController einen destructor hinzugefügt
 }

@@ -185,3 +185,8 @@ void PlayerController::ResetInput()
     Engine::Systems::inputSystem->Remove(fireAction);
     Engine::Systems::inputSystem->Remove(reviveAction);
 }
+
+int PlayerController::GetScore()
+{
+    return score;
+}
