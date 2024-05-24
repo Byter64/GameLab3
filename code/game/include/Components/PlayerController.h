@@ -31,6 +31,7 @@ struct PlayerController
     PlayerController& operator= (PlayerController& other) = default;
     PlayerController& operator= (PlayerController&& other);
 
+    void ResetInput();
     void AddMovementInput(int leftKey, int rightKey, int upKey, int downKey);
     void AddMovementInput(unsigned char joystickID, unsigned char leftButton, unsigned char rightButton, unsigned char upButton, unsigned char downButton);
     void AddMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis);

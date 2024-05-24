@@ -33,7 +33,7 @@ void OnStartGame(int screenWidth, int screenHeight)
         Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
     }
 
-    TitleScreen::StartTitlePartOfGame(screenWidth, screenHeight);
+    TitleScreen::Start(screenWidth, screenHeight);
 }
 
 void Update(float deltaTime)

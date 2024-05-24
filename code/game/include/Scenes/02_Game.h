@@ -6,10 +6,12 @@ class Game {
     static inline std::shared_ptr<Engine::InputActionButton> pause;
     static inline float pauseStartTime;
     static inline float pauseTextScale = 8;
+    static inline std::list<Engine::Entity> entities{};
 
     static void PauseGame(void*);
 public:
-    static void StartMainPartOfGame(int screenWidth, int screenHeight);
+    static void Start(int screenWidth, int screenHeight);
     static void Update(float deltaTime);
     static void UpdateWithoutPause();
+    static void End();
 };

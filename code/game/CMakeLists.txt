@@ -130,6 +130,10 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Scenes/01_TitleScreen.h
         src/Scenes/02_Game.cpp
         include/Scenes/02_Game.h
+        src/Scenes/03_GameWin.cpp
+        include/Scenes/03_GameWin.h
+        src/Scenes/04_GameLost.cpp
+        include/Scenes/04_GameLost.h
 )
 
 set(EXE_FILE Game)

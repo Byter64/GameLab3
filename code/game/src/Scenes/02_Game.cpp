@@ -4,9 +4,10 @@
 
 extern std::pair<Engine::Entity, Engine::Entity> players;
 
-void Game::StartMainPartOfGame(int screenWidth, int screenHeight)
+void Game::Start(int screenWidth, int screenHeight)
 {
     pauseText = ecsSystem->CreateEntity();
+    entities.push_back(pauseText);
     Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);
     pauseTextText.scale = 0;
     pauseTextText.position = {screenWidth / 2, screenHeight / 2};
@@ -15,12 +16,14 @@ void Game::StartMainPartOfGame(int screenWidth, int screenHeight)
     pauseTextText.SetText("Game Paused");
 
     Engine::Entity playersText = ecsSystem->CreateEntity();
+    entities.push_back(playersText);
     auto& playersUI = ecsSystem->AddComponent<Engine::Text>(playersText);
     playersUI.scale = 4;
     playersUI.position = {890, 0};
     playersUI.SetText("Both");
 
     Engine::Entity playersUIActualScore = ecsSystem->CreateEntity();
+    entities.push_back(playersUIActualScore);
     auto& playersTextUI = ecsSystem->AddComponent<Engine::Text>(playersUIActualScore);
     playersTextUI.scale = 4;
     playersTextUI.position = {960, 80};
@@ -29,12 +32,14 @@ void Game::StartMainPartOfGame(int screenWidth, int screenHeight)
 
 
     Engine::Entity player1Text = ecsSystem->CreateEntity();
+    entities.push_back(player1Text);
     auto& player1UI = ecsSystem->AddComponent<Engine::Text>(player1Text);
     player1UI.scale = 4;
     player1UI.position = {200, 0};
     player1UI.SetText("Player 1");
 
     Engine::Entity playerUI = ecsSystem->CreateEntity();
+    entities.push_back(playerUI);
     auto& textUI = ecsSystem->AddComponent<Engine::Text>(playerUI);
     textUI.scale = 4;
     textUI.position = {330, 80};
@@ -42,6 +47,7 @@ void Game::StartMainPartOfGame(int screenWidth, int screenHeight)
 
 
     Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
+    entities.push_back(player);
     ecsSystem->GetComponent<Engine::Name>(player) = "Player 1";
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     //Controller
@@ -78,12 +84,14 @@ void Game::StartMainPartOfGame(int screenWidth, int screenHeight)
     if(glfwJoystickPresent(GLFW_JOYSTICK_2))
     {
         Engine::Entity player2Text = ecsSystem->CreateEntity();
+        entities.push_back(player2Text);
         auto &player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
         player2UI.scale = 4;
         player2UI.position = {1400, 0};
         player2UI.SetText("Player 2");
 
         Engine::Entity playerUI2 = ecsSystem->CreateEntity();
+        entities.push_back(playerUI2);
         auto &textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
         textUI2.scale = 4;
         textUI2.position = {1530, 80};
@@ -91,6 +99,7 @@ void Game::StartMainPartOfGame(int screenWidth, int screenHeight)
 
 
         Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player2.glb")[0];
+        entities.push_back(player2);
         ecsSystem->GetComponent<Engine::Name>(player2) = "Player 2";
         PlayerController &controller2 = ecsSystem->AddComponent<PlayerController>(player2);
         controller2.uiTextScore = playerUI2;
@@ -171,4 +180,28 @@ void Game::UpdateWithoutPause()
         Engine::Text& text = ecsSystem->GetComponent<Engine::Text>(pauseText);
         text.scale = 0;
     }
+}
+
+void Game::End()
+{
+    if(players.first != Engine::Entity::INVALID_ENTITY_ID)
+    {
+        ecsSystem->GetComponent<PlayerController>(players.first).ResetInput();
+        players.first = Engine::Entity::INVALID_ENTITY_ID;
+    }
+
+    if(players.second != Engine::Entity::INVALID_ENTITY_ID)
+    {
+        ecsSystem->GetComponent<PlayerController>(players.second).ResetInput();
+        players.second = Engine::Entity::INVALID_ENTITY_ID;
+    }
+
+    while(!entities.empty())
+    {
+        ecsSystem->RemoveEntity(entities.back());
+        entities.pop_back();
+    }
+
+    //Hier weitermachen
+    //Als letztes hattest du in PlayerController einen destructor hinzugefügt
 }

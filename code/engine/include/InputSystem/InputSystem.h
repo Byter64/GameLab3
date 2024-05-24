@@ -5,6 +5,7 @@
 #include <memory>
 #include <map>
 #include "InputSystem/GamepadInputID.h"
+#include <set>
 
 namespace Engine
 {
@@ -23,8 +24,8 @@ namespace Engine
         std::map<GamepadInputID, std::list<InputAction*>> inputToInputActions;
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-        std::list<std::shared_ptr<InputAction>> toBeAdded{};
-        std::list<std::shared_ptr<InputAction>> toBeRemoved{};
+        std::set<std::shared_ptr<InputAction>> toBeAdded{};
+        std::set<std::shared_ptr<InputAction>> toBeRemoved{};
         void _Add(std::shared_ptr<InputAction> inputAction);
         void _Remove(std::shared_ptr<InputAction> inputAction);
 

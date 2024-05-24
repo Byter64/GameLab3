@@ -35,14 +35,14 @@ namespace Engine
     {
         while (!toBeRemoved.empty())
         {
-            _Remove(toBeRemoved.back());
-            toBeRemoved.pop_back();
+            _Remove(*toBeRemoved.begin());
+            toBeRemoved.erase(toBeRemoved.begin());
         }
 
         while (!toBeAdded.empty())
         {
-            _Add(toBeAdded.back());
-            toBeAdded.pop_back();
+            _Add(*toBeAdded.begin());
+            toBeAdded.erase(toBeAdded.begin());
         }
 
         maxJoysticks = maxJoysticks > GLFW_JOYSTICK_LAST ? GLFW_JOYSTICK_LAST : maxJoysticks;
@@ -97,12 +97,12 @@ namespace Engine
 
     void InputSystem::Add(std::shared_ptr<InputAction> inputAction)
     {
-        toBeAdded.push_back(inputAction);
+        toBeAdded.insert(inputAction);
     }
 
     void InputSystem::Remove(std::shared_ptr<InputAction> inputAction)
     {
-        toBeRemoved.push_back(inputAction);
+        toBeRemoved.insert(inputAction);
     }
 
     void InputSystem::_Remove(std::shared_ptr<InputAction> inputAction)

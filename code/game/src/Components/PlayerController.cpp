@@ -178,3 +178,10 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
 
     return *this;
 }
+
+void PlayerController::ResetInput()
+{
+    Engine::Systems::inputSystem->Remove(inputAction);
+    Engine::Systems::inputSystem->Remove(fireAction);
+    Engine::Systems::inputSystem->Remove(reviveAction);
+}
