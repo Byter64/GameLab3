@@ -26,6 +26,7 @@ public:
     void LoadNextDungeon();
     bool IsDungeonCleared();
     void OnEnemyDestroyed(Engine::Entity enemy);
+    void SpawnEnemy(Engine::Entity entity);
 
     void ChangeWall(int x, int y, bool isWall);
     bool IsWall(std::pair<int, int> pos);

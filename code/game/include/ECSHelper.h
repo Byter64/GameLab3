@@ -19,5 +19,4 @@ public:
     static Engine::Entity CreateAssi(std::pair<int, int> startPos);
     static Engine::Entity CreateCuball(std::pair<int, int> startPos);
     static Engine::Entity CreateDuke(std::pair<int, int> startPos);
-    static void SpawnEnemy(Engine::Entity entity);
 };

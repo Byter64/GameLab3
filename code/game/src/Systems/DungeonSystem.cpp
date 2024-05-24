@@ -62,23 +62,47 @@ void DungeonSystem::Update()
     switch (frontEnemy.type)
     {
         case EnemyBehaviour::Hubertus:
-            ECSHelper::SpawnEnemy(ECSHelper::CreateHubertus(frontEnemy.spawnPosition));
+            SpawnEnemy(ECSHelper::CreateHubertus(frontEnemy.spawnPosition));
             break;
         case EnemyBehaviour::KindredSpirit:
-            ECSHelper::SpawnEnemy(ECSHelper::CreateKindredSpirit(frontEnemy.spawnPosition).first);
+            SpawnEnemy(ECSHelper::CreateKindredSpirit(frontEnemy.spawnPosition).first);
             break;
         case EnemyBehaviour::Assi:
-            ECSHelper::SpawnEnemy(ECSHelper::CreateAssi(frontEnemy.spawnPosition));
+            SpawnEnemy(ECSHelper::CreateAssi(frontEnemy.spawnPosition));
             break;
         case EnemyBehaviour::Cuball:
-            ECSHelper::SpawnEnemy(ECSHelper::CreateCuball(frontEnemy.spawnPosition));
+            SpawnEnemy(ECSHelper::CreateCuball(frontEnemy.spawnPosition));
             break;
-        case EnemyBehaviour::Duke:
-            ECSHelper::SpawnEnemy(ECSHelper::CreateDuke(frontEnemy.spawnPosition));
+        case EnemyBehaviour::Duke:SpawnEnemy(ECSHelper::CreateDuke(frontEnemy.spawnPosition));
             break;
     }
     dungeon.spawnerData.pop_front();
 }
+
+void DungeonSystem::SpawnEnemy(Engine::Entity entity)
+{
+    Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(this->entity);
+    dungeon.activeEnemies.push_back(entity);
+
+    ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int) CollisionLayer::Ignore;
+    if (ecsSystem->HasComponent<Cuball>(entity))
+    {
+        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning");
+    }
+    else
+    {
+        Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(entity).GetTranslation(), entity);
+        Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
+
+        if(ecsSystem->HasComponent<KindredSpirit>(entity) && ecsSystem->GetComponent<KindredSpirit>(entity).isMainEntity)
+        {
+            Engine::Entity otherKindredSpirit = ecsSystem->GetComponent<KindredSpirit>(entity).other;
+            SpawnEnemy(otherKindredSpirit);
+            dungeon.activeEnemies.push_back(otherKindredSpirit);
+        }
+    }
+}
+
 
 void DungeonSystem::LoadNextDungeon()
 {

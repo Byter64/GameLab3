@@ -442,20 +442,3 @@ Engine::Entity ECSHelper::CreateDuke(std::pair<int, int> startPos)
 
     return enemy;
 }
-
-void ECSHelper::SpawnEnemy(Engine::Entity entity)
-{
-    ecsSystem->GetComponent<Engine::BoxCollider>(entity).layer = (int) CollisionLayer::Ignore;
-    if (ecsSystem->HasComponent<Cuball>(entity))
-    {
-        Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_Spawning");
-    }
-    else
-    {
-        Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(entity).GetTranslation(), entity);
-        Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
-
-        if(ecsSystem->HasComponent<KindredSpirit>(entity) && ecsSystem->GetComponent<KindredSpirit>(entity).isMainEntity)
-            SpawnEnemy(ecsSystem->GetComponent<KindredSpirit>(entity).other);
-    }
-}

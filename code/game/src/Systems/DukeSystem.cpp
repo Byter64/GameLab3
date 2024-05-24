@@ -111,16 +111,16 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 switch (duke.spawnedType)
                 {
                     case EnemyBehaviour::Hubertus:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::KindredSpirit:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
                         break;
                     case EnemyBehaviour::Assi:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::Cuball:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
                         break;
                 }
             }
@@ -228,16 +228,16 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 switch (duke.spawnedType)
                 {
                     case EnemyBehaviour::Hubertus:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::KindredSpirit:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
                         break;
                     case EnemyBehaviour::Assi:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::Cuball:
-                        ECSHelper::SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
                         break;
                 }
             }
