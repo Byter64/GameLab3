@@ -126,6 +126,10 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/Systems.cpp
         src/HighScore.cpp
         include/HighScore.h
+        src/Scenes/01_TitleScreen.cpp
+        include/Scenes/01_TitleScreen.h
+        src/Scenes/02_Game.cpp
+        include/Scenes/02_Game.h
 )
 
 set(EXE_FILE Game)
