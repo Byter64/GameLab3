@@ -221,5 +221,5 @@ void PlayerControllerSystem::CheckIfAllPlayerDead()
     else
         GameLost::Start(ecsSystem->GetComponent<PlayerController>(players.first).GetScore(),
                         ecsSystem->GetComponent<PlayerController>(players.second).GetScore());
-    Game::End();
+    sceneManager->LoadScene<GameLost>();
 }

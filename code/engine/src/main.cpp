@@ -56,8 +56,9 @@ int main()
             {
                 Update(passedTimeInSeconds);
                 Engine::Systems::collisionSystem->CheckCollisions();
-                ecsSystem->DeletePurgatory();
             }
+            sceneManager->Update();
+            ecsSystem->DeletePurgatory();
 
             Engine::Systems::renderSystem->Render();
             Engine::Systems::textRenderSystem->Render();

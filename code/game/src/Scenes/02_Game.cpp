@@ -5,7 +5,7 @@
 extern std::pair<Engine::Entity, Engine::Entity> players;
 extern int windowWidth, windowHeight;
 
-void Game::Start()
+void Game::OnStart()
 {
     pauseText = ecsSystem->CreateEntity();
     entities.push_back(pauseText);
@@ -136,17 +136,18 @@ void Game::Start()
     isRunning = true;
 }
 
-void Game::PauseGame(void*)
+void Game::PauseGame(void* game)
 {
+    Game* actualGame = (Game*)game;
     if(Engine::GetIsGamePaused())
     {
         Engine::ContinueGame();
-        ecsSystem->GetComponent<Engine::Text>(pauseText).scale = 0;
+        ecsSystem->GetComponent<Engine::Text>(actualGame->pauseText).scale = 0;
     }
     else
     {
         Engine::PauseGame();
-        pauseStartTime = Engine::Systems::timeManager->GetTimeSinceStartupWithoutPauses();
+        actualGame->pauseStartTime = Engine::Systems::timeManager->GetTimeSinceStartupWithoutPauses();
     }
 }
 
@@ -186,7 +187,7 @@ void Game::UpdateWithoutPause()
     }
 }
 
-void Game::End()
+void Game::OnEnd()
 {
     if(players.first != Engine::Entity::INVALID_ENTITY_ID)
     {

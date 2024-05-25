@@ -6,6 +6,8 @@
 #include "Systems.h"
 #include "Miscellaneous.h"
 #include "TimeManager.h"
+#include "SceneManager.h"
+#include "Scene.h"
 
 #include "ECS/Entity.h"
 #include "ECS/Components/Name.h"

@@ -1,14 +1,14 @@
 #pragma once
 #include "ECSExtension.h"
 
-class TitleScreen
+class TitleScreen : public Engine::Scene
 {
-    static inline std::shared_ptr<Engine::InputActionButton> button1;
-    static inline std::shared_ptr<Engine::InputActionButton> button2;
-    static inline std::list<Engine::Entity> entities{};
+    std::shared_ptr<Engine::InputActionButton> button1;
+    std::shared_ptr<Engine::InputActionButton> button2;
+    std::list<Engine::Entity> entities{};
     static void OnButtonPress(void * doesntmatter);
 public:
-    static void CreateText(std::string text, int x, int y, int scale);
-    static void Start();
-    static void End();
+    void CreateText(std::string text, int x, int y, int scale);
+    void OnStart() override;
+    void OnEnd() override;
 };

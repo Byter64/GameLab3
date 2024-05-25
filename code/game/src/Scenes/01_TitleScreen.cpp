@@ -15,7 +15,7 @@ void TitleScreen::CreateText(std::string text, int x, int y, int scale)
     infoTextText.SetText(text);
 }
 
-void TitleScreen::Start()
+void TitleScreen::OnStart()
 {
     CreateText("Press any button to start", windowWidth / 2, windowHeight / 2, 5);
     CreateText("My Cool Game Lab III Game", windowWidth / 2, 300, 9);
@@ -40,11 +40,10 @@ void TitleScreen::Start()
 
 void TitleScreen::OnButtonPress(void * doesntmatter)
 {
-    End();
-    Game::Start();
+    sceneManager->LoadScene<Game>();
 }
 
-void TitleScreen::End()
+void TitleScreen::OnEnd()
 {
     while(!entities.empty())
     {

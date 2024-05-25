@@ -1,18 +1,18 @@
 #pragma once
 #include "ECSHelper.h"
 
-class Game
+class Game : public Engine::Scene
 {
-    static inline Engine::Entity pauseText;
-    static inline std::shared_ptr<Engine::InputActionButton> pause;
-    static inline float pauseStartTime;
-    static inline float pauseTextScale = 8;
-    static inline std::list<Engine::Entity> entities{};
+    Engine::Entity pauseText;
+    std::shared_ptr<Engine::InputActionButton> pause;
+    float pauseStartTime;
+    float pauseTextScale = 8;
+    std::list<Engine::Entity> entities{};
     static void PauseGame(void*);
 public:
-    static inline bool isRunning = false;
-    static void Start();
-    static void Update(float deltaTime);
-    static void UpdateWithoutPause();
-    static void End();
+    bool isRunning = false;
+    void OnStart() override;
+    void OnEnd() override;
+    void Update(float deltaTime);
+    void UpdateWithoutPause();
 };
