@@ -33,6 +33,9 @@ namespace Engine
         explicit InputSystem(GLFWwindow* window);
         ~InputSystem();
         void Update(unsigned char maxJoysticks = 2);
+
+        //Only call this AFTER all bindings have been assigned to inputAction
+        //If bindings are assigned after the inputAction is added, the inputAction needs to be removed before added again
         void Add(std::shared_ptr<InputAction> inputAction);
         void Remove(std::shared_ptr<InputAction> inputAction);
         int GetKeyState(int key);

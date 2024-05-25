@@ -73,7 +73,7 @@ void Game::OnStart()
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
-    ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health")});
+    ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health"), Defines::Int("Player1_Health")});
     players.first = player;
 
     if(glfwJoystickPresent(GLFW_JOYSTICK_2))
@@ -115,7 +115,7 @@ void Game::OnStart()
         ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
         ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
         ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
-        ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health")});
+        ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health"), Defines::Int("Player2_Health")});
         players.second = player2;
     }
 
@@ -190,6 +190,8 @@ void Game::OnEnd()
         ecsSystem->GetComponent<PlayerController>(players.second).ResetInput();
         players.second = Engine::Entity::INVALID_ENTITY_ID;
     }
+
+    Engine::Systems::inputSystem->Remove(pause);
 }
 
 

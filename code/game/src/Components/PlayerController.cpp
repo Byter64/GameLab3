@@ -156,7 +156,9 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
     speed = other.speed;
 
     hasScoreChanged = true;
+    isActive = other.isActive;
     stunnedTimer = other.stunnedTimer;
+    respawnTimer = other.respawnTimer;
     uiTextScore = other.uiTextScore;
     score = other.score;
 

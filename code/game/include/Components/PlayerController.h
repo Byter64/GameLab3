@@ -6,12 +6,12 @@
 struct PlayerController
 {
     friend class PlayerControllerSystem;
-    glm::vec3 movementInput;
+    glm::vec3 movementInput{0, 0, 0};
     glm::vec3 lookDirection{1, 0, 0};
-    bool wasFirePushed;
-    bool wasRevivePushed;
+    bool wasFirePushed = false;
+    bool wasRevivePushed = false;
 
-    float bulletSpeed;
+    float bulletSpeed = 0;
     int maxBullets = 2;
     int activeBullets = 0;
 
@@ -22,8 +22,8 @@ struct PlayerController
     float stunnedTimer = 0;
     Engine::Entity uiTextScore = Engine::Entity::INVALID_ENTITY_ID;
 
-    float respawnTime;
-    float respawnTimer;
+    float respawnTime = 0;
+    float respawnTimer = 0;
 
     PlayerController() = default;
     PlayerController(PlayerController& other) = default;

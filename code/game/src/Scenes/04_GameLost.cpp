@@ -18,10 +18,10 @@ void GameLost::CreateText(std::string text, int x, int y, int scale)
 void GameLost::OnStart()
 {
     const char *winner = Game::scoreP1 > Game::scoreP2 ? "player 1" : "player 2";
-    CreateText((std::string)"Congratulation " + winner + " won the game", windowWidth / 2, windowHeight / 2, 5);
-    CreateText("Player 1 reached " + std::to_string(Game::scoreP1) + " points", windowWidth / 2, 300, 9);
+    CreateText((std::string)"Congratulation " + winner + " won the game", windowWidth / 2, windowHeight / 2, 6);
+    CreateText("Player 1 reached " + std::to_string(Game::scoreP1) + " points", windowWidth / 2, 300, 4);
     if(Game::scoreP2 != -1)
-        CreateText("Player 2 reached " + std::to_string(Game::scoreP2) + "points", windowWidth / 2, 400, 9);
+        CreateText("Player 2 reached " + std::to_string(Game::scoreP2) + "points", windowWidth / 2, 400, 4);
 
     button1 = std::make_shared<Engine::InputActionButton>("Any button");
     button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));

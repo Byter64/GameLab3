@@ -80,8 +80,6 @@ namespace Engine
         }
     }
 
-    //Only call this AFTER all bindings have been assigned to inputAction
-    //If bindings are assigned after the inputAction is added, the inputAction needs to be removed before added again
     void InputSystem::_Add(std::shared_ptr<InputAction> inputAction)
     {
         inputAction->inputSystem = this;

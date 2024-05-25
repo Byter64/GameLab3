@@ -21,13 +21,14 @@ void PlayerControllerSystem::Update(float deltaTime)
 {
     for (Engine::Entity playerEntity: entities)
     {
-        ecsSystem->GetComponent<PlayerController>(playerEntity).stunnedTimer -= deltaTime;
-        if(ecsSystem->GetComponent<PlayerController>(playerEntity).isActive)
+        PlayerController& playerController = ecsSystem->GetComponent<PlayerController>(playerEntity);
+        playerController.stunnedTimer -= deltaTime;
+        if(playerController.isActive)
             HandleInput(playerEntity, deltaTime);
         else
         {
-            ecsSystem->GetComponent<PlayerController>(playerEntity).respawnTimer -= deltaTime;
-            if(ecsSystem->GetComponent<PlayerController>(playerEntity).respawnTimer <= 0.0f)
+            playerController.respawnTimer -= deltaTime;
+            if(playerController.respawnTimer <= 0.0f)
                 ActivatePlayer(playerEntity);
         }
 
