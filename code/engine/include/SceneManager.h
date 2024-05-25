@@ -27,7 +27,14 @@ namespace Engine
             isLoadRequested = true;
         }
 
-        Scene& GetActiveScene();
+        template<class T>
+        T& GetActiveScene()
+        {
+            T* castedScene = dynamic_cast<T*>(activeScene.get());
+            if (castedScene == nullptr)
+                throw std::runtime_error((std::string) "You are trying to access the active screen with type " + typeid(T).name() + " but the active scene has type " + typeid(*activeScene).name());
+            return *castedScene;
+        }
         void Update();
     };
 

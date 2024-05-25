@@ -93,6 +93,6 @@ namespace Engine
 
     bool EntityManager::IsEntityActive(Entity entity)
     {
-        return std::find(pooledEntities.begin(), pooledEntities.end(),entity) == pooledEntities.end();
+        return entity != Entity::INVALID_ENTITY_ID && std::find(pooledEntities.begin(), pooledEntities.end(),entity) == pooledEntities.end();
     }
 } // Engine

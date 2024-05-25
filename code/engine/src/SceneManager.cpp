@@ -5,11 +5,6 @@ std::shared_ptr<Engine::SceneManager>& sceneManager = Engine::Systems::sceneMana
 
 namespace Engine
 {
-    Scene &SceneManager::GetActiveScene()
-    {
-        return *activeScene;
-    }
-
     void SceneManager::Update()
     {
         if(isLoadRequested)

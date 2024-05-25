@@ -65,18 +65,18 @@ void DungeonSystem::Update()
     switch (frontEnemy.type)
     {
         case EnemyBehaviour::Hubertus:
-            SpawnEnemy(ECSHelper::CreateHubertus(frontEnemy.spawnPosition));
+            SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateHubertus(frontEnemy.spawnPosition));
             break;
         case EnemyBehaviour::KindredSpirit:
-            SpawnEnemy(ECSHelper::CreateKindredSpirit(frontEnemy.spawnPosition).first);
+            SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateKindredSpirit(frontEnemy.spawnPosition).first);
             break;
         case EnemyBehaviour::Assi:
-            SpawnEnemy(ECSHelper::CreateAssi(frontEnemy.spawnPosition));
+            SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateAssi(frontEnemy.spawnPosition));
             break;
         case EnemyBehaviour::Cuball:
-            SpawnEnemy(ECSHelper::CreateCuball(frontEnemy.spawnPosition));
+            SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateCuball(frontEnemy.spawnPosition));
             break;
-        case EnemyBehaviour::Duke:SpawnEnemy(ECSHelper::CreateDuke(frontEnemy.spawnPosition));
+        case EnemyBehaviour::Duke:SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateDuke(frontEnemy.spawnPosition));
             break;
     }
     dungeon.spawnerData.pop_front();
@@ -94,7 +94,7 @@ void DungeonSystem::SpawnEnemy(Engine::Entity entity)
     }
     else
     {
-        Engine::Entity elevator = ECSHelper::SpawnElevator(ecsSystem->GetComponent<Engine::Transform>(entity).GetTranslation(), entity);
+        Engine::Entity elevator = sceneManager->GetActiveScene<Game>().CreateElevator(ecsSystem->GetComponent<Engine::Transform>(entity).GetTranslation(), entity);
         Engine::Systems::animationSystem->PlayAnimation(elevator, "Elevator_Spawning");
 
         if(ecsSystem->HasComponent<KindredSpirit>(entity) && ecsSystem->GetComponent<KindredSpirit>(entity).isMainEntity)
@@ -273,9 +273,9 @@ void DungeonSystem::ReadInDungeonMap(std::string file)
             glm::vec3 spawnPos = glm::vec3(x - width / 2, y - height / 2,0);
             Engine::Entity wall;
             if(type1 == Type::Wall)
-                wall = ECSHelper::SpawnWall(spawnPos);
+                wall = sceneManager->GetActiveScene<Game>().CreateWall(spawnPos);
             else if(type1 == Type::BreakableWall)
-                wall = ECSHelper::SpawnBreakableWall(spawnPos);
+                wall = sceneManager->GetActiveScene<Game>().CreateBreakableWall(spawnPos);
 
             ecsSystem->GetComponent<Engine::Name>(wall) = name;
             ecsSystem->GetComponent<Engine::Transform>(wall).SetParent(&ecsSystem->GetComponent<Engine::Transform>(entity));

@@ -111,16 +111,16 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 switch (duke.spawnedType)
                 {
                     case EnemyBehaviour::Hubertus:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateHubertus(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::KindredSpirit:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateKindredSpirit(duke.movement.oldTargetNode).first);
                         break;
                     case EnemyBehaviour::Assi:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateAssi(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::Cuball:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateCuball(duke.movement.oldTargetNode));
                         break;
                 }
             }
@@ -154,7 +154,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             if(duke.canShoot && normalizedDistance >= Duke::shootTime)
             {
                 duke.canShoot = false;
-                ECSHelper::SpawnBullet(entity, transform.GetGlobalTranslation(), glm::vec3(duke.movement.direction, 0), duke.bulletSpeed);
+                sceneManager->GetActiveScene<Game>().CreateBullet(entity, transform.GetGlobalTranslation(), glm::vec3(duke.movement.direction, 0), duke.bulletSpeed);
             }
 
             if (newDistance > oldDistance)
@@ -228,16 +228,16 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 switch (duke.spawnedType)
                 {
                     case EnemyBehaviour::Hubertus:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateHubertus(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateHubertus(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::KindredSpirit:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateKindredSpirit(duke.movement.oldTargetNode).first);
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateKindredSpirit(duke.movement.oldTargetNode).first);
                         break;
                     case EnemyBehaviour::Assi:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateAssi(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateAssi(duke.movement.oldTargetNode));
                         break;
                     case EnemyBehaviour::Cuball:
-                        Systems::dungeonSystem->SpawnEnemy(ECSHelper::CreateCuball(duke.movement.oldTargetNode));
+                        Systems::dungeonSystem->SpawnEnemy(sceneManager->GetActiveScene<Game>().CreateCuball(duke.movement.oldTargetNode));
                         break;
                 }
             }

@@ -253,5 +253,5 @@ void EnemyBehaviourSystem::Kill(Engine::Entity entity, int score)
     float timeAlive = Engine::Systems::timeManager->GetTimeSinceStartup() - behaviour.spawnTime;
     score = score - (int)(timeAlive * EnemyBehaviour::scoreDecrease);
     score = score < 1 ? 1 : score;
-    ECSHelper::SpawnLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
+    sceneManager->GetActiveScene<Game>().CreateLoot(ecsSystem->GetComponent<Engine::Transform>(entity).GetGlobalTranslation(), score);
 }

@@ -26,7 +26,8 @@ namespace Engine
         OnEnd();
 
         for(Entity entity : entities)
-            ecsSystem->RemoveEntity(entity);
+            if(ecsSystem->IsEntityActive(entity))
+                RemoveEntityWithChildren(entity);
         entities.clear();
     }
 
@@ -68,5 +69,10 @@ namespace Engine
     void Scene::OnEnd()
     {
 
+    }
+
+    void Scene::AddEntity(Entity entity)
+    {
+        entities.insert(entity);
     }
 } // Engine

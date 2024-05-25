@@ -29,3 +29,8 @@
 #include "Systems.h"
 
 #include "CollisionLayer.h"
+
+#include "Scenes/01_TitleScreen.h"
+#include "Scenes/02_Game.h"
+#include "Scenes/03_GameWin.h"
+#include "Scenes/04_GameLost.h"

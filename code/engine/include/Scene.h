@@ -30,6 +30,7 @@ namespace Engine
         virtual void OnEnd();
 
         Entity CreateEntity();
+        void AddEntity(Entity entity);
         std::vector<Entity> CreateEntity(std::filesystem::path path, std::string animationPrefix = "", bool addParent = false);
         void RemoveEntity(Entity entity);
     };

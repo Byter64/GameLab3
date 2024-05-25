@@ -204,7 +204,7 @@ void CuballSystem::MoveCuball(Engine::Entity entity, float deltaTime)
         for(std::pair<int, int> node : list)
         {
             glm::vec3 direction = glm::vec3(Systems::dungeonSystem->ToGlobal(node), 0) - transform.GetGlobalTranslation();
-            ECSHelper::SpawnBullet(ecsSystem->GetEntity(transform), transform.GetGlobalTranslation(), direction, cuball.bulletSpeed);
+            sceneManager->GetActiveScene<Game>().CreateBullet(ecsSystem->GetEntity(transform), transform.GetGlobalTranslation(), direction, cuball.bulletSpeed);
         }
     }
 }

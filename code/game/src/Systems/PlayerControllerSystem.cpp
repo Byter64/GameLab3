@@ -140,8 +140,8 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
         controller.wasFirePushed = false;
         if(controller.activeBullets != controller.maxBullets)
         {
-            ECSHelper::SpawnBullet(playerEntity, transform.GetGlobalTranslation(),
-                                   Miscellaneous::RoundTo8Directions(controller.lookDirection), controller.bulletSpeed);
+            sceneManager->GetActiveScene<Game>().CreateBullet(playerEntity, transform.GetGlobalTranslation(),
+                                    Miscellaneous::RoundTo8Directions(controller.lookDirection), controller.bulletSpeed);
             controller.activeBullets++;
         }
     }

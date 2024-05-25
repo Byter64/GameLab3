@@ -70,11 +70,11 @@ void GameMain()
             Engine::Systems::inputSystem->Update();
 
             UpdateWithoutPause();
-            sceneManager->GetActiveScene().UpdateWithoutPause();
+            sceneManager->GetActiveScene<Engine::Scene>().UpdateWithoutPause();
             if (!Engine::isGamePaused)
             {
                 Update(passedTimeInSeconds);
-                sceneManager->GetActiveScene().Update(passedTimeInSeconds);
+                sceneManager->GetActiveScene<Engine::Scene>().Update(passedTimeInSeconds);
                 Engine::Systems::collisionSystem->CheckCollisions();
             }
             sceneManager->Update();
