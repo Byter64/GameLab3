@@ -10,4 +10,5 @@ namespace Engine::Systems
     std::shared_ptr<TextRenderSystem> textRenderSystem;
     std::shared_ptr<AnimationSystem> animationSystem;
     std::shared_ptr<TimeManager> timeManager;
+    std::shared_ptr<SceneManager> sceneManager;
 } // Engine::Systems

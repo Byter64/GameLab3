@@ -1,7 +1,8 @@
 #pragma once
 #include "ECSExtension.h"
 
-class TitleScreen {
+class TitleScreen
+{
     static inline std::shared_ptr<Engine::InputActionButton> button1;
     static inline std::shared_ptr<Engine::InputActionButton> button2;
     static inline std::list<Engine::Entity> entities{};

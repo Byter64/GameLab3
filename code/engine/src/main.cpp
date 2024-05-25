@@ -35,7 +35,7 @@ int main()
     if (SetupWindow() == -1) return -1;
     InitializeECS();
     Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
-
+    Engine::Systems::sceneManager = std::make_shared<Engine::SceneManager>();
     try
     {
         OnStartGame(screenWidth, screenHeight);

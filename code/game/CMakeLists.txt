@@ -134,6 +134,10 @@ set(SOURCE_FILES ../engine/src/main.cpp
         include/Scenes/03_GameWin.h
         src/Scenes/04_GameLost.cpp
         include/Scenes/04_GameLost.h
+        ../engine/src/Scene.cpp
+        ../engine/include/Scene.h
+        ../engine/src/SceneManager.cpp
+        ../engine/include/SceneManager.h
 )
 
 set(EXE_FILE Game)

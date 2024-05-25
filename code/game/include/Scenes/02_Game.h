@@ -1,7 +1,8 @@
 #pragma once
 #include "ECSHelper.h"
 
-class Game {
+class Game
+{
     static inline Engine::Entity pauseText;
     static inline std::shared_ptr<Engine::InputActionButton> pause;
     static inline float pauseStartTime;
