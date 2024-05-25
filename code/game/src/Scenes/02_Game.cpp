@@ -7,8 +7,7 @@ extern int windowWidth, windowHeight;
 
 void Game::OnStart()
 {
-    pauseText = ecsSystem->CreateEntity();
-    entities.push_back(pauseText);
+    pauseText = CreateEntity();
     Engine::Text& pauseTextText = ecsSystem->AddComponent<Engine::Text>(pauseText);
     pauseTextText.scale = 0;
     pauseTextText.position = {windowWidth / 2, windowHeight / 2};
@@ -16,15 +15,13 @@ void Game::OnStart()
     pauseTextText.verticalAlignment = Engine::Text::Center;
     pauseTextText.SetText("Game Paused");
 
-    Engine::Entity playersText = ecsSystem->CreateEntity();
-    entities.push_back(playersText);
+    Engine::Entity playersText = CreateEntity();
     auto& playersUI = ecsSystem->AddComponent<Engine::Text>(playersText);
     playersUI.scale = 4;
     playersUI.position = {890, 0};
     playersUI.SetText("Both");
 
-    Engine::Entity playersUIActualScore = ecsSystem->CreateEntity();
-    entities.push_back(playersUIActualScore);
+    Engine::Entity playersUIActualScore = CreateEntity();
     auto& playersTextUI = ecsSystem->AddComponent<Engine::Text>(playersUIActualScore);
     playersTextUI.scale = 4;
     playersTextUI.position = {960, 80};
@@ -32,23 +29,20 @@ void Game::OnStart()
     Systems::playerControllerSystem->scoreUI = playersUIActualScore;
 
 
-    Engine::Entity player1Text = ecsSystem->CreateEntity();
-    entities.push_back(player1Text);
+    Engine::Entity player1Text = CreateEntity();
     auto& player1UI = ecsSystem->AddComponent<Engine::Text>(player1Text);
     player1UI.scale = 4;
     player1UI.position = {200, 0};
     player1UI.SetText("Player 1");
 
-    Engine::Entity playerUI = ecsSystem->CreateEntity();
-    entities.push_back(playerUI);
+    Engine::Entity playerUI = CreateEntity();
     auto& textUI = ecsSystem->AddComponent<Engine::Text>(playerUI);
     textUI.scale = 4;
     textUI.position = {330, 80};
     textUI.horizontalAlignment = Engine::Text::Center;
 
 
-    Engine::Entity player = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
-    entities.push_back(player);
+    Engine::Entity player = CreateEntity(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
     ecsSystem->GetComponent<Engine::Name>(player) = "Player 1";
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     //Controller
@@ -73,7 +67,7 @@ void Game::OnStart()
     pause = std::make_shared<Engine::InputActionButton>("Pause");
     pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
     pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
-    pause->AddOnStart(nullptr, PauseGame);
+    pause->AddOnStart(this, PauseGame);
     Engine::Systems::inputSystem->Add(pause);
 
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
@@ -84,23 +78,20 @@ void Game::OnStart()
 
     if(glfwJoystickPresent(GLFW_JOYSTICK_2))
     {
-        Engine::Entity player2Text = ecsSystem->CreateEntity();
-        entities.push_back(player2Text);
+        Engine::Entity player2Text = CreateEntity();
         auto &player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
         player2UI.scale = 4;
         player2UI.position = {1400, 0};
         player2UI.SetText("Player 2");
 
-        Engine::Entity playerUI2 = ecsSystem->CreateEntity();
-        entities.push_back(playerUI2);
+        Engine::Entity playerUI2 = CreateEntity();
         auto &textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
         textUI2.scale = 4;
         textUI2.position = {1530, 80};
         textUI2.horizontalAlignment = Engine::Text::Center;
 
 
-        Engine::Entity player2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Player2.glb")[0];
-        entities.push_back(player2);
+        Engine::Entity player2 = CreateEntity(Engine::Files::ASSETS / "Graphics\\Models\\Player2.glb")[0];
         ecsSystem->GetComponent<Engine::Name>(player2) = "Player 2";
         PlayerController &controller2 = ecsSystem->AddComponent<PlayerController>(player2);
         controller2.uiTextScore = playerUI2;
@@ -133,7 +124,8 @@ void Game::OnStart()
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
     Systems::dungeonSystem->Initialize();
-    isRunning = true;
+    Game::scoreP1 = -1;
+    Game::scoreP2 = -1;
 }
 
 void Game::PauseGame(void* game)
@@ -151,9 +143,8 @@ void Game::PauseGame(void* game)
     }
 }
 
-void Game::Update(float deltaTime)
+void Game::OnUpdate(float deltaTime)
 {
-    if(!isRunning) return;
     Systems::playerControllerSystem->Update(deltaTime);
     Systems::hubertusSystem->Update(deltaTime);
     Systems::kindredSpiritSystem->Update(deltaTime);
@@ -170,9 +161,8 @@ void Game::Update(float deltaTime)
         Systems::dungeonSystem->LoadNextDungeon();
 }
 
-void Game::UpdateWithoutPause()
+void Game::OnUpdateWithoutPause()
 {
-    if(!isRunning) return;
     if(!Engine::GetIsGamePaused()) return;
     float delta = Engine::Systems::timeManager->GetTimeSinceStartupWithoutPauses() - pauseStartTime;
     if(((int)delta) % 2 == 0)
@@ -200,13 +190,4 @@ void Game::OnEnd()
         ecsSystem->GetComponent<PlayerController>(players.second).ResetInput();
         players.second = Engine::Entity::INVALID_ENTITY_ID;
     }
-
-    while(!entities.empty())
-    {
-        ecsSystem->RemoveEntity(entities.back());
-        entities.pop_back();
-    }
-
-    ecsSystem->RemoveAllEntities();
-    isRunning = false;
 }

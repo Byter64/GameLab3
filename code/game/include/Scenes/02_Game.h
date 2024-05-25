@@ -7,12 +7,13 @@ class Game : public Engine::Scene
     std::shared_ptr<Engine::InputActionButton> pause;
     float pauseStartTime;
     float pauseTextScale = 8;
-    std::list<Engine::Entity> entities{};
     static void PauseGame(void*);
 public:
-    bool isRunning = false;
+    static inline int scoreP1 = -1;
+    static inline int scoreP2 = -1;
+
     void OnStart() override;
     void OnEnd() override;
-    void Update(float deltaTime);
-    void UpdateWithoutPause();
+    void OnUpdate(float deltaTime) override;
+    void OnUpdateWithoutPause() override;
 };

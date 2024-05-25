@@ -122,11 +122,10 @@ void DungeonSystem::LoadNextDungeon()
     }
     catch (std::exception& e)
     {
-        int score = ecsSystem->GetComponent<PlayerController>(players.first).GetScore();
+        Game::scoreP1 = ecsSystem->GetComponent<PlayerController>(players.first).GetScore();
         if(players.second != Engine::Entity::INVALID_ENTITY_ID)
-            score += ecsSystem->GetComponent<PlayerController>(players.second).GetScore();
-        Game::End();
-        GameWin::Start(score);
+            Game::scoreP2 = ecsSystem->GetComponent<PlayerController>(players.second).GetScore();
+        sceneManager->LoadScene<GameWin>();
     }
 
     ecsSystem->GetComponent<PlayerController>(players.first).stunnedTimer = 0;
@@ -334,7 +333,7 @@ bool DungeonSystem::IsDungeonCleared()
 
 void DungeonSystem::OnEnemyDestroyed(Engine::Entity enemy)
 {
-    if(!Game::isRunning) return;
+    if(!ecsSystem->IsEntityActive(entity)) return;
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeEnemies.remove(enemy);
 }

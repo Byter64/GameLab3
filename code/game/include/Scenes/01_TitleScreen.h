@@ -5,7 +5,6 @@ class TitleScreen : public Engine::Scene
 {
     std::shared_ptr<Engine::InputActionButton> button1;
     std::shared_ptr<Engine::InputActionButton> button2;
-    std::list<Engine::Entity> entities{};
     static void OnButtonPress(void * doesntmatter);
 public:
     void CreateText(std::string text, int x, int y, int scale);

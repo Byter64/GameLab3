@@ -90,4 +90,9 @@ namespace Engine
                 RemoveEntity(i);
         }
     }
+
+    bool EntityManager::IsEntityActive(Entity entity)
+    {
+        return std::find(pooledEntities.begin(), pooledEntities.end(),entity) == pooledEntities.end();
+    }
 } // Engine

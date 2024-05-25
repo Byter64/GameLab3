@@ -16,8 +16,13 @@ namespace Engine
         {
             activeScene->End();
             activeScene.swap(newScene);
-            activeScene->Start();
+            activeScene->OnStart();
             isLoadRequested = false;
         }
+    }
+
+    void SceneManager::Initialize()
+    {
+        activeScene = std::make_unique<Scene>();
     }
 } // Engine

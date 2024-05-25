@@ -22,6 +22,9 @@ namespace Engine
         void DestroyEntity(Entity entity);
         void RemoveEntity(Entity entity);
 
+        ///Returns true, if the entity has not been destroyed by a call to RemoveEntity() or similar
+        bool IsEntityActive(Entity entity);
+
         ///WARNING: all variables with entity IDs will be invalid after calling this function. New onse need to be inquired with "CreateEntity()"
         void RemoveAllEntities();
         void DeletePurgatory();

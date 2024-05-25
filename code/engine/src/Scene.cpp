@@ -1,4 +1,5 @@
 #include "Scene.h"
+#include "EntityUtility.h"
 
 namespace Engine
 {
@@ -27,5 +28,45 @@ namespace Engine
         for(Entity entity : entities)
             ecsSystem->RemoveEntity(entity);
         entities.clear();
+    }
+
+    std::vector<Entity> Scene::CreateEntity(std::filesystem::path path, std::string animationPrefix, bool addParent)
+    {
+        std::vector<Entity> entities = ImportGLTF(path, animationPrefix, addParent);
+        for(Entity entity : entities)
+        {
+            this->entities.insert(entity);
+        }
+        return entities;
+    }
+
+    void Scene::Update(float deltaTime)
+    {
+        OnUpdate(deltaTime);
+    }
+
+    void Scene::UpdateWithoutPause()
+    {
+        OnUpdateWithoutPause();
+    }
+
+    void Scene::OnUpdate(float deltaTime)
+    {
+
+    }
+
+    void Scene::OnUpdateWithoutPause()
+    {
+
+    }
+
+    void Scene::OnStart()
+    {
+
+    }
+
+    void Scene::OnEnd()
+    {
+
     }
 } // Engine

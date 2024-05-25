@@ -216,10 +216,8 @@ void PlayerControllerSystem::CheckIfAllPlayerDead()
     }
 
     std::cout << "You are so good. You all died. Game over now" << std::endl;
-    if(players.second == Engine::Entity::INVALID_ENTITY_ID)
-        GameLost::Start(ecsSystem->GetComponent<PlayerController>(players.first).GetScore());
-    else
-        GameLost::Start(ecsSystem->GetComponent<PlayerController>(players.first).GetScore(),
-                        ecsSystem->GetComponent<PlayerController>(players.second).GetScore());
+    Game::scoreP1 = ecsSystem->GetComponent<PlayerController>(players.first).GetScore();
+    if(players.second != Engine::Entity::INVALID_ENTITY_ID)
+        Game::scoreP2 = ecsSystem->GetComponent<PlayerController>(players.second).GetScore();
     sceneManager->LoadScene<GameLost>();
 }

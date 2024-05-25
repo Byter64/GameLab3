@@ -11,6 +11,8 @@ namespace Engine
         std::unique_ptr<Scene> newScene{};
         bool isLoadRequested = false;
     public:
+        void Initialize();
+
 
         /// Unloads the currently active scene and loads the given Scene
         /// \tparam T

@@ -26,18 +26,36 @@ int SetupWindow();
 void InitializeECS();
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 void window_pos_callback(GLFWwindow *window, int x, int y);
+void GameMain();
 
 int main()
+{
+    try
+    {
+        GameMain();
+    }
+    catch (Engine::EngineException& baseException)
+    {
+        std::cout << std::endl;
+        std::cout << "ERROR: " << std::endl;
+        std::cout << baseException.errorName << std::endl;
+        std::cout << baseException.errorDescription << std::endl;
+        std::cout << "Stacktrace:\n" << baseException.stackTrace << std::endl;
+    }
+    return 0;
+}
+
+void GameMain()
 {
     Engine::CrashHandler::SetupCrashHandler();
 
     Engine::Systems::timeManager = std::make_shared<Engine::TimeManager>();
-    if (SetupWindow() == -1) return -1;
+    if (SetupWindow() == -1) throw std::exception("Window could not be set up. Help");
     InitializeECS();
     Engine::Systems::inputSystem = std::make_shared<Engine::InputSystem>(window);
     Engine::Systems::sceneManager = std::make_shared<Engine::SceneManager>();
-    try
-    {
+    sceneManager->Initialize();
+
         OnStartGame(screenWidth, screenHeight);
         float passedTimeInSeconds = 1.0f / 60;
         glfwSetTime(passedTimeInSeconds);
@@ -52,9 +70,11 @@ int main()
             Engine::Systems::inputSystem->Update();
 
             UpdateWithoutPause();
+            sceneManager->GetActiveScene().UpdateWithoutPause();
             if (!Engine::isGamePaused)
             {
                 Update(passedTimeInSeconds);
+                sceneManager->GetActiveScene().Update(passedTimeInSeconds);
                 Engine::Systems::collisionSystem->CheckCollisions();
             }
             sceneManager->Update();
@@ -82,16 +102,6 @@ int main()
         std::cout << "Game Time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - gameTime1).count() / 1000000 << " s" << std::endl;
 
         glfwTerminate();
-    }
-    catch (Engine::EngineException& baseException)
-    {
-        std::cout << std::endl;
-        std::cout << "ERROR: " << std::endl;
-        std::cout << baseException.errorName << std::endl;
-        std::cout << baseException.errorDescription << std::endl;
-        std::cout << "Stacktrace:\n" << baseException.stackTrace << std::endl;
-    }
-    return 0;
 }
 
 int SetupWindow()

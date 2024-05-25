@@ -37,17 +37,17 @@ void OnStartGame(int screenWidth, int screenHeight)
         Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
     }
 
-    TitleScreen::Start();
+    sceneManager->LoadScene<TitleScreen>();
 }
 
 void Update(float deltaTime)
 {
-    Game::Update(deltaTime);
+
 }
 
 void UpdateWithoutPause()
 {
-    Game::UpdateWithoutPause();
+
 }
 
 void OnEndGame()

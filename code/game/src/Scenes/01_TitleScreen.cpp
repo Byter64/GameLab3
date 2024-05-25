@@ -5,8 +5,7 @@ extern int windowWidth, windowHeight;
 
 void TitleScreen::CreateText(std::string text, int x, int y, int scale)
 {
-    Engine::Entity infoText = ecsSystem->CreateEntity();
-    entities.push_back(infoText);
+    Engine::Entity infoText = CreateEntity();
     Engine::Text& infoTextText = ecsSystem->AddComponent<Engine::Text>(infoText);
     infoTextText.scale = scale;
     infoTextText.position = {x, y};
@@ -45,11 +44,6 @@ void TitleScreen::OnButtonPress(void * doesntmatter)
 
 void TitleScreen::OnEnd()
 {
-    while(!entities.empty())
-    {
-        ecsSystem->RemoveEntity(entities.back());
-        entities.pop_back();
-    }
     Engine::Systems::inputSystem->Remove(button1);
     Engine::Systems::inputSystem->Remove(button2);
 }

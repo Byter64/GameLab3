@@ -146,7 +146,7 @@ std::pair<int, int> EnemyBehaviourSystem::FindWall(int startx, int starty, int d
     return std::make_pair(-1, -1);
 }
 
-/// This needs to be called (at least) once before the first call to Update
+/// This needs to be called (at least) once before the first call to OnUpdate
 void EnemyBehaviourSystem::UpdateGraph()
 {
     Engine::Entity entity = Systems::dungeonSystem->GetDungeonEntity();

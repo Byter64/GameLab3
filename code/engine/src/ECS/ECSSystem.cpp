@@ -69,4 +69,9 @@ namespace Engine
     {
         entityManager->RemoveAllEntities();
     }
+
+    bool ECSSystem::IsEntityActive(Entity entity)
+    {
+        return entityManager->IsEntityActive(entity);
+    }
 } // Engine

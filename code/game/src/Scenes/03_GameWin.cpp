@@ -1,12 +1,12 @@
 #include "Scenes/03_GameWin.h"
 #include "Scenes/01_TitleScreen.h"
+#include "Scenes/02_Game.h"
 
 extern int windowWidth, windowHeight;
 
 void GameWin::CreateText(std::string text, int x, int y, int scale)
 {
-    Engine::Entity infoText = ecsSystem->CreateEntity();
-    entities.push_back(infoText);
+    Engine::Entity infoText = CreateEntity();
     Engine::Text& infoTextText = ecsSystem->AddComponent<Engine::Text>(infoText);
     infoTextText.scale = scale;
     infoTextText.position = {x, y};
@@ -15,8 +15,12 @@ void GameWin::CreateText(std::string text, int x, int y, int scale)
     infoTextText.SetText(text);
 }
 
-void GameWin::Start(int score)
+void GameWin::OnStart()
 {
+    int score = Game::scoreP1;
+    if(Game::scoreP2 != -1)
+        score += Game::scoreP2;
+
     CreateText("Congratulation you won the game", windowWidth / 2, windowHeight / 2, 5);
     CreateText("You reached " + std::to_string(score) + " points", windowWidth / 2, 300, 9);
     CreateText("Try to be faster for a higher score!", windowWidth / 2, windowHeight / 2 + 200, 3);
@@ -40,17 +44,11 @@ void GameWin::Start(int score)
 
 void GameWin::OnButtonPress(void * doesntmatter)
 {
-    End();
-    TitleScreen::Start();
+    sceneManager->LoadScene<TitleScreen>();
 }
 
-void GameWin::End()
+void GameWin::OnEnd()
 {
-    while(!entities.empty())
-    {
-        ecsSystem->RemoveEntity(entities.back());
-        entities.pop_back();
-    }
     Engine::Systems::inputSystem->Remove(button1);
     Engine::Systems::inputSystem->Remove(button2);
 }

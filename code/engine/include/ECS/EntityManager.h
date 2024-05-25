@@ -27,6 +27,7 @@ namespace Engine
         Entity CreateEntity();
         void SetSignature(Entity entity, Signature signature);
         Signature GetSignature(Entity entity);
+        bool IsEntityActive(Entity entity);
         void RemoveEntity(Entity entity);
         void RemoveAllEntities();
         void DestroyEntity(Entity entity);
