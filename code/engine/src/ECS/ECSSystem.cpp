@@ -64,4 +64,9 @@ namespace Engine
         Signature signature = entityManager->GetSignature(entity);
         return signature[componentType];
     }
+
+    void ECSSystem::RemoveAllEntities()
+    {
+        entityManager->RemoveAllEntities();
+    }
 } // Engine

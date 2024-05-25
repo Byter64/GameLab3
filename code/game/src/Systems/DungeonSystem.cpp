@@ -334,6 +334,7 @@ bool DungeonSystem::IsDungeonCleared()
 
 void DungeonSystem::OnEnemyDestroyed(Engine::Entity enemy)
 {
+    if(!Game::isRunning) return;
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeEnemies.remove(enemy);
 }

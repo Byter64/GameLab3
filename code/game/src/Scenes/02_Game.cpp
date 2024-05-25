@@ -133,6 +133,7 @@ void Game::Start()
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-12.0f),0,0));
 
     Systems::dungeonSystem->Initialize();
+    isRunning = true;
 }
 
 void Game::PauseGame(void*)
@@ -151,6 +152,7 @@ void Game::PauseGame(void*)
 
 void Game::Update(float deltaTime)
 {
+    if(!isRunning) return;
     Systems::playerControllerSystem->Update(deltaTime);
     Systems::hubertusSystem->Update(deltaTime);
     Systems::kindredSpiritSystem->Update(deltaTime);
@@ -169,6 +171,7 @@ void Game::Update(float deltaTime)
 
 void Game::UpdateWithoutPause()
 {
+    if(!isRunning) return;
     if(!Engine::GetIsGamePaused()) return;
     float delta = Engine::Systems::timeManager->GetTimeSinceStartupWithoutPauses() - pauseStartTime;
     if(((int)delta) % 2 == 0)
@@ -202,4 +205,7 @@ void Game::End()
         ecsSystem->RemoveEntity(entities.back());
         entities.pop_back();
     }
+
+    ecsSystem->RemoveAllEntities();
+    isRunning = false;
 }

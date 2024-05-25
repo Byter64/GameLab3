@@ -3,13 +3,14 @@
 #include <queue>
 #include <array>
 #include <set>
+#include <deque>
 
 namespace Engine
 {
 
     class EntityManager
     {
-        std::queue<Entity> pooledEntities; //Unused entities that are available for usage
+        std::deque<Entity> pooledEntities; //Unused entities that are available for usage
         std::array<Signature, Entity::MAX_ENTITIES> signatures;
         std::uint32_t activeEntitiesCount; //Currently used entities (these are always inside the pool)
         std::uint32_t pooledEntitiesCount; //Currently used AND unused entities
@@ -27,6 +28,7 @@ namespace Engine
         void SetSignature(Entity entity, Signature signature);
         Signature GetSignature(Entity entity);
         void RemoveEntity(Entity entity);
+        void RemoveAllEntities();
         void DestroyEntity(Entity entity);
         void DeletePurgatory();
     };

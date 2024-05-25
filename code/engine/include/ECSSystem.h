@@ -21,6 +21,9 @@ namespace Engine
         Entity CreateEntity();
         void DestroyEntity(Entity entity);
         void RemoveEntity(Entity entity);
+
+        ///WARNING: all variables with entity IDs will be invalid after calling this function. New onse need to be inquired with "CreateEntity()"
+        void RemoveAllEntities();
         void DeletePurgatory();
 
         template<typename T>

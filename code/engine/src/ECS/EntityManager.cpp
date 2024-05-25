@@ -21,7 +21,7 @@ namespace Engine
 
         for(int i = 0; i < amount; i++)
         {
-            pooledEntities.push(pooledEntitiesCount + i);
+            pooledEntities.push_back(pooledEntitiesCount + i);
         }
         pooledEntitiesCount += amount;
 
@@ -39,7 +39,7 @@ namespace Engine
         activeEntitiesCount++;
 
         Entity id = pooledEntities.front();
-        pooledEntities.pop();
+        pooledEntities.pop_front();
         
         return id;
     }
@@ -68,7 +68,7 @@ namespace Engine
         if(entity == Entity::INVALID_ENTITY_ID) return;
 
         signatures[entity.id].reset();
-        pooledEntities.push(entity);
+        pooledEntities.push_back(entity);
         activeEntitiesCount--;
     }
 
@@ -79,5 +79,15 @@ namespace Engine
             ecsSystem->DestroyEntity(entity);
         }
         purgatory.clear();
+    }
+
+    void EntityManager::RemoveAllEntities()
+    {
+        for(int i = 0; i < pooledEntitiesCount; i++)
+        {
+            auto iter = std::find(pooledEntities.begin(), pooledEntities.end(), i);
+            if(iter == pooledEntities.end())
+                RemoveEntity(i);
+        }
     }
 } // Engine

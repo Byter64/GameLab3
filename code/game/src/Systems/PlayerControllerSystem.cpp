@@ -2,20 +2,19 @@
 #include <iostream>
 #include "ECSExtension.h"
 #include "Systems/PlayerControllerSystem.h"
+#include "Scenes/02_Game.h"
+#include "Scenes/04_GameLost.h"
+
+extern std::pair<Engine::Entity, Engine::Entity> players;
 
 void PlayerControllerSystem::EntityAdded(Engine::Entity entity)
 {
-    alivePlayers++;
+
 }
 
 void PlayerControllerSystem::EntityRemoved(Engine::Entity entity)
 {
-    alivePlayers--;
-    if(alivePlayers == 0)
-    {
-        std::cout << "All players dead" << std::endl;
-        Engine::EndGame();
-    }
+
 }
 
 void PlayerControllerSystem::Update(float deltaTime)
@@ -53,7 +52,7 @@ void PlayerControllerSystem::ResolveCollisions(Engine::Entity playerEntity, floa
             controller.AddScore(ecsSystem->GetComponent<Loot>(other).score);
             RemoveEntityWithChildren(other);
         }
-            //If bullet was hit
+        //If bullet was hit
         else if (ecsSystem->HasComponent<Bullet>(other) && ecsSystem->GetComponent<Bullet>(other).spawner != playerEntity)
         {
             //If bullet is shot from player
@@ -217,5 +216,10 @@ void PlayerControllerSystem::CheckIfAllPlayerDead()
     }
 
     std::cout << "You are so good. You all died. Game over now" << std::endl;
-    Engine::EndGame();
+    if(players.second == Engine::Entity::INVALID_ENTITY_ID)
+        GameLost::Start(ecsSystem->GetComponent<PlayerController>(players.first).GetScore());
+    else
+        GameLost::Start(ecsSystem->GetComponent<PlayerController>(players.first).GetScore(),
+                        ecsSystem->GetComponent<PlayerController>(players.second).GetScore());
+    Game::End();
 }
