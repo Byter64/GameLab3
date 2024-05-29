@@ -185,18 +185,18 @@ void DungeonSystem::ReadInEnemies(std::string file)
         {
             Engine::Transform &transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
             std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            transform1.SetTranslation(glm::vec3(ToGlobal(pos1), 0.0f));
+            transform1.SetTranslation(glm::vec3(ToGlobal(pos1), -0.5f));
             i += 2;
         }
         else if (symbol == MULTI_KEYWORD && players.second != Engine::Entity::INVALID_ENTITY_ID)
         {
             Engine::Transform &transform1 = ecsSystem->GetComponent<Engine::Transform>(players.first);
             std::pair<int, int> pos1 = {std::stoi(filecontent[i + 1]), std::stoi(filecontent[i + 2])};
-            transform1.SetTranslation(glm::vec3(ToGlobal(pos1), 0.0f));
+            transform1.SetTranslation(glm::vec3(ToGlobal(pos1), -0.5f));
 
             Engine::Transform &transform2 = ecsSystem->GetComponent<Engine::Transform>(players.second);
             std::pair<int, int> pos2 = {std::stoi(filecontent[i + 3]), std::stoi(filecontent[i + 4])};
-            transform2.SetTranslation(glm::vec3(ToGlobal(pos2), 0.0f));
+            transform2.SetTranslation(glm::vec3(ToGlobal(pos2), -0.5f));
             i += 4;
         }
         else if (symbol == MIRROR_KEYWORD)

@@ -44,6 +44,7 @@ void Game::OnStart()
 
     Engine::Entity player = CreateEntity(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
     ecsSystem->GetComponent<Engine::Name>(player) = "Player 1";
+    ecsSystem->GetComponent<Engine::Transform>(player).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     //Controller
     controller.uiTextScore = playerUI;
@@ -71,7 +72,7 @@ void Game::OnStart()
     Engine::Systems::inputSystem->Add(pause);
 
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.9f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.6f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health"), Defines::Int("Player1_Health")});
     players.first = player;
@@ -93,6 +94,7 @@ void Game::OnStart()
 
         Engine::Entity player2 = CreateEntity(Engine::Files::ASSETS / "Graphics\\Models\\Player2.glb")[0];
         ecsSystem->GetComponent<Engine::Name>(player2) = "Player 2";
+        ecsSystem->GetComponent<Engine::Transform>(player2).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         PlayerController &controller2 = ecsSystem->AddComponent<PlayerController>(player2);
         controller2.uiTextScore = playerUI2;
         controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
