@@ -203,6 +203,8 @@ Engine::Entity Game::CreateWall(glm::vec3 position)
     {
         wallPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Wall.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(wallPrefab).SetScale(glm::vec3(0.0f));
+        ecsSystem->GetComponent<Engine::Transform>(wallPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
+        ecsSystem->GetComponent<Engine::MeshRenderer>(wallPrefab).primitiveData[0].material.baseColorFactor *= 0.7f;
     }
 
     Engine::Entity wall = ECSHelper::CopyEntity(wallPrefab);
