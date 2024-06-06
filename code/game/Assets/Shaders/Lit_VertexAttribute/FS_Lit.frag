@@ -20,5 +20,5 @@ layout(location = 0)out vec4 fragmentColor;
 
 void main()
 {
-    fragmentColor = texture(baseColor, texCoord) * baseColorFactor;
-}
+    fragmentColor = vec4(pow(vertexColor, vec3(1.0/2)), 1.0) * baseColorFactor * texture(baseColor, texCoord);
+} 

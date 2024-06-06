@@ -138,6 +138,7 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/include/Scene.h
         ../engine/src/SceneManager.cpp
         ../engine/include/SceneManager.h
+        ../engine/src/ECS/Components/MeshRenderer.h.cpp
 )
 
 set(EXE_FILE Game)

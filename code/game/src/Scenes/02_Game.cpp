@@ -5,6 +5,9 @@
 extern std::pair<Engine::Entity, Engine::Entity> players;
 extern int windowWidth, windowHeight;
 
+GLuint litVertexShader;
+GLuint litFragmentShader;
+
 void Game::OnStart()
 {
     pauseText = CreateEntity();
@@ -121,6 +124,9 @@ void Game::OnStart()
         players.second = player2;
     }
 
+    litVertexShader = Engine::Systems::renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Lit_VertexAttribute/VS_Lit.vert", GL_VERTEX_SHADER);
+    litFragmentShader = Engine::Systems::renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Lit_VertexAttribute/FS_Lit.frag", GL_FRAGMENT_SHADER);
+
     Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,0,-30));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-30.0f),0,0));
@@ -128,6 +134,16 @@ void Game::OnStart()
     Systems::dungeonSystem->Initialize();
     Game::scoreP1 = -1;
     Game::scoreP2 = -1;
+
+    auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus.glb")[0];
+    ecsSystem->GetComponent<Engine::Transform>(test).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),glm::radians(-60.0f),glm::radians(-90.0f))));
+    ecsSystem->GetComponent<Engine::Transform>(test).SetScale(glm::vec3(1.0f));
+    ecsSystem->GetComponent<Engine::Transform>(test).SetTranslation({0, -14, 23});
+
+    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
+        renderer->SetVertexShader(litVertexShader);
+    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
+        renderer->SetFragmentShader(litFragmentShader);
 }
 
 void Game::PauseGame(void* game)
@@ -322,6 +338,11 @@ Engine::Entity Game::CreateHubertus(std::pair<int, int> startPos)
         hubertusPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(hubertusPrefab).SetScale(glm::vec3(0.0f));
+
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(hubertusPrefab))
+            renderer->SetVertexShader(litVertexShader);
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(hubertusPrefab))
+            renderer->SetFragmentShader(litFragmentShader);
     }
     Engine::Entity enemy = ECSHelper::CopyEntity(hubertusPrefab, true);
     AddEntity(enemy);

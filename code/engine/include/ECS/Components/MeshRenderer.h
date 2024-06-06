@@ -18,6 +18,9 @@ namespace Engine
 
         MeshRenderer() = default;
 
+        void SetFragmentShader(GLuint fragmentShader);
+        void SetVertexShader(GLuint vertexShader);
+
         struct PrimitiveData
         {
             Shader shader;
