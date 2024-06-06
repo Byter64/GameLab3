@@ -134,16 +134,6 @@ void Game::OnStart()
     Systems::dungeonSystem->Initialize();
     Game::scoreP1 = -1;
     Game::scoreP2 = -1;
-
-    auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Hubertus.glb")[0];
-    ecsSystem->GetComponent<Engine::Transform>(test).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),glm::radians(-60.0f),glm::radians(-90.0f))));
-    ecsSystem->GetComponent<Engine::Transform>(test).SetScale(glm::vec3(1.0f));
-    ecsSystem->GetComponent<Engine::Transform>(test).SetTranslation({0, -14, 23});
-
-    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
-        renderer->SetVertexShader(litVertexShader);
-    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
-        renderer->SetFragmentShader(litFragmentShader);
 }
 
 void Game::PauseGame(void* game)
