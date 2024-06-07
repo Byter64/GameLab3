@@ -49,6 +49,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
 
     if(!behaviour.isActive) return;
 
+    std::cout << duke.teleportCounter << std::endl;
     switch (duke.phase)
     {
         case Duke::PhaseStart_TeleportStart:
@@ -161,7 +162,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             {
                 duke.timer = Duke::teleportTime / 2;
                 duke.phase = Duke::Tp_TeleportStart;
-                if(duke.teleportCounter % 20 == 19)
+                if(duke.teleportCounter % 15 == 14)
                     duke.phase = Duke::Tp_TeleportTowardsPlayerStart;
             }
         }
@@ -246,13 +247,6 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             duke.timer = Duke::teleportTime / 2;
             duke.phase = Duke::Tp_TeleportEnd;
             Engine::Entity player = Engine::Entity::INVALID_ENTITY_ID;
-            auto newStartCondition = [&](glm::vec3 startGlobalPos) {
-                return ((player = Systems::enemyBehaviourSystem->FindPlayerInSight(startGlobalPos, Duke::maxDistanceToPlayerAttacking)) == players.first &&
-                                glm::length(ecsSystem->GetComponent<Engine::Transform>(players.first).GetGlobalTranslation() - startGlobalPos) >= 1.0f) ||
-                       (players.second != Engine::Entity::INVALID_ENTITY_ID &&
-                               (player = Systems::enemyBehaviourSystem->FindPlayerInSight(startGlobalPos, Duke::maxDistanceToPlayerAttacking)) == players.second &&
-                               glm::length(ecsSystem->GetComponent<Engine::Transform>(players.second).GetGlobalTranslation() - startGlobalPos) >= 1.0f);
-            };
 
             auto newTargetCondition = [&](glm::vec3 targetGlobalPos) {
                 glm::vec3 playerPos = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation();
@@ -262,11 +256,22 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 return x1 == x2;
             };
             bool hasWorked = false;
-                    while(!hasWorked)
-                    {
-                        FindNewPosition(duke.movement, newStartCondition);
-                        hasWorked = FindNewTargetPosition(duke.movement, newTargetCondition);
-                    }
+            int tries = 10;
+            while(!hasWorked && tries > 0)
+            {
+                if(players.second == Engine::Entity::INVALID_ENTITY_ID)
+                    player = players.first;
+                else
+                    player = (rand() % 2) == 0 ? players.first : players.second;
+                 FindNewPositionCloseToPlayer(duke.movement, ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation());
+                 hasWorked = FindNewTargetPosition(duke.movement, newTargetCondition);
+                 tries--;
+            }
+            if(!hasWorked)
+            {
+                std::cout << "Duke could not find a valid position to attack the player" << std::endl;
+                duke.phase = Duke::Tp_TeleportStart;
+            }
             break;
     }
 }
@@ -287,6 +292,22 @@ void DukeSystem::FindNewPosition(Movement &movement, std::function<bool(glm::vec
     movement.oldTargetNode = startDungeonPos;
     movement.currentPos = startGlobalPos;
 }
+
+void DukeSystem::FindNewPositionCloseToPlayer(Movement &movement, glm::vec3 playerPos)
+{
+    std::pair<int, int> startDungeonPos;
+    glm::vec3 startGlobalPos = glm::vec3(Systems::dungeonSystem->ToGlobal(startDungeonPos), 0);
+    std::pair<int, int> dungeonPlayerPos = Systems::dungeonSystem->ToDungeon(playerPos);
+    do
+    {
+        startDungeonPos = Systems::dungeonSystem->GetRandomFreePos(dungeonPlayerPos.first, dungeonPlayerPos.second, Duke::maxDistanceToPlayerAttacking, 20);
+        startGlobalPos = glm::vec3(Systems::dungeonSystem->ToGlobal(startDungeonPos), 0);
+    } while (startDungeonPos == std::make_pair(-1, -1));
+
+    movement.oldTargetNode = startDungeonPos;
+    movement.currentPos = startGlobalPos;
+}
+
 
 /// This is ugly as hell ~The author
 /// \param movement

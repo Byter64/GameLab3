@@ -413,15 +413,25 @@ std::pair<int, int> DungeonSystem::ToDungeon(glm::vec3 globalPos)
     return {glm::round(globalPos.x - originOffset.x), glm::round(originOffset.y - globalPos.y)};
 }
 
-std::pair<int, int> DungeonSystem::GetRandomFreePos()
+std::pair<int, int> DungeonSystem::GetRandomFreePos(int startX, int startY, int radius, int tries)
 {
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
+    if(startX == INT_MIN)
+        startX = dungeon.wallMap.size() / 2;
+    if (startY == INT_MIN)
+        startY = dungeon.wallMap[0].size() / 2;
+    if (radius == INT_MIN)
+        radius = (std::min(dungeon.wallMap.size(), dungeon.wallMap[0].size())) / 2;
+
     int x, y;
-    while(true)
+    while(tries > 0)
     {
-        x = rand() % dungeon.wallMap.size();
-        y = rand() % dungeon.wallMap[0].size();
-        if(!dungeon.wallMap[x][y])
+        x = startX + (rand() % (radius * 2 + 1) - radius);
+        y = startY + (rand() % (radius * 2 + 1) - radius);
+
+        if(!IsWall({x, y}))
             return {x, y};
+        tries--;
     }
+    return {-1, -1};
 }

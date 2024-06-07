@@ -9,6 +9,7 @@ class DukeSystem : public Engine::System
     void EntityRemoved(Engine::Entity entity);
 
     void FindNewPosition(Movement &movement, std::function<bool(glm::vec3 startGlobalPos)> condition);
+    void FindNewPositionCloseToPlayer(Movement &movement, glm::vec3 playerPos);
     bool FindNewTargetPosition(Movement &movement, std::function<bool(glm::vec3 startGlobalPos)> condition);
 
     void Update(Engine::Entity entity, float deltaTime);
