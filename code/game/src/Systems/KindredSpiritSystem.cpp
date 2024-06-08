@@ -37,7 +37,7 @@ void KindredSpiritSystem::EntityRemoved(Engine::Entity entity)
     KindredSpirit& kindredSpirit = ecsSystem->GetComponent<KindredSpirit>(entity);
     if(kindredSpirit.isMainEntity)
     {
-        glm::vec4 colour = Engine::GetComponentsInChildren<Engine::MeshRenderer>(entity)[0]->primitiveData[0].material.baseColorFactor;
+        glm::vec4 colour = kindredSpirit.colour;
         KindredSpirit::colours.push(colour);
     }
 }

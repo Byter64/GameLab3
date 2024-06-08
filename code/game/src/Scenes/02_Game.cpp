@@ -414,6 +414,7 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
 
 
     glm::vec4 colour = KindredSpirit::colours.front();
+    kindredSpirit1.colour = colour;
     KindredSpirit::colours.pop();
     for(Engine::MeshRenderer* renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(enemy1))
         for(Engine::MeshRenderer::PrimitiveData &primitive : renderer->primitiveData)

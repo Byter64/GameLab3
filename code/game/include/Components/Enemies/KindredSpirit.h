@@ -12,6 +12,7 @@ struct KindredSpirit
     std::chrono::time_point<std::chrono::system_clock> timeWhenLastHit;
     std::pair<int, int> startPos = {1, 1};
     Movement movement;
+    glm::vec4 colour;
 
     Engine::Entity other;
 };
