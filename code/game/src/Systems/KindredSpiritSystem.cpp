@@ -22,14 +22,15 @@ void KindredSpiritSystem::EntityAdded(Engine::Entity entity)
 
     if(kindredSpirit.isMainEntity)
     {
-        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos), 0));
+        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos), HEIGHT));
         std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(kindredSpirit.startPos.first, kindredSpirit.startPos.second);
         std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
         Systems::enemyBehaviourSystem->SetTarget(kindredSpirit.movement, kindredSpirit.startPos, target);
         kindredSpirit.movement.currentPos = Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos);
     }
     else
-        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos) * -1.0f, 0));
+        transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(kindredSpirit.startPos) * -1.0f, HEIGHT));
+
 }
 
 void KindredSpiritSystem::EntityRemoved(Engine::Entity entity)
@@ -53,7 +54,7 @@ void KindredSpiritSystem::Update(Engine::Entity entity, float deltaTime)
     if(kindredSpirit.isMainEntity)
     {
         Systems::enemyBehaviourSystem->MoveRandomly(kindredSpirit.movement, kindredSpirit.speed * deltaTime);
-        transform.SetTranslation(glm::vec3(kindredSpirit.movement.currentPos, -0.5f));
+        transform.SetTranslation(glm::vec3(kindredSpirit.movement.currentPos, HEIGHT));
 
         float angle = glm::atan(kindredSpirit.movement.direction.y, kindredSpirit.movement.direction.x);
         angle /= glm::radians(90.0f);
@@ -65,12 +66,10 @@ void KindredSpiritSystem::Update(Engine::Entity entity, float deltaTime)
     {
         Engine::Transform &mainTransform = ecsSystem->GetComponent<Engine::Transform>(kindredSpirit.other);
 
-        //TODO: BUG: Kindredspirit position ist falsch gesetzt
-        //TODO: BUG: Boss kann nicht getroffen werden
         glm::vec3 pos = mainTransform.GetTranslation() * -1.0f;
         pos.z = mainTransform.GetTranslation().z;
         transform.SetTranslation(pos);
-        transform.SetRotation(mainTransform.GetRotation() * glm::quat(glm::vec3(0, 0, glm::radians((180.0f)))));
+        transform.SetRotation(mainTransform.GetRotation() * glm::quat(glm::vec3(0, glm::radians(180.0f), 0)));
     }
 }
 

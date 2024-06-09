@@ -49,7 +49,6 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
 
     if(!behaviour.isActive) return;
 
-    std::cout << duke.teleportCounter << std::endl;
     switch (duke.phase)
     {
         case Duke::PhaseStart_TeleportStart:

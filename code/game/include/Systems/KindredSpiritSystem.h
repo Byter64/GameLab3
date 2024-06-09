@@ -3,7 +3,7 @@
 
 class KindredSpiritSystem : public Engine::System
 {
-
+    static inline float HEIGHT = -0.5f;
     void EntityAdded(Engine::Entity entity);
     void EntityRemoved(Engine::Entity entity);
 

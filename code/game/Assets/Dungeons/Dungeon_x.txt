@@ -1,0 +1,7 @@
+SinglePlayer 12 21
+TwoPlayers 11 20  13 20
+Mirror 0 1
+
+Duke 12 2
+
+KindredSpirit 12 3
