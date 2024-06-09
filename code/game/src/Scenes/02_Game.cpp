@@ -386,6 +386,9 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
     kindredSpirit1.startPos = startPos;
     kindredSpirit1.isMainEntity = true;
     kindredSpirit1.speed = Defines::Float("KindredSpirit_Speed");
+    glm::vec4 colour = KindredSpirit::colours.front();
+    kindredSpirit1.colour = colour;
+    KindredSpirit::colours.pop();
     ecsSystem->AddComponent<Health>(enemy1, Health{Defines::Int("KindredSpirit_Health"), Defines::Int("KindredSpirit_Health")});
 
     Engine::Entity enemy2 = CopyEntity(kindredSpiritPrefab, true);
@@ -413,9 +416,6 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
     ecsSystem->AddComponent(enemy2, kindredSpirit2);
 
 
-    glm::vec4 colour = KindredSpirit::colours.front();
-    kindredSpirit1.colour = colour;
-    KindredSpirit::colours.pop();
     for(Engine::MeshRenderer* renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(enemy1))
         for(Engine::MeshRenderer::PrimitiveData &primitive : renderer->primitiveData)
             primitive.material.baseColorFactor = colour;

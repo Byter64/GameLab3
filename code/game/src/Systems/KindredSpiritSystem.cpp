@@ -42,7 +42,6 @@ void KindredSpiritSystem::EntityRemoved(Engine::Entity entity)
     }
 }
 
-
 void KindredSpiritSystem::Update(Engine::Entity entity, float deltaTime)
 {
     EnemyBehaviour &behaviour = ecsSystem->GetComponent<EnemyBehaviour>(entity);
@@ -54,7 +53,7 @@ void KindredSpiritSystem::Update(Engine::Entity entity, float deltaTime)
     if(kindredSpirit.isMainEntity)
     {
         Systems::enemyBehaviourSystem->MoveRandomly(kindredSpirit.movement, kindredSpirit.speed * deltaTime);
-        transform.SetTranslation(glm::vec3(kindredSpirit.movement.currentPos, 0));
+        transform.SetTranslation(glm::vec3(kindredSpirit.movement.currentPos, -0.5f));
 
         float angle = glm::atan(kindredSpirit.movement.direction.y, kindredSpirit.movement.direction.x);
         angle /= glm::radians(90.0f);
@@ -66,7 +65,11 @@ void KindredSpiritSystem::Update(Engine::Entity entity, float deltaTime)
     {
         Engine::Transform &mainTransform = ecsSystem->GetComponent<Engine::Transform>(kindredSpirit.other);
 
-        transform.SetTranslation(mainTransform.GetTranslation() * -1.0f);
+        //TODO: BUG: Kindredspirit position ist falsch gesetzt
+        //TODO: BUG: Boss kann nicht getroffen werden
+        glm::vec3 pos = mainTransform.GetTranslation() * -1.0f;
+        pos.z = mainTransform.GetTranslation().z;
+        transform.SetTranslation(pos);
         transform.SetRotation(mainTransform.GetRotation() * glm::quat(glm::vec3(0, 0, glm::radians((180.0f)))));
     }
 }

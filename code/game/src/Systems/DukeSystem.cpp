@@ -347,6 +347,12 @@ bool DukeSystem::FindNewTargetPosition(Movement &movement, std::function<bool(gl
             float maxPossibleDistance = glm::length(target - start);
             maxPossibleDistance = std::min(maxPossibleDistance, Duke::maxWalkDistance);
 
+            //Dirty fix, please improve
+            if(maxPossibleDistance - Duke::minWalkDistance + 1 < 1)
+            {
+                paths.remove(*iter);
+                continue;
+            }
             int distance = rand() % (int)(maxPossibleDistance - Duke::minWalkDistance + 1);
             distance += Duke::minWalkDistance;
 
