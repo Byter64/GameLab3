@@ -504,7 +504,7 @@ Engine::Entity Game::CreateDuke(std::pair<int, int> startPos)
 
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
-    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(1.0f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
     Duke duke;
