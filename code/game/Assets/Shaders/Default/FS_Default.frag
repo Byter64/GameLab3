@@ -21,4 +21,6 @@ layout(location = 0)out vec4 fragmentColor;
 void main()
 {
     fragmentColor = texture(baseColor, texCoord) * baseColorFactor;
+    if(fragmentColor.w < 0.5)
+        discard;
 }
