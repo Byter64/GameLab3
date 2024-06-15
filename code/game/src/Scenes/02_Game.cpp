@@ -135,7 +135,8 @@ void Game::OnStart()
     Game::scoreP1 = -1;
     Game::scoreP2 = -1;
 
-    /*auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi.glb")[0];
+    /*
+    auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Jewel_new.glb")[0];
     ecsSystem->GetComponent<Engine::Transform>(test).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),glm::radians(-60.0f),glm::radians(-90.0f))));
     ecsSystem->GetComponent<Engine::Transform>(test).SetScale(glm::vec3(1.0f));
     ecsSystem->GetComponent<Engine::Transform>(test).SetTranslation({0, -14, 23});
@@ -289,7 +290,7 @@ Engine::Entity Game::CreateLoot(glm::vec3 position, int points)
 {
     if(!ecsSystem->IsEntityActive(lootPrefab))
     {
-        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel.glb", "Loot_")[0];
+        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_new.glb", "Loot_")[0];
         ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetScale(glm::vec3(0));
         ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f),0,0)));
         ecsSystem->AddComponent<Loot>(lootPrefab, {0});
