@@ -115,9 +115,8 @@ namespace Engine
     {
         if(animations.count(name) == 0)
         {
-            std::string message = "animation \"" + name + "\" does not exist";
-            std::cout << message << std::endl;
-            throw std::runtime_error(message);
+            std::string message = "The animation \"" + name + "\" does not exist";
+            throw EngineException("Unknown Animation", message);
         }
 
         Animator& animator = ecsSystem->AddComponent<Animator>(entity);
