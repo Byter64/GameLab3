@@ -514,9 +514,11 @@ namespace Engine
         {
             char infoLog[512];
             glGetShaderInfoLog(shader, 512, nullptr, infoLog);
-            std::cout << "Error in shader " << pathToShader << ": \n";
-            std::cout << infoLog;
-            exit(-1);
+            std::string message = "Error in shader ";
+            message += pathToShader.string();
+            message +=  ": \n";
+            message += infoLog;
+            throw EngineException("Shader Could not Be Compiled", message);
         }
         return shader;
     }
@@ -550,10 +552,11 @@ namespace Engine
         if (!hasSuccessfullyCompiled)
         {
             char infoLog[512];
-            std::cout << "Error during linking a shader program. Good luck finding out, what the problem is. Here is a tip: \n";
             glGetProgramInfoLog(shaderProgram, 512, nullptr, infoLog);
-            std::cout << infoLog;
-            exit(-1);
+            std::string message = "Error during linking a shader program. Good luck finding out, what the problem is. Here is a tip:";
+            message +=  "\n";
+            message += infoLog;
+            throw EngineException("Shader Could not Be Linked", message);
         }
 
         shader.id = shaderProgram;
