@@ -141,7 +141,7 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
         controller.wasFirePushed = false;
         if(controller.activeBullets != controller.maxBullets)
         {
-            sceneManager->GetActiveScene<Game>().CreateBullet(playerEntity, transform.GetGlobalTranslation(),
+            sceneManager->GetActiveScene<Game>().CreateBullet(playerEntity, transform.GetGlobalTranslation() + glm::vec3{0, 0, 0.5f},
                                     Miscellaneous::RoundTo8Directions(controller.lookDirection), controller.bulletSpeed);
             controller.activeBullets++;
         }

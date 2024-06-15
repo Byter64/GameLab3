@@ -52,7 +52,7 @@ void HubertusSystem::Update(Engine::Entity entity, float deltaTime)
     std::mt19937 gen(rd());
     if(hubertus.shootTimer <= 0)
     {
-        sceneManager->GetActiveScene<Game>().CreateBullet(entity, transform.GetGlobalTranslation(), glm::vec3(hubertus.movement.direction, 0), hubertus.bulletSpeed);
+        sceneManager->GetActiveScene<Game>().CreateBullet(entity, transform.GetGlobalTranslation() + glm::vec3{0, 0, 0.5f}, glm::vec3(hubertus.movement.direction, 0), hubertus.bulletSpeed);
         std::uniform_real_distribution<> distr(shootIntervalRange.first, shootIntervalRange.second);
         hubertus.shootTimer = distr(gen);
     }

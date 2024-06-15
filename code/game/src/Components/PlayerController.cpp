@@ -153,6 +153,7 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
     movementInput = other.movementInput;
     lookDirection = other.lookDirection;
     wasFirePushed = other.wasFirePushed;
+    activeBullets = other.activeBullets;
     speed = other.speed;
 
     hasScoreChanged = true;
