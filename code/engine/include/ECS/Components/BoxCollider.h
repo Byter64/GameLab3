@@ -5,6 +5,8 @@
 
 namespace Engine
 {
+    //IMPORTANT: This collider class is not able to rotate. Thus, be careful when rotating your entity
+    //as the collider will not rotate with it. (scale works though)
     struct BoxCollider
     {
         bool isStatic = false; //Does the object of this collider stay in place or does it change position?

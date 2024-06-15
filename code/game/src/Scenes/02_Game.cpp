@@ -77,6 +77,7 @@ void Game::OnStart()
     ecsSystem->AddComponent<Engine::BoxCollider>(player, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(player).size = glm::vec3(0.6f);
     ecsSystem->GetComponent<Engine::BoxCollider>(player).layer = static_cast<unsigned char>(CollisionLayer::Player);
+    ecsSystem->GetComponent<Engine::BoxCollider>(player).position = glm::vec3(0, 0, 0.5f);
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health"), Defines::Int("Player1_Health")});
     players.first = player;
 
@@ -120,6 +121,7 @@ void Game::OnStart()
         ecsSystem->AddComponent<Engine::BoxCollider>(player2, Engine::BoxCollider());
         ecsSystem->GetComponent<Engine::BoxCollider>(player2).size = glm::vec3(0.9f);
         ecsSystem->GetComponent<Engine::BoxCollider>(player2).layer = static_cast<unsigned char>(CollisionLayer::Player);
+        ecsSystem->GetComponent<Engine::BoxCollider>(player2).position = glm::vec3(0, 0, 0.5f);
         ecsSystem->AddComponent<Health>(player2, Health{Defines::Int("Player2_Health"), Defines::Int("Player2_Health")});
         players.second = player2;
     }
@@ -351,6 +353,7 @@ Engine::Entity Game::CreateHubertus(std::pair<int, int> startPos)
 
     ecsSystem->GetComponent<Engine::Transform>(enemy).SetScale(glm::vec3(1.0f));
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).position = glm::vec3(0, 0, 0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.9f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
     EnemyBehaviour behaviour;
@@ -389,6 +392,7 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
     Engine::BoxCollider& coll1 = ecsSystem->GetComponent<Engine::BoxCollider>(enemy1);
     coll1.size = glm::vec3(0.5f);
     coll1.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
+    coll1.position = glm::vec3(0, 0, 0.5f);
 
     EnemyBehaviour behav1;
     behav1.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
@@ -411,6 +415,7 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
     Engine::BoxCollider& coll2 = ecsSystem->GetComponent<Engine::BoxCollider>(enemy2);
     coll2.size = glm::vec3(0.5f);
     coll2.layer = static_cast<unsigned char>(CollisionLayer::Enemy);
+    coll2.position = glm::vec3(0, 0, 0.5f);
 
     EnemyBehaviour behav2;
     behav2.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
@@ -459,6 +464,7 @@ Engine::Entity Game::CreateAssi(std::pair<int, int> startPos)
     ecsSystem->AddComponent<Engine::BoxCollider>(enemy, Engine::BoxCollider());
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).size = glm::vec3(0.5f);
     ecsSystem->GetComponent<Engine::BoxCollider>(enemy).layer = static_cast<unsigned char>(CollisionLayer::Enemy);
+    ecsSystem->GetComponent<Engine::BoxCollider>(enemy).position = glm::vec3(0, 0, 0.5f);
     EnemyBehaviour behaviour;
     behaviour.spawnTime = Engine::Systems::timeManager->GetTimeSinceStartup();
     ecsSystem->AddComponent(enemy, behaviour);
