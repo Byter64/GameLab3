@@ -83,6 +83,7 @@ void CuballSystem::Update(Engine::Entity entity, float deltaTime)
         cuball.movement.oldTargetNode = dungeonPos;
         cuball.movement.targetNode = target;
         cuball.movement.targetPos = Systems::dungeonSystem->ToGlobal(cuball.movement.targetNode);
+        cuball.movement.currentPos = transform.GetGlobalTranslation();
         cuball.movement.direction = glm::normalize(glm::vec2(cuball.movement.targetNode.first - cuball.movement.oldTargetNode.first, cuball.movement.targetNode.second - cuball.movement.oldTargetNode.second));
 
         cuball.phase = Cuball::Ball;
@@ -114,7 +115,6 @@ void CuballSystem::HandleDamage(Engine::Entity entity, Engine::Entity other)
             cuball.speed = Defines::Float("Cuball_Ball_Speed");
 
             Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
-            Engine::Transform& parent = ecsSystem->GetComponent<Engine::Transform>(cuball.rotationParent);
             glm::vec3 pos = transform.GetGlobalTranslation();
             transform.SetParent(nullptr);
             transform.SetRotation(glm::quat({glm::radians(90.0f), 0, 0}));
