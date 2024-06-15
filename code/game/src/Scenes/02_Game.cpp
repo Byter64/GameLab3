@@ -378,7 +378,7 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
         for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(kindredSpiritPrefab))
             renderer->SetVertexShader(litVertexShader);
         for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(kindredSpiritPrefab))
-            renderer->SetFragmentShader(litFragmentShader);
+            renderer->SetFragmentShader(Engine::Systems::renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Lit_VertexAttribute/FS_Lit_NoAlpha.frag", GL_FRAGMENT_SHADER));
     }
 
     Engine::Entity enemy1 = ECSHelper::CopyEntity(kindredSpiritPrefab, true);
