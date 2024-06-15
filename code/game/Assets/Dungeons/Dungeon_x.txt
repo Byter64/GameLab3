@@ -3,3 +3,6 @@ TwoPlayers 11 20  13 20
 Mirror 0 1
 
 Duke 12 2
+
+Assi 13 2
+Assi 11 2

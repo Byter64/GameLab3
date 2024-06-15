@@ -135,10 +135,16 @@ void Game::OnStart()
     Game::scoreP1 = -1;
     Game::scoreP2 = -1;
 
-    //auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\KindredSpirits.glb")[0];
-    //ecsSystem->GetComponent<Engine::Transform>(test).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),glm::radians(-60.0f),glm::radians(-90.0f))));
-    //ecsSystem->GetComponent<Engine::Transform>(test).SetScale(glm::vec3(1.0f));
-    //ecsSystem->GetComponent<Engine::Transform>(test).SetTranslation({0, -14, 23});
+    /*auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi.glb")[0];
+    ecsSystem->GetComponent<Engine::Transform>(test).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),glm::radians(-60.0f),glm::radians(-90.0f))));
+    ecsSystem->GetComponent<Engine::Transform>(test).SetScale(glm::vec3(1.0f));
+    ecsSystem->GetComponent<Engine::Transform>(test).SetTranslation({0, -14, 23});
+
+    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
+        renderer->SetVertexShader(litVertexShader);
+    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
+        renderer->SetFragmentShader(litFragmentShader);
+        */
 }
 
 void Game::PauseGame(void* game)
@@ -367,6 +373,11 @@ std::pair<Engine::Entity, Engine::Entity> Game::CreateKindredSpirit(std::pair<in
         kindredSpiritPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\KindredSpirits.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
         ecsSystem->GetComponent<Engine::Transform>(kindredSpiritPrefab).SetScale(glm::vec3(0.0f));
+
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(kindredSpiritPrefab))
+            renderer->SetVertexShader(litVertexShader);
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(kindredSpiritPrefab))
+            renderer->SetFragmentShader(litFragmentShader);
     }
 
     Engine::Entity enemy1 = ECSHelper::CopyEntity(kindredSpiritPrefab, true);
@@ -434,6 +445,11 @@ Engine::Entity Game::CreateAssi(std::pair<int, int> startPos)
         assiPrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Assi.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(assiPrefab).SetScale(glm::vec3(0.0f));
+
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(assiPrefab))
+            renderer->SetVertexShader(litVertexShader);
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(assiPrefab))
+            renderer->SetFragmentShader(litFragmentShader);
     }
     Engine::Entity enemy = ECSHelper::CopyEntity(assiPrefab, true);
     AddEntity(enemy);

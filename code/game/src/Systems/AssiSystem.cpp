@@ -16,7 +16,7 @@ void AssiSystem::EntityAdded(Engine::Entity entity)
     Assi& assi = ecsSystem->GetComponent<Assi>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
-    transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(assi.startPos), 0));
+    transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(assi.startPos), -0.5f));
 
     std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(assi.startPos.first, assi.startPos.second);
     std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
@@ -63,7 +63,7 @@ void AssiSystem::Update(Engine::Entity entity, float deltaTime)
             assi.idleTimer = distr(gen);
 
             assi.movement.currentPos = glm::round(assi.movement.currentPos);
-            transform.SetTranslation(glm::vec3(assi.movement.currentPos, 0));
+            transform.SetTranslation(glm::vec3(assi.movement.currentPos, -0.5f));
         }
         else
         {
@@ -113,13 +113,7 @@ void AssiSystem::Move(Engine::Entity entity, float deltaTime)
         glm::vec3 direction = ecsSystem->GetComponent<Engine::Transform>(player).GetGlobalTranslation() - transform.GetGlobalTranslation();
         if(direction != glm::vec3(0)) direction = glm::normalize(direction);
         Systems::enemyBehaviourSystem->MoveStraight(assi.movement, direction, assi.speed * deltaTime);
-        transform.SetTranslation(glm::vec3(assi.movement.currentPos, 0));
-
-        float angle = glm::atan(direction.y, direction.x);
-        angle /= glm::radians(90.0f);
-        angle = glm::round(angle);
-        angle *= glm::radians(90.0f);
-        transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, angle)));
+        transform.SetTranslation(glm::vec3(assi.movement.currentPos, -0.5f));
     }
     else if (assi.isPlayerInSight)
     {
@@ -133,8 +127,13 @@ void AssiSystem::Move(Engine::Entity entity, float deltaTime)
     else
     {
         Systems::enemyBehaviourSystem->MoveRandomly(assi.movement, assi.speed * deltaTime);
-        transform.SetTranslation(glm::vec3(assi.movement.currentPos, 0));
+        transform.SetTranslation(glm::vec3(assi.movement.currentPos, -0.5f));
     }
+    float angle = glm::atan(assi.movement.direction.y, assi.movement.direction.x);
+    angle /= glm::radians(90.0f);
+    angle = glm::round(angle);
+    angle *= glm::radians(90.0f);
+    transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, angle)));
 }
 
 void AssiSystem::Update(float deltaTime)
