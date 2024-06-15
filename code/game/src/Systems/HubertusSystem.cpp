@@ -18,7 +18,7 @@ void HubertusSystem::EntityAdded(Engine::Entity entity)
     Hubertus &hubertus = ecsSystem->GetComponent<Hubertus>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
-    transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(hubertus.startPos), 0));
+    transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(hubertus.startPos), -0.5f));
 
     std::vector<std::pair<int,int>> targetNodes = Systems::enemyBehaviourSystem->FindNodes(hubertus.startPos.first, hubertus.startPos.second);
     std::pair<int, int> target = targetNodes[rand() % targetNodes.size()];
@@ -72,7 +72,7 @@ void HubertusSystem::Update(Engine::Entity entity, float deltaTime)
     if(hubertus.isMoving)
     {
         Systems::enemyBehaviourSystem->MoveRandomly(hubertus.movement, hubertus.speed * deltaTime);
-        transform.SetTranslation(glm::vec3(hubertus.movement.currentPos, 0));
+        transform.SetTranslation(glm::vec3(hubertus.movement.currentPos, -0.5f));
         float angle = glm::atan(hubertus.movement.direction.y, hubertus.movement.direction.x);
         angle /= glm::radians(90.0f);
         angle = glm::round(angle);
