@@ -290,15 +290,44 @@ Engine::Entity Game::CreateBullet(Engine::Entity spawner, glm::vec3 position, gl
 
 Engine::Entity Game::CreateLoot(glm::vec3 position, int points)
 {
-    if(!ecsSystem->IsEntityActive(lootPrefab))
+    static Engine::Entity jewel1, jewel2, jewel3, jewel4;
+    if(!ecsSystem->IsEntityActive(jewelAnimationPrefab))
     {
-        lootPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_new.glb", "Loot_")[0];
-        ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetScale(glm::vec3(0));
-        ecsSystem->GetComponent<Engine::Transform>(lootPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f),0,0)));
-        ecsSystem->AddComponent<Loot>(lootPrefab, {0});
+        jewelAnimationPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_Old.glb", "Loot_")[0];
+        ecsSystem->GetComponent<Engine::Transform>(jewelAnimationPrefab).SetScale(glm::vec3(0));
+        ecsSystem->GetComponent<Engine::Transform>(jewelAnimationPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
+        ecsSystem->AddComponent<Loot>(jewelAnimationPrefab, {0});
+
+        jewel1 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_1.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(jewel1).SetScale(glm::vec3(0));
+        ecsSystem->GetComponent<Engine::Transform>(jewel1).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
+        ecsSystem->AddComponent<Loot>(jewel1, {0});
+
+        jewel2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_2.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(jewel2).SetScale(glm::vec3(0));
+        ecsSystem->GetComponent<Engine::Transform>(jewel2).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
+        ecsSystem->AddComponent<Loot>(jewel2, {0});
+
+        jewel3 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_3.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(jewel3).SetScale(glm::vec3(0));
+        ecsSystem->GetComponent<Engine::Transform>(jewel3).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
+        ecsSystem->AddComponent<Loot>(jewel3, {0});
+
+        jewel4 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_4.glb")[0];
+        ecsSystem->GetComponent<Engine::Transform>(jewel4).SetScale(glm::vec3(0));
+        ecsSystem->GetComponent<Engine::Transform>(jewel4).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
+        ecsSystem->AddComponent<Loot>(jewel4, {0});
     }
 
-    Engine::Entity loot = ECSHelper::CopyEntity(lootPrefab);
+    Engine::Entity loot;
+    if(points > 560)
+        loot = ECSHelper::CopyEntity(jewel4);
+    else if(points > 380)
+        loot = ECSHelper::CopyEntity(jewel3);
+    else if(points > 280)
+        loot = ECSHelper::CopyEntity(jewel2);
+    else
+        loot = ECSHelper::CopyEntity(jewel1);
     AddEntity(loot);
 
     ecsSystem->GetComponent<Engine::Transform>(loot).SetScale(glm::vec3(1));

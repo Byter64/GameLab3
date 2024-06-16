@@ -6,7 +6,7 @@ class Game : public Engine::Scene
     Engine::Entity wallPrefab = Engine::Entity::INVALID_ENTITY_ID;
     Engine::Entity breakableWallPrefab = Engine::Entity::INVALID_ENTITY_ID;
     Engine::Entity bulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
-    Engine::Entity lootPrefab = Engine::Entity::INVALID_ENTITY_ID;
+    Engine::Entity jewelAnimationPrefab = Engine::Entity::INVALID_ENTITY_ID;
     Engine::Entity elevatorPrefab = Engine::Entity::INVALID_ENTITY_ID;
     Engine::Entity hubertusPrefab = Engine::Entity::INVALID_ENTITY_ID;
     Engine::Entity kindredSpiritPrefab = Engine::Entity::INVALID_ENTITY_ID;

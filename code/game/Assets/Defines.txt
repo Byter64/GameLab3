@@ -25,7 +25,7 @@ Hubertus_WalkDuration_Max = 30.0
 Hubertus_ShootInterval_Min = 1.0
 Hubertus_ShootInterval_Max = 6.0
 
-KindredSpirit_Score = 200
+KindredSpirit_Score = 300
 KindredSpirit_Speed = 2.9
 KindredSpirit_Health = 1
 KindredSpirit_TimeTolerance = 2 /*How much time can pass betwenn both being hit */
@@ -47,7 +47,7 @@ Cuball_Ball_BulletSpeed = 4.0
 
 Duke_Score = 5
 Duke_Speed = 5.0
-Duke_Health = 4 /*Please dont change this. */
+Duke_Health = 4 /*Please dont change this. You will make somebody very sad if you do*/
 Duke_BulletSpeed = 10.0
 Duke_MinDistanceToPlayer = 3.0
 Duke_MinDistanceToPlayerSpawning = 10.0
