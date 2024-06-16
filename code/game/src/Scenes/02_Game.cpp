@@ -271,7 +271,7 @@ Engine::Entity Game::CreateBullet(Engine::Entity spawner, glm::vec3 position, gl
     Engine::Entity entity = ECSHelper::CopyEntity(bulletPrefab);
     AddEntity(entity);
 
-    ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.2f));
+    ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(1.0f));
     ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(position);
     ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
 
@@ -280,7 +280,7 @@ Engine::Entity Game::CreateBullet(Engine::Entity spawner, glm::vec3 position, gl
     bullet.spawner = spawner;
 
     Engine::BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(entity);
-    collider.size = glm::vec3(1, 1, 1);
+    collider.size = glm::vec3(0.2f, 0.2f, 0.2f);
     collider.isStatic = false;
     collider.layer = static_cast<unsigned char>(CollisionLayer::Bullet);
     collider.collisions.clear();
