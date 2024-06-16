@@ -288,6 +288,39 @@ Engine::Entity Game::CreateBullet(Engine::Entity spawner, glm::vec3 position, gl
     return entity;
 }
 
+Engine::Entity Game::CreateBulletCuball(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed)
+{
+    static Engine::Entity cuballBulletPrefab;
+    if(!ecsSystem->IsEntityActive(cuballBulletPrefab))
+    {
+        cuballBulletPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet_Cuball.glb", "Cuball_")[0];
+        ecsSystem->GetComponent<Engine::Transform>(cuballBulletPrefab).SetScale(glm::vec3(0.0f));
+    }
+
+    Engine::Entity entity = ECSHelper::CopyEntity(cuballBulletPrefab);
+    AddEntity(entity);
+    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
+    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
+    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
+    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
+
+    ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(1.0f));
+    ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(position);
+    ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
+
+    Bullet& bullet = ecsSystem->AddComponent<Bullet>(entity);
+    bullet.velocity = glm::normalize(direction) * speed;
+    bullet.spawner = spawner;
+
+    Engine::BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(entity);
+    collider.size = glm::vec3(0.2f, 0.2f, 0.2f);
+    collider.isStatic = false;
+    collider.layer = static_cast<unsigned char>(CollisionLayer::Bullet);
+    collider.collisions.clear();
+
+    return entity;
+}
+
 Engine::Entity Game::CreateLoot(glm::vec3 position, int points)
 {
     static Engine::Entity jewel1, jewel2, jewel3, jewel4;
