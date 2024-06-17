@@ -178,8 +178,7 @@ void Game::OnUpdate(float deltaTime)
     Systems::bulletSystem->Update(deltaTime);
     Systems::destroyerSystem->Update();
 
-    //Number of components needs to be 1 for lootie because the prefab will always exist
-    if(Systems::dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 1)
+    if(Systems::dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 0)
         Systems::dungeonSystem->LoadNextDungeon();
 }
 
@@ -326,27 +325,22 @@ Engine::Entity Game::CreateLoot(glm::vec3 position, int points)
         jewelAnimationPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_Old.glb", "Loot_")[0];
         ecsSystem->GetComponent<Engine::Transform>(jewelAnimationPrefab).SetScale(glm::vec3(0));
         ecsSystem->GetComponent<Engine::Transform>(jewelAnimationPrefab).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
-        ecsSystem->AddComponent<Loot>(jewelAnimationPrefab, {0});
 
         jewel1 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_1.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(jewel1).SetScale(glm::vec3(0));
-        ecsSystem->GetComponent<Engine::Transform>(jewel1).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
-        ecsSystem->AddComponent<Loot>(jewel1, {0});
+        ecsSystem->GetComponent<Engine::Transform>(jewel1).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
 
         jewel2 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_2.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(jewel2).SetScale(glm::vec3(0));
-        ecsSystem->GetComponent<Engine::Transform>(jewel2).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
-        ecsSystem->AddComponent<Loot>(jewel2, {0});
+        ecsSystem->GetComponent<Engine::Transform>(jewel2).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
 
         jewel3 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_3.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(jewel3).SetScale(glm::vec3(0));
-        ecsSystem->GetComponent<Engine::Transform>(jewel3).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
-        ecsSystem->AddComponent<Loot>(jewel3, {0});
+        ecsSystem->GetComponent<Engine::Transform>(jewel3).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
 
         jewel4 = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Jewel_4.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(jewel4).SetScale(glm::vec3(0));
-        ecsSystem->GetComponent<Engine::Transform>(jewel4).SetRotation(glm::quat(glm::vec3(glm::radians(22.5f), 0, 0)));
-        ecsSystem->AddComponent<Loot>(jewel4, {0});
+        ecsSystem->GetComponent<Engine::Transform>(jewel4).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, 0)));
     }
 
     Engine::Entity loot;
@@ -362,7 +356,7 @@ Engine::Entity Game::CreateLoot(glm::vec3 position, int points)
 
     ecsSystem->GetComponent<Engine::Transform>(loot).SetScale(glm::vec3(1));
     ecsSystem->GetComponent<Engine::Transform>(loot).SetTranslation(position);
-    ecsSystem->GetComponent<Loot>(loot).score = points;
+    ecsSystem->AddComponent<Loot>(loot, {points});
 
     Engine::BoxCollider& collider = ecsSystem->AddComponent<Engine::BoxCollider>(loot);
     collider.size = glm::vec3(1,1, 1000);

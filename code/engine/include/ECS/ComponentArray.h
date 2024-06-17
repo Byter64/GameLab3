@@ -22,6 +22,7 @@ namespace Engine
         //Component data is default initialized, when using this AddComponent overload
         T& AddComponent(Entity entity)
         {
+            std::string debug = typeid(T).name();
             if(entityToIndex.find(entity.id) != entityToIndex.end())
             {
                 std::string message{"A component of type \""};
@@ -43,6 +44,7 @@ namespace Engine
 
         void AddComponent(Entity entity, T component)
         {
+            std::string debug = typeid(T).name();
             if(entityToIndex.find(entity.id) != entityToIndex.end())
             {
                 std::string message{"A component of type \""};
@@ -80,7 +82,7 @@ namespace Engine
             indexToEntity[entityIndex] = lastEntity.id;
 
             entityToIndex.erase(entity.id);
-            indexToEntity.erase(lastIndex);
+             indexToEntity.erase(lastIndex);
 
             size--;
         }

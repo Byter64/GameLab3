@@ -2,5 +2,4 @@ SinglePlayer 12 21
 TwoPlayers 11 20  13 20
 Mirror 0 1
 
-Duke 12 2
-Cuball 12 3
+Hubertus 12 2
