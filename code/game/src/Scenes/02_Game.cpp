@@ -288,9 +288,9 @@ Engine::Entity Game::CreateBullet(Engine::Entity spawner, glm::vec3 position, gl
     return entity;
 }
 
-Engine::Entity Game::CreateBulletCuball(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed)
+Engine::Entity Game::CreateBulletCuball(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed, float animationSpeed)
 {
-    static Engine::Entity cuballBulletPrefab;
+    static Engine::Entity cuballBulletPrefab = Engine::Entity::INVALID_ENTITY_ID;
     if(!ecsSystem->IsEntityActive(cuballBulletPrefab))
     {
         cuballBulletPrefab = Engine::ImportGLTF(Engine::Files::ASSETS / "Graphics\\Models\\Bullet_Cuball.glb", "Cuball_")[0];
@@ -299,12 +299,9 @@ Engine::Entity Game::CreateBulletCuball(Engine::Entity spawner, glm::vec3 positi
 
     Engine::Entity entity = ECSHelper::CopyEntity(cuballBulletPrefab);
     AddEntity(entity);
-    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
-    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
-    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
-    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_SphereAction", true);
+    Engine::Systems::animationSystem->PlayAnimation(entity, "Cuball_BulletWobbling", true, 0.0f, animationSpeed);
 
-    ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(1.0f));
+    ecsSystem->GetComponent<Engine::Transform>(entity).SetScale(glm::vec3(0.3f));
     ecsSystem->GetComponent<Engine::Transform>(entity).SetTranslation(position);
     ecsSystem->GetComponent<Engine::Transform>(entity).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::atan(direction.y, direction.x) + glm::radians(90.0f))));
 
