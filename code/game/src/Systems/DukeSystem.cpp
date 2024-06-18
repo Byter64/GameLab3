@@ -154,7 +154,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             if(duke.canShoot && normalizedDistance >= Duke::shootTime)
             {
                 duke.canShoot = false;
-                sceneManager->GetActiveScene<Game>().CreateBullet(entity, transform.GetGlobalTranslation(), glm::vec3(duke.movement.direction, 0), duke.bulletSpeed);
+                sceneManager->GetActiveScene<Game>().CreateBulletEnemy(entity, transform.GetGlobalTranslation(), glm::vec3(duke.movement.direction, 0), duke.bulletSpeed);
             }
 
             if (newDistance > oldDistance)

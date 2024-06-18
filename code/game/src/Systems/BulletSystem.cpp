@@ -33,5 +33,13 @@ void BulletSystem::Update(float deltaTime)
         }
 
         transform.AddTranslation(glm::vec3(bullet.velocity, 0) * deltaTime);
+
+        if(bullet.isSprite)
+        {
+            glm::quat rot = Engine::Systems::renderSystem->camera.GetRotation();
+            rot = glm::inverse(rot);
+            rot *= glm::quat(glm::vec3(glm::radians(90.0f), 0.0f, 0.0f));
+            transform.SetRotation(rot);
+        }
     }
 }

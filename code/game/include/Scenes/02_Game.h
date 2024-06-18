@@ -31,6 +31,7 @@ public:
     Engine::Entity CreateWall(glm::vec3 position);
     Engine::Entity CreateBreakableWall(glm::vec3 position);
     Engine::Entity CreateBullet(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed = 4.0f);
+    Engine::Entity CreateBulletEnemy(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed = 4.0f);
     Engine::Entity CreateBulletCuball(Engine::Entity spawner, glm::vec3 position, glm::vec3 direction, float speed = 4.0f, float animationSpeed = 1.0f);
     Engine::Entity CreateLoot(glm::vec3 position, int points);
     Engine::Entity CreateElevator(glm::vec3 position, Engine::Entity spawnedEnemy);
