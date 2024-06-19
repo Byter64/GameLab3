@@ -141,6 +141,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/ECS/Components/MeshRenderer.h.cpp
         include/HighScore.h
         src/HighScore.cpp
+        src/Keyboard.cpp
+        include/Keyboard.h
 )
 
 set(EXE_FILE Game)

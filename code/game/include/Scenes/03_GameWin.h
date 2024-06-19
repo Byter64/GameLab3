@@ -8,6 +8,7 @@ class GameWin : public Engine::Scene
     static void OnButtonPress(void * doesntmatter);
 public:
     void CreateText(std::string text, int x, int y, int scale);
+    Engine::Entity CreateInputText(std::string startText, int x, int y, int scale);
     void OnStart() override;
     void OnEnd() override;
 };
