@@ -15,11 +15,28 @@ void TitleScreen::CreateText(std::string text, int x, int y, int scale)
     infoTextText.SetText(text);
 }
 
+void TitleScreen::PrintScores()
+{
+    std::vector<HighScore> scores = HighScoreManager::ReadHighScores();
+
+    CreateText(std::to_string(1) + ".", windowWidth * 2 / 5 - 250, windowHeight / 2 + 190 , 6);
+    CreateText(std::to_string(scores[0].score), windowWidth * 2 / 5, windowHeight / 2 + 190, 6);
+    CreateText(scores[0].teamName, windowWidth * 3 / 5, windowHeight / 2 + 190, 6);
+
+    for(int i = 1; i < scores.size(); i++)
+    {
+        CreateText(std::to_string(i + 1) + ".", windowWidth * 2 / 5 - 250, windowHeight / 2 + 200 + i * 50, 3);
+        CreateText(std::to_string(scores[i].score), windowWidth * 2 / 5, windowHeight / 2 + 200 + i * 50, 3);
+        CreateText(scores[i].teamName, windowWidth * 3 / 5, windowHeight / 2 + 200+ i * 50, 3);
+    }
+}
+
 void TitleScreen::OnStart()
 {
-    CreateText("Press any button to start", windowWidth / 2, windowHeight / 2, 5);
     CreateText("My Cool Game Lab III Game", windowWidth / 2, 300, 9);
-    CreateText("Here would be the highscores if there were any", windowWidth / 2, windowHeight / 2 + 200, 3);
+    CreateText("Press any button to start", windowWidth / 2, windowHeight / 2, 5);
+
+    PrintScores();
 
     button1 = std::make_shared<Engine::InputActionButton>("Any button");
     button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
