@@ -124,8 +124,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/Systems/DukeSystem.cpp
         include/Systems/DukeSystem.h
         src/Systems.cpp
-        src/HighScore.cpp
-        include/HighScore.h
+        src/HighScoreManager.cpp
+        include/HighScoreManager.h
         src/Scenes/01_TitleScreen.cpp
         include/Scenes/01_TitleScreen.h
         src/Scenes/02_Game.cpp
@@ -139,6 +139,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/SceneManager.cpp
         ../engine/include/SceneManager.h
         ../engine/src/ECS/Components/MeshRenderer.h.cpp
+        include/HighScore.h
+        src/HighScore.cpp
 )
 
 set(EXE_FILE Game)

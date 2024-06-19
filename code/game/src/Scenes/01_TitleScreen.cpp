@@ -1,5 +1,6 @@
 #include "Scenes/01_TitleScreen.h"
 #include "Scenes/02_Game.h"
+#include "HighScoreManager.h"
 
 extern int windowWidth, windowHeight;
 

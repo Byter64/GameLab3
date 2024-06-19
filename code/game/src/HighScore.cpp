@@ -1,6 +1,6 @@
 #include "HighScore.h"
 
-std::vector<std::string> HighScore::ReadHighScores()
+bool HighScore::operator<(const HighScore &other)
 {
-    return std::vector<std::string>();
+    return score < other.score;
 }
