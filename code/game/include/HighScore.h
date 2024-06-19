@@ -1,9 +1,10 @@
 #pragma once
-#include "ECSHelper.h"
+#include <string>
 
-class HighScore
+struct HighScore
 {
-    static std::vector<std::string> ReadHighScores();
-    static int CheckIfHighScore(int score);
-    static bool TryWriteHighScore(int score);
+    int score;
+    std::string teamName;
+
+    bool operator<(HighScore const& other);
 };
