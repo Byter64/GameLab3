@@ -11,4 +11,5 @@ public:
     Engine::Entity CreateInputText(std::string startText, int x, int y, int scale);
     void OnStart() override;
     void OnEnd() override;
+    void OnUpdate(float deltaTime) override;
 };

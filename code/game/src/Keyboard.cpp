@@ -24,8 +24,10 @@ Keyboard::Keyboard(glm::vec2 position, int scale, int charsPerLine)
         for(int x = 0; x < charsPerLine; x++)
         {
             Engine::Entity key = ecsSystem->CreateEntity();
+            char ch = (char)('a' + i);
+            keys.insert({ch, key});
             Engine::Text& text = ecsSystem->AddComponent<Engine::Text>(key);
-            text.SetText(std::string("") + (char)('a' + i));
+            text.SetText(std::string("") + ch);
             text.scale = scale;
             text.position = position + glm::vec2(xPixel * x, yPixel * y);
             text.horizontalAlignment = Engine::Text::Center;
@@ -49,6 +51,11 @@ Keyboard::~Keyboard()
     Engine::Systems::inputSystem->Remove(right);
     Engine::Systems::inputSystem->Remove(enter);
     Engine::Systems::inputSystem->Remove(del);
+
+    for(auto pair: keys)
+        ecsSystem->RemoveEntity(pair.second);
+
+    ecsSystem->RemoveEntity(selector);
 }
 
 
