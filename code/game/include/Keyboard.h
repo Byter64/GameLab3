@@ -1,5 +1,5 @@
 #pragma once
-#include "ECSExtension.h"
+#include "Engine.h"
 
 class Keyboard
 {
@@ -34,6 +34,7 @@ public:
     ~Keyboard();
 
     std::string GetText();
+    void SetText(std::string text);
     void SetPos(int x, int y);
     void AddPos(int x, int y);
     void EnterChar();

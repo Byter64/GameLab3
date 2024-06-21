@@ -13,6 +13,11 @@ int windowWidth, windowHeight;
 
 void OnStartGame(int screenWidth, int screenHeight)
 {
+    for(int i = 0; i < GLFW_JOYSTICK_LAST && glfwJoystickPresent(i); i++)
+    {
+        std::cout << "Input" << std::to_string(i) << ": Detected " << glfwGetJoystickName(i) << (glfwJoystickIsGamepad(i) ? " as gamepad  " : "") << std::endl;
+    }
+
     windowWidth = screenWidth;
     windowHeight = screenHeight;
 
@@ -37,7 +42,7 @@ void OnStartGame(int screenWidth, int screenHeight)
         Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
     }
 
-    sceneManager->LoadScene<TitleScreen>();
+    sceneManager->LoadScene<GameLost>();
 }
 
 void Update(float deltaTime)

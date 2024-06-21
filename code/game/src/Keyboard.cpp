@@ -64,6 +64,12 @@ std::string Keyboard::GetText()
     return text;
 }
 
+void Keyboard::SetText(std::string text)
+{
+    this->text = text;
+}
+
+
 void Keyboard::SetPos(int x, int y)
 {
     selectorPos = x + y * charsPerLine;
