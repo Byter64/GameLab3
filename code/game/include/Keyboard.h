@@ -29,6 +29,8 @@ class Keyboard
     static void OnEnter(void* o);
     static void OnDelete(void* o);
 public:
+    int maxChars = 16;
+
     explicit Keyboard(glm::vec2 position, int scale = 3, int charsPerLine = 7);
     explicit Keyboard(std::string startText, int charsPerLine, glm::vec2 position, int scale = 3);
     ~Keyboard();

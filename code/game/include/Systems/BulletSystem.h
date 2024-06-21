@@ -7,4 +7,5 @@ class BulletSystem : public Engine::System
 
 public:
     void Update(float deltaTime);
+    void RemoveAllBullets();
 };

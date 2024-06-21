@@ -88,12 +88,14 @@ void Keyboard::AddPos(int x, int y)
 
 void Keyboard::EnterChar()
 {
-    text += (char)('a' + selectorPos);
+    if(text.size() >= maxChars) return;
+        text += (char)('a' + selectorPos);
 }
 
 void Keyboard::DeleteChar()
 {
-    text.pop_back();
+    if(!text.empty())
+        text.pop_back();
 }
 
 void Keyboard::SetUpAction(std::shared_ptr<Engine::InputActionButton> action)

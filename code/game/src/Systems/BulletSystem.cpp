@@ -43,3 +43,9 @@ void BulletSystem::Update(float deltaTime)
         }
     }
 }
+
+void BulletSystem::RemoveAllBullets()
+{
+    for(Engine::Entity entity : entities)
+        ecsSystem->RemoveEntity(entity);
+}

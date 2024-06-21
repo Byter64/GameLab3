@@ -34,7 +34,7 @@ void TitleScreen::PrintScores()
 void TitleScreen::OnStart()
 {
     CreateText("My Cool Game Lab III Game", windowWidth / 2, 300, 9);
-    CreateText("Press any button to start", windowWidth / 2, windowHeight / 2, 5);
+    CreateText("Press start or select button to start", windowWidth / 2, windowHeight / 2, 5);
 
     PrintScores();
 
