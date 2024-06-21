@@ -129,7 +129,7 @@ void Game::OnStart()
     litVertexShader = Engine::Systems::renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Lit_VertexAttribute/VS_Lit.vert", GL_VERTEX_SHADER);
     litFragmentShader = Engine::Systems::renderSystem->LoadShader(Engine::Files::ASSETS / "Shaders/Lit_VertexAttribute/FS_Lit.frag", GL_FRAGMENT_SHADER);
 
-    Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,0,-30));
+    Engine::Systems::renderSystem->camera.SetTranslation(glm::vec3(0,1,-25));
     Engine::Systems::renderSystem->camera.SetScale(glm::vec3(1));
     Engine::Systems::renderSystem->camera.SetRotation(glm::vec3(glm::radians(-30.0f),0,0));
 
