@@ -51,12 +51,12 @@ void Game::OnStart()
     PlayerController& controller = ecsSystem->AddComponent<PlayerController>(player);
     //Controller
     controller.uiTextScore = playerUI;
-    controller.AddMovementInput(GLFW_JOYSTICK_1, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
-    controller.AddMovementInput(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
-    controller.AddFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
-    controller.AddFireInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
-    controller.AddReviveInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
-    controller.AddReviveInput({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
+    controller.AddMovementInput(0, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
+    controller.AddMovementInput(0, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
+    controller.AddFireInput({0, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
+    controller.AddFireInput({0, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+    controller.AddReviveInput({0, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
+    controller.AddReviveInput({0, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
     //Keyboard
     controller.AddMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
     controller.AddFireInput(GLFW_KEY_SPACE);
@@ -69,8 +69,8 @@ void Game::OnStart()
     controller.respawnTime = Defines::Float("Player1_RespawnTime");
 
     pause = std::make_shared<Engine::InputActionButton>("Pause");
-    pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
-    pause->AddGamepadBinding({GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
+    pause->AddGamepadBinding({0, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
+    pause->AddGamepadBinding({0, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
     pause->AddOnStart(this, PauseGame);
     Engine::Systems::inputSystem->Add(pause);
 
@@ -81,7 +81,7 @@ void Game::OnStart()
     ecsSystem->AddComponent<Health>(player, Health{Defines::Int("Player1_Health"), Defines::Int("Player1_Health")});
     players.first = player;
 
-    if(glfwJoystickPresent(GLFW_JOYSTICK_2))
+    if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         Engine::Entity player2Text = CreateEntity();
         auto &player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
@@ -101,20 +101,20 @@ void Game::OnStart()
         ecsSystem->GetComponent<Engine::Transform>(player2).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         PlayerController &controller2 = ecsSystem->AddComponent<PlayerController>(player2);
         controller2.uiTextScore = playerUI2;
-        controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
-        controller2.AddMovementInput(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT,GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
-        controller2.AddFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
-        controller2.AddFireInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
-        controller2.AddReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
-        controller2.AddReviveInput({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
+        controller2.AddMovementInput(1, GLFW_GAMEPAD_AXIS_LEFT_X, GLFW_GAMEPAD_AXIS_LEFT_Y);
+        controller2.AddMovementInput(1, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT,GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
+        controller2.AddFireInput({1, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::Button});
+        controller2.AddFireInput({1, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::Button});
+        controller2.AddReviveInput({1, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::Button});
+        controller2.AddReviveInput({1, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::Button});
         controller2.speed = Defines::Float("Player2_Speed");
         controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
         controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");
         controller2.maxBullets = Defines::Int("Player2_MaxBullets");
         controller2.respawnTime = Defines::Float("Player2_RespawnTime");
 
-        pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
-        pause->AddGamepadBinding({GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
+        pause->AddGamepadBinding({1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button});
+        pause->AddGamepadBinding({1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button});
         Engine::Systems::inputSystem->Remove(pause);
         Engine::Systems::inputSystem->Add(pause);
 

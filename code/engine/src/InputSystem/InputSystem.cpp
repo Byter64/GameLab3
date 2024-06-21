@@ -145,4 +145,22 @@ namespace Engine
     {
         return gamePadStates[joystick].axes[axis];
     }
+
+    int InputSystem::FindJoystickID(int gamepadID)
+    {
+        int gamepads = 0;
+        for(int i = 0; i <  GLFW_JOYSTICK_LAST; i++)
+        {
+            if(glfwJoystickPresent(i) && glfwJoystickIsGamepad(i))
+                gamepads++;
+            if(gamepads - 1 == gamepadID)
+                return i;
+        }
+        return -1;
+    }
+
+    bool InputSystem::IsGamepadPresent(int gamepadID)
+    {
+        return FindJoystickID(gamepadID) != -1;
+    }
 } // Engine

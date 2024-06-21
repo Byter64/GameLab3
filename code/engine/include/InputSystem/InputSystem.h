@@ -34,6 +34,9 @@ namespace Engine
         ~InputSystem();
         void Update(unsigned char maxJoysticks = 2);
 
+        int FindJoystickID(int gamepadID);
+        bool IsGamepadPresent(int gamepadID);
+
         //Only call this AFTER all bindings have been assigned to inputAction
         //If bindings are assigned after the inputAction is added, the inputAction needs to be removed before added again
         void Add(std::shared_ptr<InputAction> inputAction);

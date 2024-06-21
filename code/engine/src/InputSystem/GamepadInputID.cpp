@@ -1,4 +1,5 @@
 #include "InputSystem/GamepadInputID.h"
+#include "Systems.h"
 
 bool Engine::GamepadInputID::operator<(Engine::GamepadInputID const &other) const
 {
@@ -21,9 +22,9 @@ bool Engine::GamepadInputID::operator!=(const Engine::GamepadInputID &other) con
     return !(*this == other);
 }
 
-Engine::GamepadInputID::GamepadInputID(unsigned char joystickID, unsigned char inputID, Engine::GamepadInputID::InputType inputType)
+Engine::GamepadInputID::GamepadInputID(unsigned char gamepadID, unsigned char inputID, Engine::GamepadInputID::InputType inputType)
 {
-    this->joystickID = joystickID;
+    this->joystickID = Systems::inputSystem->FindJoystickID(gamepadID);
     this->inputID = inputID;
     this->inputType = inputType;
 }

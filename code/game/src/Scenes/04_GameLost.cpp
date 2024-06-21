@@ -24,28 +24,28 @@ void GameLost::CreateText(std::string text, int x, int y, int scale)
 }
 
 
-Keyboard *GameLost::CreateKeyBoard(int joystickID, int x, int y)
+Keyboard *GameLost::CreateKeyBoard(int gamepadId, int x, int y)
 {
     Keyboard* keyboard = new Keyboard(glm::vec2(x, y));
     auto temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_DPAD_UP, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_UP, Engine::GamepadInputID::InputType::Button));
     keyboard->SetUpAction(temp);
     temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_DPAD_DOWN, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_DOWN, Engine::GamepadInputID::InputType::Button));
     keyboard->SetDownAction(temp);
     temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, Engine::GamepadInputID::InputType::Button));
     keyboard->SetLeftAction(temp);
     temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, Engine::GamepadInputID::InputType::Button));
     keyboard->SetRightAction(temp);
     temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::InputType::Button));
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::InputType::Button));
     keyboard->SetEnterAction(temp);
     temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::InputType::Button));
-    temp->AddGamepadBinding(Engine::GamepadInputID(joystickID, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::InputType::Button));
+    temp->AddGamepadBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::InputType::Button));
     keyboard->SetDeleteAction(temp);
 
     return keyboard;
@@ -54,7 +54,7 @@ Keyboard *GameLost::CreateKeyBoard(int joystickID, int x, int y)
 
 void GameLost::OnStart()
 {
-    if(glfwJoystickPresent(GLFW_JOYSTICK_2))
+    if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         const char *winner = Game::scoreP1 > Game::scoreP2 ? "player 1" : "player 2";
         CreateText((std::string) "Congratulation " + winner + " won the game", windowWidth / 2, 300, 6);
@@ -64,14 +64,14 @@ void GameLost::OnStart()
     CreateText("Player 1 reached " + std::to_string(Game::scoreP1) + " points", windowWidth / 2, 400, 4);
 
     button1 = std::make_shared<Engine::InputActionButton>("Any button");
-    button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
-    button1->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
+    button1->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
+    button1->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
     button1->AddKeyboardBinding(GLFW_KEY_ENTER);
     button1->AddOnEnd((void *) 0, OnButton1Press);
     Engine::Systems::inputSystem->Add(button1);
 
 
-    if(!glfwJoystickPresent(GLFW_JOYSTICK_2))
+    if(!Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         CreateText("Enter name: ", 640, 675,3);
         name1 = ecsSystem->CreateEntity();
@@ -81,14 +81,14 @@ void GameLost::OnStart()
         text.position = glm::vec2(785, 650);
         text.horizontalAlignment = Engine::Text::Left;
 
-        keyboard1 = CreateKeyBoard(GLFW_JOYSTICK_1, 800, 750);
+        keyboard1 = CreateKeyBoard(0, 800, 750);
     }
 
-    if(glfwJoystickPresent(GLFW_JOYSTICK_2))
+    if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         button2 = std::make_shared<Engine::InputActionButton>("Any button");
-        button2->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
-        button2->AddGamepadBinding(Engine::GamepadInputID(GLFW_JOYSTICK_2, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
+        button2->AddGamepadBinding(Engine::GamepadInputID(1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
+        button2->AddGamepadBinding(Engine::GamepadInputID(1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
         button2->AddKeyboardBinding(GLFW_KEY_ENTER);
         button2->AddOnEnd((void *) 0, OnButton2Press);
         Engine::Systems::inputSystem->Add(button2);
@@ -100,7 +100,7 @@ void GameLost::OnStart()
         text1.scale = 3;
         text1.position = glm::vec2(435, 750);
         text1.horizontalAlignment = Engine::Text::Left;
-        keyboard1 = CreateKeyBoard(GLFW_JOYSTICK_1, 450, 850);
+        keyboard1 = CreateKeyBoard(0, 450, 850);
 
         CreateText("P2, Enter name: ", 1250, 700,3);
         name2 = ecsSystem->CreateEntity();
@@ -109,7 +109,7 @@ void GameLost::OnStart()
         text2.scale = 3;
         text2.position = glm::vec2(1085, 750);
         text2.horizontalAlignment = Engine::Text::Left;
-        keyboard2 = CreateKeyBoard(GLFW_JOYSTICK_2, 1100, 850);
+        keyboard2 = CreateKeyBoard(1, 1100, 850);
     }
 }
 
@@ -123,10 +123,10 @@ void GameLost::OnButton1Press(void * doesntmatter)
     }
     else
     {
-        if(!glfwJoystickPresent(GLFW_JOYSTICK_2))
-            keyboard1 = CreateKeyBoard(GLFW_JOYSTICK_1, 800, 850);
+        if(!Engine::Systems::inputSystem->IsGamepadPresent(1))
+            keyboard1 = CreateKeyBoard(0, 800, 850);
         else
-            keyboard1 = CreateKeyBoard(GLFW_JOYSTICK_1, 450, 850);
+            keyboard1 = CreateKeyBoard(0, 450, 850);
 
         keyboard1->SetText(ecsSystem->GetComponent<Engine::Text>(name1).GetText());
     }
@@ -142,7 +142,7 @@ void GameLost::OnButton2Press(void * doesntmatter)
     }
     else
     {
-        keyboard2 = CreateKeyBoard(GLFW_JOYSTICK_2, 1100, 850);
+        keyboard2 = CreateKeyBoard(1, 1100, 850);
 
         keyboard2->SetText(ecsSystem->GetComponent<Engine::Text>(name2).GetText());
     }
@@ -154,7 +154,7 @@ void GameLost::OnEnd()
     Engine::Systems::inputSystem->Remove(button2);
 
     HighScoreManager::AddHighScore(Game::scoreP1, ecsSystem->GetComponent<Engine::Text>(name1).GetText());
-    if(glfwJoystickPresent(GLFW_JOYSTICK_2))
+    if(Engine::Systems::inputSystem->IsGamepadPresent(1))
         HighScoreManager::AddHighScore(Game::scoreP2, ecsSystem->GetComponent<Engine::Text>(name2).GetText());
 
     delete keyboard1;
