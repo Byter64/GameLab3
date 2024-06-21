@@ -36,11 +36,13 @@ void GameWin::OnStart()
     button1->AddOnEnd((void *) 0, OnButtonPress);
     Engine::Systems::inputSystem->Add(button1);
 
+
+    CreateText("Enter team name: ", 580, 675,3);
     teamName = ecsSystem->CreateEntity();
     AddEntity(teamName);
     Engine::Text& text = ecsSystem->AddComponent<Engine::Text>(teamName);
     text.scale = 3;
-    text.position = glm::vec2(800, 650);
+    text.position = glm::vec2(785, 650);
     text.horizontalAlignment = Engine::Text::Left;
 
     keyboard = new Keyboard(glm::vec2(800, 750));
