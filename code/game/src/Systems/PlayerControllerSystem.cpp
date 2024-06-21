@@ -135,6 +135,8 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
             movementInput = glm::normalize(controller.movementInput);
         transform.AddTranslation(movementInput * deltaTime * controller.speed);
         controller.lookDirection = movementInput;
+        glm::vec2 rot = Miscellaneous::RoundTo8Directions(movementInput);
+        transform.SetRotation(glm::vec3(glm::radians(90.0f),0 , glm::atan(rot.y, rot.x)));
     }
     if(controller.wasFirePushed)
     {
