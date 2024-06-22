@@ -78,6 +78,10 @@ namespace Engine
                         inputAction->Update(input);
             }
         }
+
+        for(auto& inputAction : inputActions)
+            inputAction->Update();
+
     }
 
     void InputSystem::_Add(std::shared_ptr<InputAction> inputAction)

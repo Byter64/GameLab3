@@ -36,6 +36,12 @@ namespace Engine
         * @param input The input that changed
         */
         virtual void Update(GamepadAxis& input) = 0;
+
+        /**
+        * Will be called by the InputSystem to update the state of this action.
+        * @param input The input that changed
+        */
+        virtual void Update() = 0;
     };
 
 } // Engine

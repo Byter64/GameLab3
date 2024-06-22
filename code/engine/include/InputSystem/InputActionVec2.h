@@ -42,6 +42,7 @@ namespace Engine
         glm::vec2 lastFloatInput{0};
         glm::vec2 lastIntInput{0};
         glm::vec2 lastInput{0};
+        glm::vec2 actualFloatInput{0};
         std::list<DirectionMap<int>> keyDirectionMaps;
         std::list<DirectionMap<GamepadButton>> gamepadDirectionMaps;
         std::list<std::pair<GamepadAxis, GamepadAxis>> axes;
@@ -73,5 +74,6 @@ namespace Engine
         void Update(int key) override;
         void Update(GamepadButton& button) override;
         void Update(GamepadAxis& input) override;
+        void Update() override;
     };
 } // Engine

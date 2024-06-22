@@ -167,28 +167,27 @@ namespace Engine
         UpdateFloat(value);
     }
 
-    void InputActionVec2::UpdateFloat(glm::vec2 value)
+    void InputActionVec2::Update()
     {
-        glm::vec2 direction = value - lastFloatInput;
+        glm::vec2 direction = actualFloatInput - lastFloatInput;
         direction.x = direction.x / ::abs(direction.x);
         direction.y = direction.y / ::abs(direction.y);
 
-        glm::vec2 newVal = lastFloatInput + direction * maxChange;
-        if (std::signbit(newVal.x - value.x) != std::signbit(lastFloatInput.x - value.x))
-            newVal.x = value.x;
-        if (std::signbit(newVal.y - value.y) != std::signbit(lastFloatInput.y - value.y))
-            newVal.y = value.y;
-        value = newVal;
+        glm::vec2 newInput = lastFloatInput + direction * maxChange;
+        if (std::signbit(newInput.x - actualFloatInput.x) != std::signbit(lastFloatInput.x - actualFloatInput.x))
+            newInput.x = actualFloatInput.x;
+        if (std::signbit(newInput.y - actualFloatInput.y) != std::signbit(lastFloatInput.y - actualFloatInput.y))
+            newInput.y = actualFloatInput.y;
 
         glm::vec2 oldDeadZoned, newDeadZoned;
         oldDeadZoned.x = glm::abs(lastInput.x) < deadzone ? 0.0f : lastInput.x;
         oldDeadZoned.y = glm::abs(lastInput.y) < deadzone ? 0.0f : lastInput.y;
-        newDeadZoned.x = glm::abs(value.x) < deadzone ? 0.0f : value.x;
-        newDeadZoned.y = glm::abs(value.y) < deadzone ? 0.0f : value.y;
+        newDeadZoned.x = glm::abs(newInput.x) < deadzone ? 0.0f : newInput.x;
+        newDeadZoned.y = glm::abs(newInput.y) < deadzone ? 0.0f : newInput.y;
         if (oldDeadZoned == newDeadZoned)
         {
-            lastFloatInput = value;
-            lastInput = value;
+            lastFloatInput = newInput;
+            lastInput = newInput;
             return;
         }
         //prioritise int inputs (i.e. d-pad) over joystick
@@ -206,8 +205,8 @@ namespace Engine
             {
                 pair.second(pair.first, newDeadZoned);
             }
-            lastFloatInput = value;
-            lastInput = value;
+            lastFloatInput = newInput;
+            lastInput = newInput;
             return;
         }
 
@@ -222,22 +221,28 @@ namespace Engine
             {
                 pair.second(pair.first, newDeadZoned);
             }
-            lastFloatInput = value;
-            lastInput = value;
+            lastFloatInput = newInput;
+            lastInput = newInput;
             return;
         }
 
-        //Check for value change of input
+            //Check for value change of input
         else if(newDeadZoned != oldDeadZoned)
         {
             for (auto pair: valueChangeCallbacks)
             {
                 pair.second(pair.first, newDeadZoned);
             }
-            lastFloatInput = value;
-            lastInput = value;
+            lastFloatInput = newInput;
+            lastInput = newInput;
             return;
         }
+    }
+
+    void InputActionVec2::UpdateFloat(glm::vec2 value)
+    {
+        //Events for floats are fired in regular Update
+        actualFloatInput = value;
     }
 
     void InputActionVec2::UpdateInt(glm::vec2 value)

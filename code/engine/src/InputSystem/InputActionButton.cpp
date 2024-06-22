@@ -85,4 +85,9 @@ namespace Engine
     {
 
     }
+
+    void InputActionButton::Update()
+    {
+
+    }
 } // Engine

@@ -29,6 +29,7 @@ namespace Engine
         void Update(int key) override;
         void Update(GamepadButton& input) override;
         void Update(GamepadAxis& input) override;
+        void Update() override;
     };
 
 } // Engine
