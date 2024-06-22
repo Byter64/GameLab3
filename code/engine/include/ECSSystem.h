@@ -17,6 +17,7 @@ namespace Engine
 
     public:
         void Init();
+        void Uninit();
 
         Entity CreateEntity();
         void DestroyEntity(Entity entity);

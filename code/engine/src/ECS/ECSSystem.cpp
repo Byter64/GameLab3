@@ -12,6 +12,13 @@ namespace Engine
         systemManager = std::make_unique<SystemManager>();
     }
 
+    void ECSSystem::Uninit()
+    {
+        systemManager.reset();
+        componentManager.reset();
+        entityManager.reset();
+;    }
+
     Entity ECSSystem::CreateEntity()
     {
         return entityManager->CreateEntity();

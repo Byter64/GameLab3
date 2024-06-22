@@ -100,7 +100,7 @@ void GameMain()
 
         OnEndGame();
         std::cout << "Game Time: " << std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - gameTime1).count() / 1000000 << " s" << std::endl;
-
+        ecsSystem->Uninit();
         glfwTerminate();
 }
 
