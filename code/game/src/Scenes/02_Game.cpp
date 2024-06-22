@@ -7,6 +7,7 @@ extern int windowWidth, windowHeight;
 
 GLuint litVertexShader;
 GLuint litFragmentShader;
+static Engine::Entity dungeonNumber;
 
 void Game::OnStart()
 {
@@ -21,13 +22,14 @@ void Game::OnStart()
     Engine::Entity playersText = CreateEntity();
     auto& playersUI = ecsSystem->AddComponent<Engine::Text>(playersText);
     playersUI.scale = 4;
-    playersUI.position = {890, 0};
+    playersUI.position = {768, 0};
+    playersUI.horizontalAlignment = Engine::Text::Center;
     playersUI.SetText("Both");
 
     Engine::Entity playersUIActualScore = CreateEntity();
     auto& playersTextUI = ecsSystem->AddComponent<Engine::Text>(playersUIActualScore);
     playersTextUI.scale = 4;
-    playersTextUI.position = {960, 80};
+    playersTextUI.position = {768, 80};
     playersTextUI.horizontalAlignment = Engine::Text::Center;
     Systems::playerControllerSystem->scoreUI = playersUIActualScore;
 
@@ -35,14 +37,29 @@ void Game::OnStart()
     Engine::Entity player1Text = CreateEntity();
     auto& player1UI = ecsSystem->AddComponent<Engine::Text>(player1Text);
     player1UI.scale = 4;
-    player1UI.position = {200, 0};
+    player1UI.position = {384, 0};
+    player1UI.horizontalAlignment = Engine::Text::Center;
     player1UI.SetText("Player 1");
 
     Engine::Entity playerUI = CreateEntity();
     auto& textUI = ecsSystem->AddComponent<Engine::Text>(playerUI);
     textUI.scale = 4;
-    textUI.position = {330, 80};
+    textUI.position = {384, 80};
     textUI.horizontalAlignment = Engine::Text::Center;
+
+
+    Engine::Entity dungeonText = CreateEntity();
+    auto& dungeonTextUI = ecsSystem->AddComponent<Engine::Text>(dungeonText);
+    dungeonTextUI.scale = 4;
+    dungeonTextUI.position = {1536, 0};
+    dungeonTextUI.horizontalAlignment = Engine::Text::Center;
+    dungeonTextUI.SetText("Dungeon");
+
+    dungeonNumber = CreateEntity();
+    auto& dungeonNumberUI = ecsSystem->AddComponent<Engine::Text>(dungeonNumber);
+    dungeonNumberUI.scale = 4;
+    dungeonNumberUI.position = {1536, 80};
+    dungeonNumberUI.horizontalAlignment = Engine::Text::Center;
 
 
     Engine::Entity player = CreateEntity(Engine::Files::ASSETS / "Graphics\\Models\\Player.glb")[0];
@@ -86,13 +103,14 @@ void Game::OnStart()
         Engine::Entity player2Text = CreateEntity();
         auto &player2UI = ecsSystem->AddComponent<Engine::Text>(player2Text);
         player2UI.scale = 4;
-        player2UI.position = {1400, 0};
+        player2UI.position = {1152, 0};
+        player2UI.horizontalAlignment = Engine::Text::Center;
         player2UI.SetText("Player 2");
 
         Engine::Entity playerUI2 = CreateEntity();
         auto &textUI2 = ecsSystem->AddComponent<Engine::Text>(playerUI2);
         textUI2.scale = 4;
-        textUI2.position = {1530, 80};
+        textUI2.position = {1152, 80};
         textUI2.horizontalAlignment = Engine::Text::Center;
 
 
@@ -136,18 +154,6 @@ void Game::OnStart()
     Systems::dungeonSystem->Initialize();
     Game::scoreP1 = -1;
     Game::scoreP2 = -1;
-
-    /*
-    auto test = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Jewel_new.glb")[0];
-    ecsSystem->GetComponent<Engine::Transform>(test).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),glm::radians(-60.0f),glm::radians(-90.0f))));
-    ecsSystem->GetComponent<Engine::Transform>(test).SetScale(glm::vec3(1.0f));
-    ecsSystem->GetComponent<Engine::Transform>(test).SetTranslation({0, -14, 23});
-
-    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
-        renderer->SetVertexShader(litVertexShader);
-    for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(test))
-        renderer->SetFragmentShader(litFragmentShader);
-        */
 }
 
 void Game::PauseGame(void* game)
@@ -180,6 +186,7 @@ void Game::OnUpdate(float deltaTime)
 
     if(Systems::dungeonSystem->IsDungeonCleared() && ecsSystem->GetNumberOfComponents<Loot>() == 0)
         Systems::dungeonSystem->LoadNextDungeon();
+    ecsSystem->GetComponent<Engine::Text>(dungeonNumber).SetText(std::to_string(ecsSystem->GetComponent<Dungeon>(Systems::dungeonSystem->GetDungeonEntity()).activeDungeonIndex));
 }
 
 void Game::OnUpdateWithoutPause()
