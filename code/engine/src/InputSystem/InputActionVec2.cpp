@@ -219,7 +219,6 @@ namespace Engine
         newDeadZoned.y = glm::abs(value.y) < deadzone ? 0.0f : value.y;
         oldDeadZoned.x = glm::abs(oldInput.x) < deadzone ? 0.0f : oldInput.x;
         oldDeadZoned.y = glm::abs(oldInput.y) < deadzone ? 0.0f : oldInput.y;
-        std::cout << this << ": " << newDeadZoned.x << " " << newDeadZoned.y << std::endl;
         if (oldDeadZoned == newDeadZoned)
         {
             oldInput = value;
