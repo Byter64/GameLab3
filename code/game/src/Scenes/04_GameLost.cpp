@@ -164,6 +164,6 @@ void GameLost::OnUpdate(float deltaTme)
     if(keyboard2 != nullptr)
         ecsSystem->GetComponent<Engine::Text>(name2).SetText(keyboard2->GetText());
 
-    if(isP1Ready && isP2Ready)
+    if(isP1Ready && (isP2Ready || !Engine::Systems::inputSystem->IsGamepadPresent(1)))
         sceneManager->LoadScene<TitleScreen>();
 }

@@ -131,6 +131,12 @@ namespace Engine
             list.remove(result->get());
         }
 
+        for(auto& pair : axisToInputActions)
+        {
+            std::list<InputAction*>& list = pair.second;
+            list.remove(result->get());
+        }
+
         if(result != inputActions.end())
         {
             std::shared_ptr<InputAction> action = *result;
