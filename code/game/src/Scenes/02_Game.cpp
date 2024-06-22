@@ -613,6 +613,12 @@ Engine::Entity Game::CreateDuke(std::pair<int, int> startPos)
         dukePrefab = Engine::ImportGLTF(Engine::Files::ASSETS/ "Graphics\\Models\\Duke.glb")[0];
         ecsSystem->GetComponent<Engine::Transform>(dukePrefab).SetRotation(glm::quat(glm::vec3(glm::radians(90.0f),0,0)));
         ecsSystem->GetComponent<Engine::Transform>(dukePrefab).SetScale(glm::vec3(0.0f));
+
+        Engine::Entity cubeForm = ecsSystem->GetEntity(*ecsSystem->GetComponent<Engine::Transform>(dukePrefab).GetChild(1));
+        for(auto& renderer : Engine::GetComponentsInChildren<Engine::MeshRenderer>(cubeForm))
+        {
+            renderer->isActive = false;
+        }
     }
     Engine::Entity enemy = ECSHelper::CopyEntity(dukePrefab, true);
     AddEntity(enemy);

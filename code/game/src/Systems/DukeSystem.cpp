@@ -26,7 +26,7 @@ void DukeSystem::EntityAdded(Engine::Entity entity)
     Duke &duke = ecsSystem->GetComponent<Duke>(entity);
     Engine::Transform& transform = ecsSystem->GetComponent<Engine::Transform>(entity);
 
-    transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(duke.startPos), 0));
+    transform.SetTranslation(glm::vec3(Systems::dungeonSystem->ToGlobal(duke.startPos), -0.5f));
 
     duke.movement.oldTargetNode = duke.startPos;
     duke.movement.currentPos = Systems::dungeonSystem->ToGlobal(duke.startPos);
@@ -92,7 +92,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             break;
         case Duke::PhaseStart_TeleportEnd:
             duke.timer -= deltaTime;
-            transform.SetTranslation(glm::vec3(duke.movement.currentPos, 0));
+            transform.SetTranslation(glm::vec3(duke.movement.currentPos, -0.5f));
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::radians(-90.0f))));
             if (duke.timer <= 0)
             {
@@ -128,7 +128,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
         case Duke::Tp_TeleportEnd:
         {
             duke.timer -= deltaTime;
-            transform.SetTranslation(glm::vec3(duke.movement.currentPos, 0));
+            transform.SetTranslation(glm::vec3(duke.movement.currentPos, -0.5f));
             float angle = glm::atan(duke.movement.direction.y, duke.movement.direction.x);
             angle /= glm::radians(90.0f);
             angle = glm::round(angle);
@@ -147,7 +147,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             float oldDistance = glm::length(duke.movement.currentPos - duke.movement.targetPos);
             Systems::enemyBehaviourSystem->MoveStraight(duke.movement, duke.movement.direction, duke.speed * deltaTime);
             float newDistance = glm::length(duke.movement.currentPos - duke.movement.targetPos);
-            transform.SetTranslation(glm::vec3(duke.movement.currentPos, 0));
+            transform.SetTranslation(glm::vec3(duke.movement.currentPos, -0.5f));
 
             float normalizedDistance = 1 - glm::length(duke.movement.currentPos - duke.movement.targetPos) / glm::length(Systems::dungeonSystem->ToGlobal(duke.movement.oldTargetNode) - duke.movement.targetPos);
 
@@ -209,7 +209,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             break;
         case Duke::Sp_TeleportEnd:
             duke.timer -= deltaTime;
-            transform.SetTranslation(glm::vec3(duke.movement.currentPos, 0));
+            transform.SetTranslation(glm::vec3(duke.movement.currentPos, -0.5f));
             transform.SetRotation(glm::quat(glm::vec3(glm::radians(90.0f), 0, glm::radians(-90.0f))));
             if (duke.timer <= 0)
             {
