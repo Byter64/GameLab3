@@ -16,9 +16,9 @@ namespace Engine
         explicit InputActionButton(std::string name);
 
         void AddKeyboardBinding(int key);
-        void AddGamepadBinding(GamepadInputID inputID);
+        void AddGamepadBinding(GamepadButton inputID);
         void RemoveKeyboardBinding(int key);
-        void RemoveGamepadBinding(GamepadInputID inputID);
+        void RemoveGamepadBinding(GamepadButton inputID);
 
         void AddOnStart(void* object, CallbackButton callback);
         void RemoveOnStart(void* object, CallbackButton callback);
@@ -27,7 +27,8 @@ namespace Engine
         void RemoveOnEnd(void* object, CallbackButton callback);
 
         void Update(int key) override;
-        void Update(GamepadInputID& input) override;
+        void Update(GamepadButton& input) override;
+        void Update(GamepadAxis& input) override;
     };
 
 } // Engine

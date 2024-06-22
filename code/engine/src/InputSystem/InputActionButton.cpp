@@ -11,9 +11,9 @@ namespace Engine
         keyboardBindings.push_back(key);
     }
 
-    void InputActionButton::AddGamepadBinding(GamepadInputID inputID)
+    void InputActionButton::AddGamepadBinding(GamepadButton inputID)
     {
-        gamepadBindings.push_back(inputID);
+        gamepadButtons.push_back(inputID);
     }
 
     void InputActionButton::RemoveKeyboardBinding(int key)
@@ -21,9 +21,9 @@ namespace Engine
         keyboardBindings.remove(key);
     }
 
-    void InputActionButton::RemoveGamepadBinding(GamepadInputID inputID)
+    void InputActionButton::RemoveGamepadBinding(GamepadButton inputID)
     {
-        gamepadBindings.remove(inputID);
+        gamepadButtons.remove(inputID);
     }
 
     void InputActionButton::AddOnStart(void* object,CallbackButton callback)
@@ -52,13 +52,9 @@ namespace Engine
         Update(state);
     }
 
-    void InputActionButton::Update(GamepadInputID &input)
+    void InputActionButton::Update(GamepadButton &input)
     {
-        bool state;
-        if(input.inputType == GamepadInputID::Button)
-            state = inputSystem->GetButtonState(input.joystickID, input.inputID);
-        else if(input.inputType == GamepadInputID::Axis)
-            state = inputSystem->GetAxisState(input.joystickID, input.inputID) < axisTolerance;
+        bool state = inputSystem->GetButtonState(input.joystickID, input.inputID);
         Update(state);
     }
 
@@ -81,6 +77,11 @@ namespace Engine
     }
 
     InputActionButton::InputActionButton(std::string name) : InputAction(name)
+    {
+
+    }
+
+    void InputActionButton::Update(GamepadAxis &input)
     {
 
     }

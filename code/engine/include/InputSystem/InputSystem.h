@@ -4,7 +4,7 @@
 #include <list>
 #include <memory>
 #include <map>
-#include "InputSystem/GamepadInputID.h"
+#include "InputSystem/GamepadButton.h"
 #include <set>
 
 namespace Engine
@@ -19,9 +19,10 @@ namespace Engine
         GLFWgamepadstate gamePadStates[GLFW_JOYSTICK_LAST + 1]{};
         GLFWwindow* window;
 
-        std::list<std::shared_ptr<InputAction>> inputActions;
-        std::map<int, std::list<InputAction*>> keyToInputActions;
-        std::map<GamepadInputID, std::list<InputAction*>> inputToInputActions;
+        std::list<std::shared_ptr<InputAction>> inputActions{};
+        std::map<int, std::list<InputAction*>> keyToInputActions{};
+        std::map<GamepadButton, std::list<InputAction*>> buttonToInputActions{};
+        std::map<GamepadAxis, std::list<InputAction*>> axisToInputActions{};
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
         std::set<std::shared_ptr<InputAction>> toBeAdded{};

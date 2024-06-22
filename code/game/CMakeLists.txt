@@ -75,8 +75,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         ../engine/src/Systems.cpp
         ../engine/src/Miscellaneous.cpp
         ../engine/include/Miscellaneous.h
-        ../engine/include/InputSystem/GamepadInputID.h
-        ../engine/src/InputSystem/GamepadInputID.cpp
+        ../engine/include/InputSystem/GamepadButton.h
+        ../engine/src/InputSystem/GamepadButton.cpp
         ../engine/src/TimeManager.cpp
         ../engine/include/TimeManager.h
         src/GameDefines.cpp
@@ -143,6 +143,8 @@ set(SOURCE_FILES ../engine/src/main.cpp
         src/HighScore.cpp
         src/Keyboard.cpp
         include/Keyboard.h
+        ../engine/include/InputSystem/GamepadAxis.h
+        ../engine/src/InputSystem/GamepadAxis.cpp
 )
 
 set(EXE_FILE Game)
@@ -162,3 +164,8 @@ target_compile_definitions(${EXE_FILE} PRIVATE _ASSET_ROOT=Assets/)
 target_compile_definitions(${EXE_FILE} PRIVATE _LOGS_ROOT=Logs/)
 target_compile_features(${EXE_FILE} PRIVATE cxx_std_17)
 target_link_libraries(${EXE_FILE} PRIVATE glad glfw glm ${TARGET_StackWalker}) # Hallo ich bin ein Kommentar :)
+
+if (MSVC)
+    # warning level 4
+    add_compile_options(/MP)
+endif ()

@@ -28,20 +28,20 @@ Keyboard *GameLost::CreateKeyBoard(int gamepadId, int x, int y)
 {
     Keyboard* keyboard = new Keyboard(glm::vec2(x, y));
     auto tempVec2 = std::make_shared<Engine::InputActionVec2>("");
-    tempVec2->AddGamepadButtonBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, Engine::GamepadInputID::InputType::Button),
-                                      Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, Engine::GamepadInputID::InputType::Button),
-                                      Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_UP, Engine::GamepadInputID::InputType::Button),
-                                      Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_DOWN, Engine::GamepadInputID::InputType::Button));
-    tempVec2->AddGamepadAxesBinding(Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_AXIS_LEFT_X, Engine::GamepadInputID::Axis),
-                                    Engine::GamepadInputID(gamepadId, GLFW_GAMEPAD_AXIS_LEFT_Y, Engine::GamepadInputID::Axis));
+    tempVec2->AddGamepadButtonBinding(Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_LEFT),
+                                      Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT),
+                                      Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_UP),
+                                      Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_DPAD_DOWN));
+    tempVec2->AddGamepadAxesBinding(Engine::GamepadAxis(gamepadId, GLFW_GAMEPAD_AXIS_LEFT_X),
+                                    Engine::GamepadAxis(gamepadId, GLFW_GAMEPAD_AXIS_LEFT_Y));
     keyboard->SetMovementAction(tempVec2);
     auto tempButton = std::make_shared<Engine::InputActionButton>("");
-    tempButton->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::InputType::Button));
-    tempButton->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::InputType::Button));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_A));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_B));
     keyboard->SetEnterAction(tempButton);
     tempButton = std::make_shared<Engine::InputActionButton>("");
-    tempButton->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::InputType::Button));
-    tempButton->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::InputType::Button));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_X));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_Y));
     keyboard->SetDeleteAction(tempButton);
 
     return keyboard;
@@ -60,8 +60,8 @@ void GameLost::OnStart()
     CreateText("Player 1 reached " + std::to_string(Game::scoreP1) + " points", windowWidth / 2, 400, 4);
 
     button1 = std::make_shared<Engine::InputActionButton>("Any button");
-    button1->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
-    button1->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
+    button1->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_START));
+    button1->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_BACK));
     button1->AddKeyboardBinding(GLFW_KEY_ENTER);
     button1->AddOnEnd((void *) 0, OnButton1Press);
     Engine::Systems::inputSystem->Add(button1);
@@ -83,8 +83,8 @@ void GameLost::OnStart()
     if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         button2 = std::make_shared<Engine::InputActionButton>("Any button");
-        button2->AddGamepadBinding(Engine::GamepadInputID(1, GLFW_GAMEPAD_BUTTON_START, Engine::GamepadInputID::InputType::Button));
-        button2->AddGamepadBinding(Engine::GamepadInputID(1, GLFW_GAMEPAD_BUTTON_BACK, Engine::GamepadInputID::InputType::Button));
+        button2->AddGamepadBinding(Engine::GamepadButton(1, GLFW_GAMEPAD_BUTTON_START));
+        button2->AddGamepadBinding(Engine::GamepadButton(1, GLFW_GAMEPAD_BUTTON_BACK));
         button2->AddKeyboardBinding(GLFW_KEY_ENTER);
         button2->AddOnEnd((void *) 0, OnButton2Press);
         Engine::Systems::inputSystem->Add(button2);

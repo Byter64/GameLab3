@@ -16,10 +16,10 @@ void PlayerController::AddMovementInput(int leftKey, int rightKey, int upKey, in
 
 void PlayerController::AddMovementInput(unsigned char joystickID, unsigned char leftButton, unsigned char rightButton, unsigned char upButton, unsigned char downButton)
 {
-    Engine::GamepadInputID leftKey = {joystickID, leftButton, Engine::GamepadInputID::Button};
-    Engine::GamepadInputID rightKey = {joystickID, rightButton, Engine::GamepadInputID::Button};
-    Engine::GamepadInputID upKey = {joystickID, upButton, Engine::GamepadInputID::Button};
-    Engine::GamepadInputID downKey = {joystickID, downButton, Engine::GamepadInputID::Button};
+    Engine::GamepadButton leftKey(joystickID, leftButton);
+    Engine::GamepadButton rightKey(joystickID, rightButton);
+    Engine::GamepadButton upKey(joystickID, upButton);
+    Engine::GamepadButton downKey(joystickID, downButton);
 
     if(inputAction == nullptr)
     {
@@ -28,14 +28,14 @@ void PlayerController::AddMovementInput(unsigned char joystickID, unsigned char 
     }
 
     Engine::Systems::inputSystem->Remove(inputAction);
-    inputAction->AddGamepadButtonBinding(leftKey, rightKey, downKey, upKey);
+    inputAction->AddGamepadButtonBinding(leftKey, rightKey, upKey, downKey);
     Engine::Systems::inputSystem->Add(inputAction);
 }
 
 void PlayerController::AddMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis)
 {
-    Engine::GamepadInputID xAxisID = {joystickID, xAxis, Engine::GamepadInputID::Axis};
-    Engine::GamepadInputID yAxisID = {joystickID, yAxis, Engine::GamepadInputID::Axis};
+    Engine::GamepadAxis xAxisID(joystickID, xAxis);
+    Engine::GamepadAxis yAxisID(joystickID, yAxis);
 
     if(inputAction == nullptr)
     {
@@ -75,7 +75,7 @@ void PlayerController::AddFireInput(int key)
     Engine::Systems::inputSystem->Add(fireAction);
 }
 
-void PlayerController::AddFireInput(Engine::GamepadInputID button)
+void PlayerController::AddFireInput(Engine::GamepadButton button)
 {
     if(fireAction == nullptr)
     {
@@ -102,7 +102,7 @@ void PlayerController::GetFireActionEnd(void *object)
     player->wasFirePushed = false;
 }
 
-void PlayerController::AddReviveInput(Engine::GamepadInputID button)
+void PlayerController::AddReviveInput(Engine::GamepadButton button)
 {
     if(reviveAction == nullptr)
     {

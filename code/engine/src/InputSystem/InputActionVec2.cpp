@@ -6,41 +6,15 @@
 
 namespace Engine
 {
-    InputActionVec2::DirectionMap::DirectionMap()
-    {
-        leftKey = -1;
-        rightKey = -1;
-        upKey = -1;
-        downKey = -1;
-    }
-
-    InputActionVec2::DirectionMap::DirectionMap(int leftKey, int rightKey, int upKey, int downKey) : leftKey(leftKey), rightKey(rightKey), upKey(upKey), downKey(downKey)
-    {
-
-    }
-
-    bool InputActionVec2::DirectionMap::operator==(const InputActionVec2::DirectionMap &map) const
-    {
-        return leftKey == map.leftKey &&
-        rightKey == map.rightKey &&
-        upKey == map.upKey &&
-        downKey == map.downKey;
-    }
-
-    bool InputActionVec2::DirectionMap::operator!=(const InputActionVec2::DirectionMap &map) const
-    {
-        return !((*this) == map);
-    }
-
     InputActionVec2::InputActionVec2(std::string name) : InputAction(name)
     {
-        oldInput = glm::vec2(0,0);
+        lastFloatInput = glm::vec2(0, 0);
     }
 
     void InputActionVec2::AddKeyboardBinding(int leftKey, int rightKey, int upKey, int downKey)
     {
         DirectionMap map(leftKey, rightKey, upKey, downKey);
-        directionMaps.push_back(map);
+        keyDirectionMaps.push_back(map);
 
         keyboardBindings.push_back(leftKey);
         keyboardBindings.push_back(rightKey);
@@ -48,41 +22,32 @@ namespace Engine
         keyboardBindings.push_back(downKey);
     }
 
-    void InputActionVec2::AddGamepadAxesBinding(GamepadInputID xAxis, GamepadInputID yAxis)
+    void InputActionVec2::AddGamepadAxesBinding(GamepadAxis xAxis, GamepadAxis yAxis)
     {
-        axes.push_back({{GamepadInputID::Axis, xAxis}, {GamepadInputID::Axis, yAxis}});
+        axes.push_back({xAxis,yAxis});
 
-        gamepadBindings.push_back(xAxis);
-        gamepadBindings.push_back(yAxis);
+        gamepadAxes.push_back(xAxis);
+        gamepadAxes.push_back(yAxis);
     }
 
-    void InputActionVec2::AddGamepadButtonBinding(GamepadInputID leftButton, GamepadInputID rightButton,GamepadInputID upButton, GamepadInputID downButton)
+    void InputActionVec2::AddGamepadButtonBinding(GamepadButton leftButton, GamepadButton rightButton, GamepadButton upButton, GamepadButton downButton)
     {
-        Axis xAxis, yAxis;
-        xAxis.type = GamepadInputID::Button;
-        xAxis.buttons.b1 = leftButton;
-        xAxis.buttons.b2 = rightButton;
+        gamepadDirectionMaps.push_back({leftButton, rightButton, upButton, downButton});
 
-        yAxis.type = GamepadInputID::Button;
-        yAxis.buttons.b1 = upButton;
-        yAxis.buttons.b2 = downButton;
-
-        axes.push_back({xAxis, yAxis});
-
-        gamepadBindings.push_back(leftButton);
-        gamepadBindings.push_back(rightButton);
-        gamepadBindings.push_back(upButton);
-        gamepadBindings.push_back(downButton);
+        gamepadButtons.push_back(leftButton);
+        gamepadButtons.push_back(rightButton);
+        gamepadButtons.push_back(upButton);
+        gamepadButtons.push_back(downButton);
     }
 
     void InputActionVec2::RemoveKeyboardBinding(int leftKey, int rightKey, int upKey, int downKey)
     {
         DirectionMap map(leftKey, rightKey, upKey, downKey);
 
-        if(std::find(directionMaps.begin(), directionMaps.end(), map) == directionMaps.end())
+        if(std::find(keyDirectionMaps.begin(), keyDirectionMaps.end(), map) == keyDirectionMaps.end())
             return;
 
-        directionMaps.remove(map);
+        keyDirectionMaps.remove(map);
 
         keyboardBindings.remove(leftKey);
         keyboardBindings.remove(rightKey);
@@ -90,41 +55,31 @@ namespace Engine
         keyboardBindings.remove(downKey);
     }
 
-    void InputActionVec2::RemoveGamepadAxesBinding(GamepadInputID xAxis, GamepadInputID yAxis)
+    void InputActionVec2::RemoveGamepadAxesBinding(GamepadAxis xAxis, GamepadAxis yAxis)
     {
-        std::pair<Axis, Axis> axes = {{GamepadInputID::Axis, xAxis}, {GamepadInputID::Axis, yAxis}};
+        std::pair<GamepadAxis, GamepadAxis> axes = {xAxis, yAxis};
 
         if(std::find(this->axes.begin(), this->axes.end(), axes) == this->axes.end())
             return;
 
         this->axes.remove(axes);
 
-        gamepadBindings.remove(xAxis);
-        gamepadBindings.remove(yAxis);
+        gamepadAxes.remove(xAxis);
+        gamepadAxes.remove(yAxis);
     }
 
-    void InputActionVec2::RemoveGamepadButtonBinding(GamepadInputID leftButton, GamepadInputID rightButton, GamepadInputID upButton, GamepadInputID downButton)
+    void InputActionVec2::RemoveGamepadButtonBinding(GamepadButton leftButton, GamepadButton rightButton, GamepadButton upButton, GamepadButton downButton)
     {
-        Axis xAxis, yAxis;
-        xAxis.type = GamepadInputID::Button;
-        xAxis.buttons.b1 = leftButton;
-        xAxis.buttons.b2 = rightButton;
-
-        yAxis.type = GamepadInputID::Button;
-        yAxis.buttons.b1 = upButton;
-        yAxis.buttons.b2 = downButton;
-
-        std::pair<Axis, Axis> axes = {xAxis, yAxis};
-
-        if(std::find(this->axes.begin(), this->axes.end(), axes) == this->axes.end())
+        DirectionMap map(leftButton, rightButton, upButton, downButton);
+        if(std::find(gamepadDirectionMaps.begin(), gamepadDirectionMaps.end(), map) == gamepadDirectionMaps.end())
             return;
 
-        this->axes.remove(axes);
+        this->gamepadDirectionMaps.remove(map);
 
-        gamepadBindings.remove(leftButton);
-        gamepadBindings.remove(rightButton);
-        gamepadBindings.remove(upButton);
-        gamepadBindings.remove(downButton);
+        gamepadButtons.remove(leftButton);
+        gamepadButtons.remove(rightButton);
+        gamepadButtons.remove(upButton);
+        gamepadButtons.remove(downButton);
     }
 
     void InputActionVec2::AddOnStart(void* object, InputActionVec2::CallbackVec2 callback)
@@ -159,8 +114,8 @@ namespace Engine
 
     void InputActionVec2::Update(int key)
     {
-        auto result = std::find_if(directionMaps.begin(), directionMaps.end(), [&key](const DirectionMap& map){return key == map.leftKey || key == map.rightKey || key == map.upKey || key == map.downKey;});
-        const DirectionMap& map = *result;
+        auto result = std::find_if(keyDirectionMaps.begin(), keyDirectionMaps.end(), [&key](const DirectionMap<int>& map){return key == map.leftKey || key == map.rightKey || key == map.upKey || key == map.downKey;});
+        const DirectionMap<int>& map = *result;
 
         int x = 0,y = 0;
         x -= std::clamp(inputSystem->GetKeyState(map.leftKey), 0, 1);
@@ -173,62 +128,122 @@ namespace Engine
 
         if(input != glm::vec2(0))
             input = glm::normalize(input);
-        Update(input);
+        UpdateInt(input);
     }
 
-    void InputActionVec2::Update(GamepadInputID& input)
+    void InputActionVec2::Update(GamepadButton &button)
     {
-        auto result = std::find_if(axes.begin(), axes.end(), [&input](const std::pair<Axis, Axis>& axesPair)
+        auto result = std::find_if(gamepadDirectionMaps.begin(), gamepadDirectionMaps.end(), [&button](const DirectionMap<GamepadButton>& map){return button == map.leftKey || button == map.rightKey || button == map.upKey || button == map.downKey;});
+        const DirectionMap<GamepadButton>& map = *result;
+
+        int x = 0,y = 0;
+        x -= std::clamp(inputSystem->GetButtonState(map.leftKey.joystickID, map.leftKey.inputID), 0, 1);
+        x += std::clamp(inputSystem->GetButtonState(map.rightKey.joystickID, map.rightKey.inputID), 0, 1);
+
+        y -= std::clamp(inputSystem->GetButtonState(map.downKey.joystickID, map.downKey.inputID), 0, 1);
+        y += std::clamp(inputSystem->GetButtonState(map.upKey.joystickID, map.upKey.inputID), 0, 1);
+
+        glm::vec2 input(x, y);
+
+        if(input != glm::vec2(0))
+            input = glm::normalize(input);
+        UpdateInt(input);
+    }
+
+    void InputActionVec2::Update(GamepadAxis& input)
+    {
+        auto result = std::find_if(axes.begin(), axes.end(), [&input](const std::pair<GamepadAxis, GamepadAxis>& axesPair)
         {
-            bool isXAxis = false, isYAxis = false;
-            if(axesPair.first.type == GamepadInputID::Axis)
-                isXAxis = axesPair.first.axis == input;
-            else if(axesPair.first.type == GamepadInputID::Button)
-                isXAxis = axesPair.first.buttons.b1 == input || axesPair.first.buttons.b2 == input;
-
-            if(axesPair.second.type == GamepadInputID::Axis)
-                isYAxis = axesPair.second.axis == input;
-            else if(axesPair.second.type == GamepadInputID::Button)
-                isYAxis = axesPair.second.buttons.b1 == input || axesPair.second.buttons.b2 == input;
-
+            bool isXAxis = axesPair.first == input;
+            bool isYAxis = axesPair.second == input;
             return isXAxis || isYAxis;
         });
 
-        const std::pair<Axis, Axis>& axes = *result;
+        const std::pair<GamepadAxis, GamepadAxis>& axes = *result;
 
-        float x = GetValue(axes.first);
-        float y = GetValue(axes.second);
+        float x = inputSystem->GetAxisState(axes.first.joystickID, axes.first.inputID);
+        float y = inputSystem->GetAxisState(axes.second.joystickID, axes.second.inputID);
         glm::vec2 value(x, y);
-        Update(value);
+        UpdateFloat(value);
     }
 
-    void InputActionVec2::Update(glm::vec2 value)
+    void InputActionVec2::UpdateFloat(glm::vec2 value)
     {
-        glm::vec2 delta = value - oldInput;
-        delta.x = delta.x / ::abs(delta.x);
-        delta.y = delta.y / ::abs(delta.y);
+        glm::vec2 direction = value - lastFloatInput;
+        direction.x = direction.x / ::abs(direction.x);
+        direction.y = direction.y / ::abs(direction.y);
 
-        glm::vec2 newVal = oldInput + delta * maxChange;
-        if (std::signbit(newVal.x - value.x) != std::signbit(oldInput.x - value.x))
+        glm::vec2 newVal = lastFloatInput + direction * maxChange;
+        if (std::signbit(newVal.x - value.x) != std::signbit(lastFloatInput.x - value.x))
             newVal.x = value.x;
-        if (std::signbit(newVal.y - value.y) != std::signbit(oldInput.y - value.y))
+        if (std::signbit(newVal.y - value.y) != std::signbit(lastFloatInput.y - value.y))
             newVal.y = value.y;
         value = newVal;
-        glm::vec2 newDeadZoned, oldDeadZoned, undeadZoned;
+
+        glm::vec2 oldDeadZoned, newDeadZoned;
+        oldDeadZoned.x = glm::abs(lastInput.x) < deadzone ? 0.0f : lastInput.x;
+        oldDeadZoned.y = glm::abs(lastInput.y) < deadzone ? 0.0f : lastInput.y;
         newDeadZoned.x = glm::abs(value.x) < deadzone ? 0.0f : value.x;
         newDeadZoned.y = glm::abs(value.y) < deadzone ? 0.0f : value.y;
-        oldDeadZoned.x = glm::abs(oldInput.x) < deadzone ? 0.0f : oldInput.x;
-        oldDeadZoned.y = glm::abs(oldInput.y) < deadzone ? 0.0f : oldInput.y;
         if (oldDeadZoned == newDeadZoned)
         {
-            oldInput = value;
+            lastFloatInput = value;
+            lastInput = value;
             return;
         }
-        undeadZoned = value;
-        value = newDeadZoned;
+        //prioritise int inputs (i.e. d-pad) over joystick
+        if(lastIntInput != glm::vec2(0))
+            return;
 
         //Check for end of input
-        if(value == glm::vec2(0,0) && oldDeadZoned != glm::vec2 (0,0))
+        if(newDeadZoned == glm::vec2(0,0) && oldDeadZoned != glm::vec2 (0,0))
+        {
+            for (auto pair: valueChangeCallbacks)
+            {
+                pair.second(pair.first, newDeadZoned);
+            }
+            for (auto pair: endCallbacks)
+            {
+                pair.second(pair.first, newDeadZoned);
+            }
+            lastFloatInput = value;
+            lastInput = value;
+            return;
+        }
+
+        //Check for start of input
+        if(oldDeadZoned == glm::vec2(0,0))
+        {
+            for (auto pair: startCallbacks)
+            {
+                pair.second(pair.first, newDeadZoned);
+            }
+            for (auto pair: valueChangeCallbacks)
+            {
+                pair.second(pair.first, newDeadZoned);
+            }
+            lastFloatInput = value;
+            lastInput = value;
+            return;
+        }
+
+        //Check for value change of input
+        else if(newDeadZoned != oldDeadZoned)
+        {
+            for (auto pair: valueChangeCallbacks)
+            {
+                pair.second(pair.first, newDeadZoned);
+            }
+            lastFloatInput = value;
+            lastInput = value;
+            return;
+        }
+    }
+
+    void InputActionVec2::UpdateInt(glm::vec2 value)
+    {
+        //Check for end of input
+        if(value == glm::vec2(0,0) && lastInput != glm::vec2 (0,0))
         {
             for (auto pair: valueChangeCallbacks)
             {
@@ -238,12 +253,13 @@ namespace Engine
             {
                 pair.second(pair.first, value);
             }
-            oldInput = undeadZoned;
+            lastIntInput = value;
+            lastInput = value;
             return;
         }
 
         //Check for start of input
-        if(oldDeadZoned == glm::vec2(0,0))
+        if(lastInput == glm::vec2(0,0))
         {
             for (auto pair: startCallbacks)
             {
@@ -253,42 +269,21 @@ namespace Engine
             {
                 pair.second(pair.first, value);
             }
-            oldInput = undeadZoned;
+            lastIntInput = value;
+            lastInput = value;
             return;
         }
 
-        //Check for value change of input
-        else if(value != oldDeadZoned)
+            //Check for value change of input
+        else if(value != lastInput)
         {
             for (auto pair: valueChangeCallbacks)
             {
                 pair.second(pair.first, value);
             }
-            oldInput = undeadZoned;
+            lastIntInput = value;
+            lastInput = value;
             return;
         }
-    }
-
-    float InputActionVec2::GetValue(InputActionVec2::Axis const &axis)
-    {
-        if(axis.type == GamepadInputID::Axis)
-            return inputSystem->GetAxisState(axis.axis.joystickID, axis.axis.inputID);
-        else if(axis.type == GamepadInputID::Button)
-            return (float)(-inputSystem->GetButtonState(axis.buttons.b1.joystickID, axis.buttons.b1.inputID) + inputSystem->GetButtonState(axis.buttons.b2.joystickID, axis.buttons.b2.inputID));
-        return 0.0f;
-    }
-
-    bool InputActionVec2::Axis::operator==(const InputActionVec2::Axis &other) const
-    {
-        if(type == GamepadInputID::Axis)
-            return type == other.type && axis == other.axis;
-        else if(type == GamepadInputID::Button)
-            return type == other.type && buttons.b1 == other.buttons.b1 && buttons.b2 == other.buttons.b2;
-        return false;
-    }
-
-    bool InputActionVec2::Axis::operator!=(const InputActionVec2::Axis &other) const
-    {
-        return !(*this == other);
     }
 }

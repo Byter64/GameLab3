@@ -37,9 +37,9 @@ struct PlayerController
     void AddMovementInput(unsigned char joystickID, unsigned char leftButton, unsigned char rightButton, unsigned char upButton, unsigned char downButton);
     void AddMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis);
     void AddFireInput(int key);
-    void AddFireInput(Engine::GamepadInputID button);
+    void AddFireInput(Engine::GamepadButton button);
     void AddReviveInput(int button);
-    void AddReviveInput(Engine::GamepadInputID button);
+    void AddReviveInput(Engine::GamepadButton button);
     void AddScore(int points);
 
     int GetScore();

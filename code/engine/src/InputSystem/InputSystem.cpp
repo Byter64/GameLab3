@@ -64,16 +64,16 @@ namespace Engine
 
             for(unsigned char axis = 0; axis <= GLFW_GAMEPAD_AXIS_LAST; axis++)
             {
-                GamepadInputID input = {i, axis, GamepadInputID::Axis};
-                for(const auto &inputAction : instance->inputToInputActions[input])
+                GamepadAxis input(i, axis);
+                for(const auto &inputAction : instance->axisToInputActions[input])
                     if(gamePadStates[i].axes[axis] != oldState.axes[axis])
                         inputAction->Update(input);
             }
 
             for(unsigned char button = 0; button <= GLFW_GAMEPAD_BUTTON_LAST; button++)
             {
-                GamepadInputID input = {i, button, GamepadInputID::Button};
-                for(const auto &inputAction : instance->inputToInputActions[input])
+                GamepadButton input(i, button);
+                for(const auto &inputAction : instance->buttonToInputActions[input])
                     if(gamePadStates[i].buttons[button] != oldState.buttons[button])
                         inputAction->Update(input);
             }
@@ -87,8 +87,11 @@ namespace Engine
         for (int key: inputAction->keyboardBindings)
             keyToInputActions[key].push_back(inputAction.get());
 
-        for (GamepadInputID& input: inputAction->gamepadBindings)
-            inputToInputActions[input].push_back(inputAction.get());
+        for (GamepadButton& input: inputAction->gamepadButtons)
+            buttonToInputActions[input].push_back(inputAction.get());
+
+        for (GamepadAxis& input: inputAction->gamepadAxes)
+            axisToInputActions[input].push_back(inputAction.get());
 
         inputActions.push_back(std::move(inputAction));
     }
@@ -118,7 +121,7 @@ namespace Engine
             list.remove(result->get());
         }
 
-        for(auto& pair : inputToInputActions)
+        for(auto& pair : buttonToInputActions)
         {
             std::list<InputAction*>& list = pair.second;
             list.remove(result->get());

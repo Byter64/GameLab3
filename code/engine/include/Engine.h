@@ -26,4 +26,4 @@
 #include "InputSystem/InputSystem.h"
 #include "InputSystem/InputActionVec2.h"
 #include "InputSystem/InputActionButton.h"
-#include "InputSystem/GamepadInputID.h"
+#include "InputSystem/GamepadButton.h"
