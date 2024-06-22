@@ -27,11 +27,11 @@ namespace Engine
         explicit InputActionVec2(std::string name);
 
         void AddKeyboardBinding(int leftKey, int rightKey, int upKey, int downKey);
-        void AddGamepadAxesBinding(GamepadInputID& xAxis, GamepadInputID& yAxis);
-        void AddGamepadButtonBinding(GamepadInputID& leftButton, GamepadInputID& rightButton, GamepadInputID& upButton, GamepadInputID& downButton);
+        void AddGamepadAxesBinding(GamepadInputID xAxis, GamepadInputID yAxis);
+        void AddGamepadButtonBinding(GamepadInputID leftButton, GamepadInputID rightButton, GamepadInputID upButton, GamepadInputID downButton);
         void RemoveKeyboardBinding(int leftKey, int rightKey, int upKey, int downKey);
-        void RemoveGamepadAxesBinding(GamepadInputID& xAxis, GamepadInputID& yAxis);
-        void RemoveGamepadButtonBinding(GamepadInputID& leftButton, GamepadInputID& rightButton, GamepadInputID& upButton, GamepadInputID& downButton);
+        void RemoveGamepadAxesBinding(GamepadInputID xAxis, GamepadInputID yAxis);
+        void RemoveGamepadButtonBinding(GamepadInputID leftButton, GamepadInputID rightButton, GamepadInputID upButton, GamepadInputID downButton);
 
         void AddOnStart(void* object, CallbackVec2 callback);
         void RemoveOnStart(void* object, CallbackVec2 callback);

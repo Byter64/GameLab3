@@ -48,7 +48,7 @@ namespace Engine
         keyboardBindings.push_back(downKey);
     }
 
-    void InputActionVec2::AddGamepadAxesBinding(GamepadInputID &xAxis, GamepadInputID &yAxis)
+    void InputActionVec2::AddGamepadAxesBinding(GamepadInputID xAxis, GamepadInputID yAxis)
     {
         axes.push_back({{GamepadInputID::Axis, xAxis}, {GamepadInputID::Axis, yAxis}});
 
@@ -56,7 +56,7 @@ namespace Engine
         gamepadBindings.push_back(yAxis);
     }
 
-    void InputActionVec2::AddGamepadButtonBinding(GamepadInputID &leftButton, GamepadInputID &rightButton,GamepadInputID &upButton, GamepadInputID &downButton)
+    void InputActionVec2::AddGamepadButtonBinding(GamepadInputID leftButton, GamepadInputID rightButton,GamepadInputID upButton, GamepadInputID downButton)
     {
         Axis xAxis, yAxis;
         xAxis.type = GamepadInputID::Button;
@@ -90,7 +90,7 @@ namespace Engine
         keyboardBindings.remove(downKey);
     }
 
-    void InputActionVec2::RemoveGamepadAxesBinding(GamepadInputID &xAxis, GamepadInputID &yAxis)
+    void InputActionVec2::RemoveGamepadAxesBinding(GamepadInputID xAxis, GamepadInputID yAxis)
     {
         std::pair<Axis, Axis> axes = {{GamepadInputID::Axis, xAxis}, {GamepadInputID::Axis, yAxis}};
 
@@ -103,7 +103,7 @@ namespace Engine
         gamepadBindings.remove(yAxis);
     }
 
-    void InputActionVec2::RemoveGamepadButtonBinding(GamepadInputID &leftButton, GamepadInputID &rightButton, GamepadInputID &upButton, GamepadInputID &downButton)
+    void InputActionVec2::RemoveGamepadButtonBinding(GamepadInputID leftButton, GamepadInputID rightButton, GamepadInputID upButton, GamepadInputID downButton)
     {
         Axis xAxis, yAxis;
         xAxis.type = GamepadInputID::Button;
@@ -176,7 +176,7 @@ namespace Engine
         Update(input);
     }
 
-    void InputActionVec2::Update(GamepadInputID &input)
+    void InputActionVec2::Update(GamepadInputID& input)
     {
         auto result = std::find_if(axes.begin(), axes.end(), [&input](const std::pair<Axis, Axis>& axesPair)
         {
@@ -228,7 +228,7 @@ namespace Engine
         value = newDeadZoned;
 
         //Check for end of input
-        if(value == glm::vec2(0,0) && oldInput != glm::vec2 (0,0))
+        if(value == glm::vec2(0,0) && oldDeadZoned != glm::vec2 (0,0))
         {
             for (auto pair: valueChangeCallbacks)
             {
@@ -243,7 +243,7 @@ namespace Engine
         }
 
         //Check for start of input
-        if(oldInput == glm::vec2(0,0))
+        if(oldDeadZoned == glm::vec2(0,0))
         {
             for (auto pair: startCallbacks)
             {
@@ -258,7 +258,7 @@ namespace Engine
         }
 
         //Check for value change of input
-        else if(value != oldInput)
+        else if(value != oldDeadZoned)
         {
             for (auto pair: valueChangeCallbacks)
             {

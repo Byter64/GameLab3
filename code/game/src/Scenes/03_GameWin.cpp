@@ -46,7 +46,7 @@ void GameWin::OnStart()
     text.horizontalAlignment = Engine::Text::Left;
 
     keyboard = new Keyboard(glm::vec2(800, 750));
-    auto temp = std::make_shared<Engine::InputActionButton>("");
+    /*auto temp = std::make_shared<Engine::InputActionButton>("");
     temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_DPAD_UP, Engine::GamepadInputID::InputType::Button));
     keyboard->SetUpAction(temp);
     temp = std::make_shared<Engine::InputActionButton>("");
@@ -66,7 +66,7 @@ void GameWin::OnStart()
     temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::InputType::Button));
     temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::InputType::Button));
     keyboard->SetDeleteAction(temp);
-
+*/
     if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         button2 = std::make_shared<Engine::InputActionButton>("Any button");

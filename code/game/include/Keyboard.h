@@ -15,17 +15,11 @@ class Keyboard
     int selectorPos = 0;
     Engine::Entity selector;
 
-    std::shared_ptr<Engine::InputActionButton> up;
-    std::shared_ptr<Engine::InputActionButton> down;
-    std::shared_ptr<Engine::InputActionButton> left;
-    std::shared_ptr<Engine::InputActionButton> right;
+    std::shared_ptr<Engine::InputActionVec2> movement;
     std::shared_ptr<Engine::InputActionButton> enter;
     std::shared_ptr<Engine::InputActionButton> del;
 
-    static void OnUp(void* o);
-    static void OnDown(void* o);
-    static void OnLeft(void* o);
-    static void OnRight(void* o);
+    static void OnMovementStart(void* o, glm::vec2 input);
     static void OnEnter(void* o);
     static void OnDelete(void* o);
 public:
@@ -43,14 +37,8 @@ public:
     //Always deletes the lastly entered char
     void DeleteChar();
 
-    //Sets the given action as up. This action will be cleaned up on ~Keyboard()
-    void SetUpAction(std::shared_ptr<Engine::InputActionButton> action);
-    //Sets the given action as down. This action will be cleaned up on ~Keyboard()
-    void SetDownAction(std::shared_ptr<Engine::InputActionButton> action);
-    //Sets the given action as left. This action will be cleaned up on ~Keyboard()
-    void SetLeftAction(std::shared_ptr<Engine::InputActionButton> action);
-    //Sets the given action as right. This action will be cleaned up on ~Keyboard()
-    void SetRightAction(std::shared_ptr<Engine::InputActionButton> action);
+    //Sets the given action as movement. This action will be cleaned up on ~Keyboard()
+    void SetMovementAction(std::shared_ptr<Engine::InputActionVec2> action);
     //Sets the given action as enter. This action will be cleaned up on ~Keyboard()
     void SetEnterAction(std::shared_ptr<Engine::InputActionButton> action);
     //Sets the given action as delete. This action will be cleaned up on ~Keyboard()

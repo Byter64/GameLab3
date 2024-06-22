@@ -45,10 +45,7 @@ Keyboard::Keyboard(std::string startText, int charsPerLine, glm::vec2 position, 
 
 Keyboard::~Keyboard()
 {
-    Engine::Systems::inputSystem->Remove(up);
-    Engine::Systems::inputSystem->Remove(down);
-    Engine::Systems::inputSystem->Remove(left);
-    Engine::Systems::inputSystem->Remove(right);
+    Engine::Systems::inputSystem->Remove(movement);
     Engine::Systems::inputSystem->Remove(enter);
     Engine::Systems::inputSystem->Remove(del);
 
@@ -98,32 +95,11 @@ void Keyboard::DeleteChar()
         text.pop_back();
 }
 
-void Keyboard::SetUpAction(std::shared_ptr<Engine::InputActionButton> action)
+void Keyboard::SetMovementAction(std::shared_ptr<Engine::InputActionVec2> action)
 {
-    up = action;
-    up->AddOnStart(this, OnUp);
-    Engine::Systems::inputSystem->Add(up);
-}
-
-void Keyboard::SetDownAction(std::shared_ptr<Engine::InputActionButton> action)
-{
-    down = action;
-    down->AddOnStart(this, OnDown);
-    Engine::Systems::inputSystem->Add(down);
-}
-
-void Keyboard::SetLeftAction(std::shared_ptr<Engine::InputActionButton> action)
-{
-    left = action;
-    left->AddOnStart(this, OnLeft);
-    Engine::Systems::inputSystem->Add(left);
-}
-
-void Keyboard::SetRightAction(std::shared_ptr<Engine::InputActionButton> action)
-{
-    right = action;
-    right->AddOnStart(this, OnRight);
-    Engine::Systems::inputSystem->Add(right);
+    movement = action;
+    movement->AddOnStart(this, OnMovementStart);
+    Engine::Systems::inputSystem->Add(movement);
 }
 
 void Keyboard::SetEnterAction(std::shared_ptr<Engine::InputActionButton> action)
@@ -141,28 +117,13 @@ void Keyboard::SetDeleteAction(std::shared_ptr<Engine::InputActionButton> action
 }
 
 
-void Keyboard::OnUp(void* o)
+void Keyboard::OnMovementStart(void *o, glm::vec2 input)
 {
     Keyboard* keyboard = static_cast<Keyboard*>(o);
-    keyboard->AddPos(0, -1);
-}
-
-void Keyboard::OnDown(void* o)
-{
-    Keyboard* keyboard = static_cast<Keyboard*>(o);
-    keyboard->AddPos(0, 1);
-}
-
-void Keyboard::OnLeft(void* o)
-{
-    Keyboard* keyboard = static_cast<Keyboard*>(o);
-    keyboard->AddPos(-1, 0);
-}
-
-void Keyboard::OnRight(void* o)
-{
-    Keyboard* keyboard = static_cast<Keyboard*>(o);
-    keyboard->AddPos(1, 0);
+    int x = input.x > 0 ? 1 : (input.x < 0 ? -1 : 0);
+    int y = input.y > 0 ? 1 : (input.y < 0 ? -1 : 0);
+    y *= -1;
+    keyboard->AddPos(x, y);
 }
 
 void Keyboard::OnEnter(void *o)

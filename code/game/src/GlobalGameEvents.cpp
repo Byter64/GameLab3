@@ -41,7 +41,7 @@ void OnStartGame(int screenWidth, int screenHeight)
         Engine::Systems::collisionSystem->SetCollisionBetweenLayers((int)CollisionLayer::Ignore, i, false);
     }
 
-    sceneManager->LoadScene<TitleScreen>();
+    sceneManager->LoadScene<GameLost>();
 }
 
 void Update(float deltaTime)
