@@ -35,7 +35,7 @@ std::vector<HighScore> HighScoreManager::ReadHighScores()
 void HighScoreManager::AddHighScore(int score, std::string teamName)
 {
     if(teamName.empty())
-        teamName = "Anonymous Gängsters";
+        teamName = "Anonymous Gangsters";
     std::vector<HighScore> scores = ReadHighScores();
     scores.push_back({score, teamName});
     std::sort(scores.begin(), scores.end(), [](HighScore const & h1, HighScore const & h2) -> bool{return h1.score > h2.score;});

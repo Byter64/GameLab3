@@ -30,6 +30,7 @@ struct PlayerController
 
     PlayerController& operator= (PlayerController& other) = default;
     PlayerController& operator= (PlayerController&& other);
+    ~PlayerController();
 
     void ResetInput();
     void AddMovementInput(int leftKey, int rightKey, int upKey, int downKey);
@@ -46,9 +47,9 @@ private:
     long long int score = 0;
     bool isActive = true;
 
-    std::shared_ptr<Engine::InputActionVec2> inputAction{};
-    std::shared_ptr<Engine::InputActionButton> fireAction{};
-    std::shared_ptr<Engine::InputActionButton> reviveAction{};
+    std::shared_ptr<Engine::InputActionVec2> inputAction = nullptr;
+    std::shared_ptr<Engine::InputActionButton> fireAction = nullptr;
+    std::shared_ptr<Engine::InputActionButton> reviveAction = nullptr;
 
     static void GetMovement(void* object, glm::vec2 input);
     static void GetMovementZ(void* object, glm::vec2 input);

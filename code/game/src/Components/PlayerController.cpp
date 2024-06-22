@@ -169,6 +169,8 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
         inputAction = other.inputAction;
         inputAction->AddOnValueChange(this, GetMovement);
     }
+    else
+        inputAction = nullptr;
 
     if(other.fireAction != nullptr)
     {
@@ -178,18 +180,40 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
         fireAction->AddOnStart(this, GetFireActionStart);
         fireAction->RemoveOnStart(&other, GetFireActionEnd);
     }
+    else
+        fireAction = nullptr;
+
+    if(other.reviveAction != nullptr)
+    {
+        other.reviveAction->RemoveOnStart(&other, GetReviveActionStart);
+        reviveAction = other.reviveAction;
+        reviveAction->AddOnStart(this, GetReviveActionStart);
+    }
+    else
+        reviveAction = nullptr;
 
     return *this;
 }
 
 void PlayerController::ResetInput()
 {
-    Engine::Systems::inputSystem->Remove(inputAction);
-    Engine::Systems::inputSystem->Remove(fireAction);
-    Engine::Systems::inputSystem->Remove(reviveAction);
+    if(inputAction != nullptr)
+        Engine::Systems::inputSystem->Remove(inputAction);
+    if(fireAction != nullptr)
+        Engine::Systems::inputSystem->Remove(fireAction);
+    if(reviveAction != nullptr)
+        Engine::Systems::inputSystem->Remove(reviveAction);
 }
 
 int PlayerController::GetScore()
 {
     return score;
+}
+
+PlayerController::~PlayerController()
+{
+    ResetInput();
+    inputAction = nullptr;
+    fireAction = nullptr;
+    reviveAction = nullptr;
 }
