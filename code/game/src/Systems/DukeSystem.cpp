@@ -161,7 +161,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
             {
                 duke.timer = Duke::teleportTime / 2;
                 duke.phase = Duke::Tp_TeleportStart;
-                if(duke.teleportCounter % 15 == 14)
+                if(duke.teleportCounter % attackTime == attackTime - 1)
                     duke.phase = Duke::Tp_TeleportTowardsPlayerStart;
             }
         }
@@ -173,7 +173,7 @@ void DukeSystem::Update(Engine::Entity entity, float deltaTime)
                 duke.timer = Duke::teleportTime / 2;
                 duke.phase = Duke::Tp_TeleportEnd;
 
-                if(duke.teleportCounter % 101 != 100)
+                if(duke.teleportCounter % spawnTime != spawnTime - 1)
                 {
                     auto newStartCondition = [&](glm::vec3 startGlobalPos)
                     {

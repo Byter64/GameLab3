@@ -5,6 +5,8 @@
 
 class DukeSystem : public Engine::System
 {
+    static inline int attackTime = 11;
+    static inline int spawnTime = 29;
     void EntityAdded(Engine::Entity entity);
     void EntityRemoved(Engine::Entity entity);
 
