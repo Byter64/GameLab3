@@ -46,6 +46,12 @@ void DungeonSystem::Initialize()
     ReadInEnemies(enemyFile.string());
 }
 
+void DungeonSystem::Uninitialize()
+{
+    Engine::RemoveEntityWithChildren(entity);
+}
+
+
 void DungeonSystem::Update()
 {
     if(entity == Engine::Entity::INVALID_ENTITY_ID) return;

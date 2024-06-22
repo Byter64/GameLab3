@@ -213,6 +213,7 @@ void Game::OnEnd()
     }
 
     Engine::Systems::inputSystem->Remove(pause);
+    Systems::dungeonSystem->Uninitialize();
 }
 
 

@@ -22,6 +22,7 @@ class DungeonSystem : public Engine::System
     Type ToType(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 public:
     void Initialize();
+    void Uninitialize();
     void Update();
     void LoadNextDungeon();
     bool IsDungeonCleared();
