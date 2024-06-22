@@ -198,17 +198,36 @@ namespace Engine
 
         float x = GetValue(axes.first);
         float y = GetValue(axes.second);
-
-        x = glm::abs(x) < deadzone ? 0.0f : x;
-        y = glm::abs(y) < deadzone ? 0.0f : y;
-        if(oldInput == glm::vec2(x, y)) return;
-
         glm::vec2 value(x, y);
         Update(value);
     }
 
     void InputActionVec2::Update(glm::vec2 value)
     {
+        glm::vec2 delta = value - oldInput;
+        delta.x = delta.x / ::abs(delta.x);
+        delta.y = delta.y / ::abs(delta.y);
+
+        glm::vec2 newVal = oldInput + delta * maxChange;
+        if (std::signbit(newVal.x - value.x) != std::signbit(oldInput.x - value.x))
+            newVal.x = value.x;
+        if (std::signbit(newVal.y - value.y) != std::signbit(oldInput.y - value.y))
+            newVal.y = value.y;
+        value = newVal;
+        glm::vec2 newDeadZoned, oldDeadZoned, undeadZoned;
+        newDeadZoned.x = glm::abs(value.x) < deadzone ? 0.0f : value.x;
+        newDeadZoned.y = glm::abs(value.y) < deadzone ? 0.0f : value.y;
+        oldDeadZoned.x = glm::abs(oldInput.x) < deadzone ? 0.0f : oldInput.x;
+        oldDeadZoned.y = glm::abs(oldInput.y) < deadzone ? 0.0f : oldInput.y;
+        std::cout << this << ": " << newDeadZoned.x << " " << newDeadZoned.y << std::endl;
+        if (oldDeadZoned == newDeadZoned)
+        {
+            oldInput = value;
+            return;
+        }
+        undeadZoned = value;
+        value = newDeadZoned;
+
         //Check for end of input
         if(value == glm::vec2(0,0) && oldInput != glm::vec2 (0,0))
         {
@@ -220,7 +239,7 @@ namespace Engine
             {
                 pair.second(pair.first, value);
             }
-            oldInput = value;
+            oldInput = undeadZoned;
             return;
         }
 
@@ -235,7 +254,7 @@ namespace Engine
             {
                 pair.second(pair.first, value);
             }
-            oldInput = value;
+            oldInput = undeadZoned;
             return;
         }
 
@@ -246,7 +265,7 @@ namespace Engine
             {
                 pair.second(pair.first, value);
             }
-            oldInput = value;
+            oldInput = undeadZoned;
             return;
         }
     }

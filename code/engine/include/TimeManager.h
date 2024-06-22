@@ -1,5 +1,8 @@
 #pragma once
 #include <chrono>
+#define FRAMETIME60FPS 16667 //In microseconds, this is around 60 fps
+#define FRAMETIME144FPS 6944 //In microseconds, this is around 144 fps
+#define FRAMETIME FRAMETIME144FPS
 
 namespace Engine
 {

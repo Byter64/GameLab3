@@ -1,6 +1,7 @@
 #pragma once
 #include "InputAction.h"
 #include "glm/vec2.hpp"
+#include "TimeManager.h"
 
 namespace Engine
 {
@@ -8,6 +9,7 @@ namespace Engine
     class InputActionVec2 : public InputAction
     {
         inline static const float deadzone = 0.2f;
+        inline static const float maxChange = 20.0f * (FRAMETIME / 1000000.0f);
         typedef void (*CallbackVec2)(void*, glm::vec2 input);
         struct DirectionMap;
         struct Axis;
