@@ -196,7 +196,9 @@ void PlayerControllerSystem::DeactivatePlayer(Engine::Entity entity)
 void PlayerControllerSystem::ActivatePlayer(Engine::Entity entity)
 {
     ecsSystem->GetComponent<PlayerController>(entity).isActive = true;
+    ecsSystem->GetComponent<PlayerController>(entity).respawnTimer = -1.0f;
     ecsSystem->GetComponent<Engine::Transform>(entity).AddTranslation(glm::vec3(0,0, respawnDistance));
+    ecsSystem->GetComponent<Health>(entity).health = ecsSystem->GetComponent<Health>(entity).maxHealth;
 }
 
 int PlayerControllerSystem::SumUpAllScores()
