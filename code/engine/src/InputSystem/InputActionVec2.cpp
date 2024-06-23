@@ -169,6 +169,10 @@ namespace Engine
 
     void InputActionVec2::Update()
     {
+        //prioritise int inputs (i.e. d-pad) over joystick
+        if(lastIntInput != glm::vec2(0))
+            return;
+
         glm::vec2 direction = actualFloatInput - lastFloatInput;
         direction.x = direction.x / ::abs(direction.x);
         direction.y = direction.y / ::abs(direction.y);
@@ -187,12 +191,8 @@ namespace Engine
         if (oldDeadZoned == newDeadZoned)
         {
             lastFloatInput = newInput;
-            lastInput = newInput;
             return;
         }
-        //prioritise int inputs (i.e. d-pad) over joystick
-        if(lastIntInput != glm::vec2(0))
-            return;
 
         //Check for end of input
         if(newDeadZoned == glm::vec2(0,0) && oldDeadZoned != glm::vec2 (0,0))
@@ -205,8 +205,8 @@ namespace Engine
             {
                 pair.second(pair.first, newDeadZoned);
             }
-            lastFloatInput = newInput;
-            lastInput = newInput;
+            lastFloatInput = glm::vec2(0);
+            lastInput = glm::vec2(0);
             return;
         }
 
