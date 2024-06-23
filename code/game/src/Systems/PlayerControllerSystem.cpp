@@ -164,7 +164,6 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
                 ActivatePlayer(otherPlayer);
                 break;
             }
-            ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, -respawnDistance));
         }
 
     }
