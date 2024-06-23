@@ -50,6 +50,9 @@ Keyboard *GameLost::CreateKeyBoard(int gamepadId, int x, int y)
 
 void GameLost::OnStart()
 {
+    isP1Ready = false;
+    isP2Ready = false;
+
     if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         const char *winner = Game::scoreP1 > Game::scoreP2 ? "player 1" : "player 2";
