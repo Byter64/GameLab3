@@ -36,12 +36,12 @@ Keyboard *GameLost::CreateKeyBoard(int gamepadId, int x, int y)
                                     Engine::GamepadAxis(gamepadId, GLFW_GAMEPAD_AXIS_LEFT_Y));
     keyboard->SetMovementAction(tempVec2);
     auto tempButton = std::make_shared<Engine::InputActionButton>("");
-    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_A));
-    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_B));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_A));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_B));
     keyboard->SetEnterAction(tempButton);
     tempButton = std::make_shared<Engine::InputActionButton>("");
-    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_X));
-    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_Y));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_X));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(gamepadId, GLFW_GAMEPAD_BUTTON_Y));
     keyboard->SetDeleteAction(tempButton);
 
     return keyboard;
