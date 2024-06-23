@@ -46,27 +46,23 @@ void GameWin::OnStart()
     text.horizontalAlignment = Engine::Text::Left;
 
     keyboard = new Keyboard(glm::vec2(800, 750));
-    /*auto temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_DPAD_UP, Engine::GamepadInputID::InputType::Button));
-    keyboard->SetUpAction(temp);
-    temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_DPAD_DOWN, Engine::GamepadInputID::InputType::Button));
-    keyboard->SetDownAction(temp);
-    temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, Engine::GamepadInputID::InputType::Button));
-    keyboard->SetLeftAction(temp);
-    temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, Engine::GamepadInputID::InputType::Button));
-    keyboard->SetRightAction(temp);
-    temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_A, Engine::GamepadInputID::InputType::Button));
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_B, Engine::GamepadInputID::InputType::Button));
-    keyboard->SetEnterAction(temp);
-    temp = std::make_shared<Engine::InputActionButton>("");
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_X, Engine::GamepadInputID::InputType::Button));
-    temp->AddGamepadBinding(Engine::GamepadInputID(0, GLFW_GAMEPAD_BUTTON_Y, Engine::GamepadInputID::InputType::Button));
-    keyboard->SetDeleteAction(temp);
-*/
+    auto tempVec2 = std::make_shared<Engine::InputActionVec2>("");
+    tempVec2->AddGamepadButtonBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_DPAD_LEFT),
+                                      Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT),
+                                      Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_DPAD_UP),
+                                      Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_DPAD_DOWN));
+    tempVec2->AddGamepadAxesBinding(Engine::GamepadAxis(0, GLFW_GAMEPAD_AXIS_LEFT_X),
+                                    Engine::GamepadAxis(0, GLFW_GAMEPAD_AXIS_LEFT_Y));
+    keyboard->SetMovementAction(tempVec2);
+    auto tempButton = std::make_shared<Engine::InputActionButton>("");
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_A));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_B));
+    keyboard->SetEnterAction(tempButton);
+    tempButton = std::make_shared<Engine::InputActionButton>("");
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_X));
+    tempButton->AddGamepadBinding(Engine::GamepadButton(0, GLFW_GAMEPAD_BUTTON_Y));
+    keyboard->SetDeleteAction(tempButton);
+
     if(Engine::Systems::inputSystem->IsGamepadPresent(1))
     {
         button2 = std::make_shared<Engine::InputActionButton>("Any button");
