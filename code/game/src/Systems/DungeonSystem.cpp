@@ -118,6 +118,9 @@ void DungeonSystem::LoadNextDungeon()
     Dungeon& dungeon = ecsSystem->GetComponent<Dungeon>(entity);
     dungeon.activeDungeonIndex++;
     Systems::bulletSystem->RemoveAllBullets();
+    ecsSystem->GetComponent<PlayerController>(players.first).activeBullets = 0;
+    if(ecsSystem->IsEntityActive(players.second))
+        ecsSystem->GetComponent<PlayerController>(players.second).activeBullets = 0;
 
     std::filesystem::path enemyFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeonIndex) + ".txt");
     std::filesystem::path dungeonFile = dungeon.pathToDungeons / (dungeon.fileName + std::to_string(dungeon.activeDungeonIndex) + ".png");
