@@ -1,0 +1,63 @@
+Player1_Speed = 3.0
+Player1_Health = 1
+Player1_BulletSpeed = 8.0
+Player1_MaxBullets = 4
+Player1_StunnedTime = 3.0 /*This is the time, the other player is stunned, when player1 hits him*/
+Player1_RespawnTime = 5.0
+
+Player2_Speed = 3.0
+Player2_Health = 1
+Player2_BulletSpeed = 8.0
+Player2_MaxBullets = 2
+Player2_StunnedTime = 3.0 /*This is the time, the other player is stunned, when player2 hits him*/
+Player2_RespawnTime = 5.0
+
+Enemy_ScoreDecrease = 1.0 /*After how many seconds the enemy value decreases by one point */
+
+Hubertus_Score = 100
+Hubertus_Speed = 1.0
+Hubertus_Health = 2
+Hubertus_BulletSpeed = 3.0
+Hubertus_IdleDuration_Min = 1.0
+Hubertus_IdleDuration_Max = 4.0
+Hubertus_WalkDuration_Min = 10.0
+Hubertus_WalkDuration_Max = 30.0
+Hubertus_ShootInterval_Min = 1.0
+Hubertus_ShootInterval_Max = 6.0
+
+KindredSpirit_Score = 300
+KindredSpirit_Speed = 2.0
+KindredSpirit_Health = 1
+KindredSpirit_TimeTolerance = 2.5 /*How much time can pass betwenn both being hit */
+
+Assi_Score = 400
+Assi_Speed = 4.0
+Assi_Health = 1
+Assi_StunnedTime = 5.0	/*How long an Assi is vulnerable after being hit once */
+Assi_IdleDuration_Min = 0.2
+Assi_IdleDuration_Max = 2.0
+
+Cuball_Score = 600
+Cuball_Cube_Speed = 3.0
+Cuball_Cube_Health = 4
+Cuball_Cube_BulletSpeed = 1.5
+Cuball_Ball_Speed = 1.0
+Cuball_Ball_Health = 4
+Cuball_Ball_BulletSpeed = 3.0
+
+Duke_Score = 5
+Duke_Speed = 4.0
+Duke_Health = 4 /*Please dont change this. You will make somebody very sad if you do*/
+Duke_BulletSpeed = 6.0
+Duke_MinDistanceToPlayer = 3.0
+Duke_MinDistanceToPlayerSpawning = 10.0
+Duke_MaxDistanceToPlayerAttacking = 5.0
+Duke_MinWalkDistance = 3.0 /* Minimum a duke should walk in one go */
+Duke_MaxWalkDistance = 10.0 /* Maximum a duke should walk in one go */
+Duke_TeleportTime = 2.0 /* Time a teleport takes */
+Duke_SpawnTime = 1.0 
+Duke_ShootTime = 0.5 /* how much distance (normalized) is travelled before the bullet is fired */
+Duke_SpawnCountHubertus = 8
+Duke_SpawnCountKindredSpirit = 2
+Duke_SpawnCountAssi = 2
+Duke_SpawnCountCuball = 2
