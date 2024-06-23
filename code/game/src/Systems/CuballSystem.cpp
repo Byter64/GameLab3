@@ -84,8 +84,8 @@ void CuballSystem::Update(Engine::Entity entity, float deltaTime)
         cuball.movement.targetNode = target;
         cuball.movement.targetPos = Systems::dungeonSystem->ToGlobal(cuball.movement.targetNode);
         cuball.movement.currentPos = transform.GetGlobalTranslation();
-        cuball.movement.direction = glm::normalize(glm::vec2(cuball.movement.targetNode.first - cuball.movement.oldTargetNode.first, cuball.movement.targetNode.second - cuball.movement.oldTargetNode.second));
-
+        cuball.movement.direction = glm::normalize(glm::vec2(cuball.movement.targetPos - cuball.movement.currentPos));
+        //für die Richtung muss transform pos genommen werden!!!
         cuball.phase = Cuball::Ball;
     }
 
