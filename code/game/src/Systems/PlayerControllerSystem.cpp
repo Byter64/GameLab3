@@ -158,9 +158,10 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
 
             if(&collider == &otherCollider) continue;
             ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, respawnDistance));
-            if(Engine::Systems::collisionSystem->CheckCollision(collider, otherCollider))
+            bool hasCollided = Engine::Systems::collisionSystem->CheckCollision(collider, otherCollider);
+            ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, -respawnDistance));
+            if(hasCollided && !ecsSystem->GetComponent<PlayerController>(otherPlayer).isActive)
             {
-                ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, -respawnDistance));
                 ActivatePlayer(otherPlayer);
                 break;
             }
