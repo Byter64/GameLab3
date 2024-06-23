@@ -55,12 +55,6 @@ void PlayerController::GetMovement(void* object, glm::vec2 input)
     player->movementInput.y = input.y;
 }
 
-void PlayerController::GetMovementZ(void *object, glm::vec2 input)
-{
-    PlayerController* player = static_cast<PlayerController*>(object);
-    player->movementInput.z = input.x;
-}
-
 void PlayerController::AddFireInput(int key)
 {
     if(fireAction == nullptr)
@@ -102,39 +96,6 @@ void PlayerController::GetFireActionEnd(void *object)
     player->wasFirePushed = false;
 }
 
-void PlayerController::AddReviveInput(Engine::GamepadButton button)
-{
-    if(reviveAction == nullptr)
-    {
-        reviveAction = std::make_shared<Engine::InputActionButton>("Revive");
-        reviveAction->AddOnStart(this, GetReviveActionStart);
-    }
-
-    Engine::Systems::inputSystem->Remove(reviveAction);
-    reviveAction->AddGamepadBinding(button);
-    Engine::Systems::inputSystem->Add(reviveAction);
-}
-
-void PlayerController::AddReviveInput(int button)
-{
-    if(reviveAction == nullptr)
-    {
-        reviveAction = std::make_shared<Engine::InputActionButton>("Revive");
-        reviveAction->AddOnStart(this, GetReviveActionStart);
-    }
-
-    Engine::Systems::inputSystem->Remove(reviveAction);
-    reviveAction->AddKeyboardBinding(button);
-    Engine::Systems::inputSystem->Add(reviveAction);
-}
-
-void PlayerController::GetReviveActionStart(void *object)
-{
-    PlayerController* player = static_cast<PlayerController*>(object);
-    player->wasRevivePushed = true;
-}
-
-
 void PlayerController::AddScore(int points)
 {
     score += points;
@@ -147,8 +108,6 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
         Engine::Systems::inputSystem->Remove(inputAction);
     if(fireAction != nullptr)
         Engine::Systems::inputSystem->Remove(fireAction);
-    if(reviveAction != nullptr)
-        Engine::Systems::inputSystem->Remove(reviveAction);
 
     movementInput = other.movementInput;
     lookDirection = other.lookDirection;
@@ -183,15 +142,6 @@ PlayerController &PlayerController::operator=(PlayerController &&other)
     else
         fireAction = nullptr;
 
-    if(other.reviveAction != nullptr)
-    {
-        other.reviveAction->RemoveOnStart(&other, GetReviveActionStart);
-        reviveAction = other.reviveAction;
-        reviveAction->AddOnStart(this, GetReviveActionStart);
-    }
-    else
-        reviveAction = nullptr;
-
     return *this;
 }
 
@@ -201,8 +151,6 @@ void PlayerController::ResetInput()
         Engine::Systems::inputSystem->Remove(inputAction);
     if(fireAction != nullptr)
         Engine::Systems::inputSystem->Remove(fireAction);
-    if(reviveAction != nullptr)
-        Engine::Systems::inputSystem->Remove(reviveAction);
 }
 
 int PlayerController::GetScore()
@@ -215,5 +163,4 @@ PlayerController::~PlayerController()
     ResetInput();
     inputAction = nullptr;
     fireAction = nullptr;
-    reviveAction = nullptr;
 }

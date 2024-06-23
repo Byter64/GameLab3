@@ -72,12 +72,10 @@ void Game::OnStart()
     controller.AddMovementInput(0, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT, GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
     controller.AddFireInput({0, GLFW_GAMEPAD_BUTTON_A});
     controller.AddFireInput({0, GLFW_GAMEPAD_BUTTON_B});
-    controller.AddReviveInput({0, GLFW_GAMEPAD_BUTTON_X});
-    controller.AddReviveInput({0, GLFW_GAMEPAD_BUTTON_Y});
+
     //Keyboard
     controller.AddMovementInput(GLFW_KEY_A, GLFW_KEY_D, GLFW_KEY_W, GLFW_KEY_S);
     controller.AddFireInput(GLFW_KEY_SPACE);
-    controller.AddReviveInput(GLFW_KEY_SPACE);
 
     controller.speed = Defines::Float("Player1_Speed");
     controller.stunnedTime = Defines::Float("Player1_StunnedTime");
@@ -123,8 +121,6 @@ void Game::OnStart()
         controller2.AddMovementInput(1, GLFW_GAMEPAD_BUTTON_DPAD_LEFT, GLFW_GAMEPAD_BUTTON_DPAD_RIGHT,GLFW_GAMEPAD_BUTTON_DPAD_UP, GLFW_GAMEPAD_BUTTON_DPAD_DOWN);
         controller2.AddFireInput({1, GLFW_GAMEPAD_BUTTON_A});
         controller2.AddFireInput({1, GLFW_GAMEPAD_BUTTON_B});
-        controller2.AddReviveInput({1, GLFW_GAMEPAD_BUTTON_X});
-        controller2.AddReviveInput({1, GLFW_GAMEPAD_BUTTON_Y});
         controller2.speed = Defines::Float("Player2_Speed");
         controller2.stunnedTime = Defines::Float("Player2_StunnedTime");
         controller2.bulletSpeed = Defines::Float("Player2_BulletSpeed");

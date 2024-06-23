@@ -9,7 +9,6 @@ struct PlayerController
     glm::vec3 movementInput{0, 0, 0};
     glm::vec3 lookDirection{1, 0, 0};
     bool wasFirePushed = false;
-    bool wasRevivePushed = false;
 
     float bulletSpeed = 0;
     int maxBullets = 2;
@@ -38,8 +37,6 @@ struct PlayerController
     void AddMovementInput(unsigned char joystickID, unsigned char xAxis, unsigned char yAxis);
     void AddFireInput(int key);
     void AddFireInput(Engine::GamepadButton button);
-    void AddReviveInput(int button);
-    void AddReviveInput(Engine::GamepadButton button);
     void AddScore(int points);
 
     int GetScore();
@@ -49,11 +46,8 @@ private:
 
     std::shared_ptr<Engine::InputActionVec2> inputAction = nullptr;
     std::shared_ptr<Engine::InputActionButton> fireAction = nullptr;
-    std::shared_ptr<Engine::InputActionButton> reviveAction = nullptr;
 
     static void GetMovement(void* object, glm::vec2 input);
-    static void GetMovementZ(void* object, glm::vec2 input);
     static void GetFireActionStart(void* object);
     static void GetFireActionEnd(void* object);
-    static void GetReviveActionStart(void* object);
 };

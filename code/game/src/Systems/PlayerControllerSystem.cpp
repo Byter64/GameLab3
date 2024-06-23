@@ -148,26 +148,6 @@ void PlayerControllerSystem::HandleInput(Engine::Entity playerEntity, float delt
             controller.activeBullets++;
         }
     }
-    if(controller.wasRevivePushed)
-    {
-        controller.wasRevivePushed = false;
-        Engine::BoxCollider& collider = ecsSystem->GetComponent<Engine::BoxCollider>(playerEntity);
-        for(Engine::Entity otherPlayer : entities)
-        {
-            Engine::BoxCollider& otherCollider = ecsSystem->GetComponent<Engine::BoxCollider>(otherPlayer);
-
-            if(&collider == &otherCollider) continue;
-            ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, respawnDistance));
-            bool hasCollided = Engine::Systems::collisionSystem->CheckCollision(collider, otherCollider);
-            ecsSystem->GetComponent<Engine::Transform>(otherPlayer).AddTranslation(glm::vec3(0, 0, -respawnDistance));
-            if(hasCollided && !ecsSystem->GetComponent<PlayerController>(otherPlayer).isActive)
-            {
-                ActivatePlayer(otherPlayer);
-                break;
-            }
-        }
-
-    }
 }
 
 void PlayerControllerSystem::UpdateUI(Engine::Entity playerEntity)
